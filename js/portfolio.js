@@ -110,7 +110,20 @@ async function loadProfile() {
   // Company
   if (data.company_name) {
     const el = document.getElementById('info-company');
-    el.querySelector('.info-value').textContent = data.company_name;
+    const valueEl = el.querySelector('.info-value');
+    if (data.company_url) {
+      const link = document.createElement('a');
+      link.href = data.company_url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = data.company_name;
+      link.style.color = 'var(--accent)';
+      link.style.textDecoration = 'none';
+      valueEl.textContent = '';
+      valueEl.appendChild(link);
+    } else {
+      valueEl.textContent = data.company_name;
+    }
     el.style.display = '';
 
     if (data.company_start_date) {
