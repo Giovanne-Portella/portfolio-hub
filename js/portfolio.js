@@ -155,8 +155,13 @@ async function loadSocialLinks() {
 // ============================================
 // CERTIFICATES
 // ============================================
+let allCategories = [];
+let allCerts = [];
+let activeCategoryId = null;
+let activeSwiperInstance = null;
+
 async function loadCertificates() {
-  const container = document.getElementById('certificates-container');
+  const sidebar = document.getElementById('cert-sidebar');
 
   // Load categories
   const { data: categories, error: catError } = await supabase
@@ -165,7 +170,7 @@ async function loadCertificates() {
     .order('display_order', { ascending: true });
 
   if (catError || !categories || categories.length === 0) {
-    container.innerHTML = `
+    sidebar.innerHTML = `
       <div class="empty-state">
         <i class="fas fa-certificate"></i>
         <p>Nenhum certificado cadastrado ainda.</p>
@@ -180,93 +185,124 @@ async function loadCertificates() {
     .order('display_order', { ascending: true });
 
   if (certError) {
-    container.innerHTML = '<p class="empty-state">Erro ao carregar certificados.</p>';
+    sidebar.innerHTML = '<p class="empty-state">Erro ao carregar certificados.</p>';
     return;
   }
 
-  container.innerHTML = '';
+  allCategories = categories;
+  allCerts = certs || [];
 
-  categories.forEach((category, idx) => {
-    const categoryCerts = (certs || []).filter(c => c.category_id === category.id);
+  // Build sidebar list
+  sidebar.innerHTML = '';
+
+  categories.forEach(category => {
+    const categoryCerts = allCerts.filter(c => c.category_id === category.id);
     const completedCount = categoryCerts.filter(c => c.completed).length;
     const totalCount = categoryCerts.length;
     const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-    const swiperID = `swiper-${idx}`;
-    const categorySlug = slugify(category.name);
-
-    const html = `
-      <div class="cert-category" data-aos="fade-up" id="cat-${categorySlug}">
-        <div class="category-header collapsible-header" data-target="cat-body-${idx}">
-          <div class="category-title-row">
-            <h3 class="category-title">${escapeHtml(category.name)}</h3>
-            <div class="category-header-right">
-              <span class="category-count">${completedCount} de ${totalCount} concluídos</span>
-              <button class="collapse-toggle" aria-label="Expandir/Minimizar">
-                <i class="fas fa-chevron-up"></i>
-              </button>
-            </div>
-          </div>
-          ${category.description ? `<p class="category-description">${escapeHtml(category.description)}</p>` : ''}
-          <div class="category-progress">
-            <div class="category-progress-bar" style="width: ${progress}%"></div>
-          </div>
-        </div>
-
-        <div class="collapsible-body" id="cat-body-${idx}">
-        ${categoryCerts.length > 0 ? `
-          <div class="cert-carousel-wrapper">
-            <div class="swiper" id="${swiperID}">
-              <div class="swiper-wrapper">
-                ${categoryCerts.map(cert => createCertCard(cert)).join('')}
-              </div>
-              <div class="swiper-pagination"></div>
-            </div>
-            <div class="swiper-button-prev swiper-prev-${idx}"></div>
-            <div class="swiper-button-next swiper-next-${idx}"></div>
-          </div>
-        ` : `
-          <div class="empty-state">
-            <i class="fas fa-plus-circle"></i>
-            <p>Nenhum certificado nesta categoria.</p>
-          </div>
-        `}
-        </div>
+    const item = document.createElement('div');
+    item.className = 'cert-sidebar-item';
+    item.dataset.categoryId = category.id;
+    item.innerHTML = `
+      <div class="cert-sidebar-info">
+        <span class="cert-sidebar-name">${escapeHtml(category.name)}</span>
+        ${category.description ? `<span class="cert-sidebar-desc">${escapeHtml(category.description)}</span>` : ''}
+        <span class="cert-sidebar-count">${completedCount} de ${totalCount} concluídos</span>
+      </div>
+      <div class="cert-sidebar-progress">
+        <div class="cert-sidebar-progress-bar" style="width: ${progress}%"></div>
       </div>
     `;
-
-    container.insertAdjacentHTML('beforeend', html);
-
-    // Initialize Swiper for this category
-    if (categoryCerts.length > 0) {
-      new Swiper(`#${swiperID}`, {
-        slidesPerView: 1,
-        spaceBetween: 16,
-        pagination: {
-          el: `#${swiperID} .swiper-pagination`,
-          clickable: true,
-        },
-        navigation: {
-          nextEl: `.swiper-next-${idx}`,
-          prevEl: `.swiper-prev-${idx}`,
-        },
-        breakpoints: {
-          480: { slidesPerView: 2 },
-          768: { slidesPerView: 3 },
-          1024: { slidesPerView: 4 },
-        },
-      });
-    }
+    item.addEventListener('click', () => selectCategory(category.id));
+    sidebar.appendChild(item);
   });
-
-  // Render PDF thumbnails after all cards are inserted
-  renderPdfThumbnails();
 
   // Re-attach collapsible handlers
   setupCollapsible();
 
+  // Re-observe type-in elements (setupCollapsible clones headers, removing observers)
+  setupTypeInAnimation();
+
   // Handle deep link to specific certificate
   handleCertDeepLink();
+}
+
+function selectCategory(categoryId) {
+  // Update sidebar active state
+  document.querySelectorAll('.cert-sidebar-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.categoryId === categoryId);
+  });
+
+  activeCategoryId = categoryId;
+
+  const category = allCategories.find(c => c.id === categoryId);
+  const categoryCerts = allCerts.filter(c => c.category_id === categoryId);
+
+  const placeholder = document.getElementById('cert-placeholder');
+  const content = document.getElementById('cert-main-content');
+
+  placeholder.style.display = 'none';
+  content.style.display = '';
+
+  // Destroy previous Swiper instance
+  if (activeSwiperInstance) {
+    activeSwiperInstance.destroy(true, true);
+    activeSwiperInstance = null;
+  }
+
+  if (categoryCerts.length === 0) {
+    content.innerHTML = `
+      <div class="cert-main-header">
+        <h3>${escapeHtml(category.name)}</h3>
+      </div>
+      <div class="empty-state">
+        <i class="fas fa-plus-circle"></i>
+        <p>Nenhum certificado nesta categoria.</p>
+      </div>`;
+    return;
+  }
+
+  const swiperID = `swiper-active`;
+
+  content.innerHTML = `
+    <div class="cert-main-header">
+      <h3>${escapeHtml(category.name)}</h3>
+      ${category.description ? `<p>${escapeHtml(category.description)}</p>` : ''}
+    </div>
+    <div class="cert-carousel-wrapper">
+      <div class="swiper" id="${swiperID}">
+        <div class="swiper-wrapper">
+          ${categoryCerts.map(cert => createCertCard(cert)).join('')}
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+      <div class="swiper-button-prev swiper-prev-active"></div>
+      <div class="swiper-button-next swiper-next-active"></div>
+    </div>
+  `;
+
+  // Initialize Swiper
+  activeSwiperInstance = new Swiper(`#${swiperID}`, {
+    slidesPerView: 1,
+    spaceBetween: 16,
+    pagination: {
+      el: `#${swiperID} .swiper-pagination`,
+      clickable: true,
+    },
+    navigation: {
+      nextEl: `.swiper-next-active`,
+      prevEl: `.swiper-prev-active`,
+    },
+    breakpoints: {
+      480: { slidesPerView: 2 },
+      768: { slidesPerView: 2 },
+      1024: { slidesPerView: 3 },
+    },
+  });
+
+  // Render PDF thumbnails
+  renderPdfThumbnails();
 }
 
 function createCertCard(cert) {
@@ -387,13 +423,31 @@ function handleCertDeepLink() {
   const certId = params.get('cert');
   if (!certId) return;
 
+  // Find which category this cert belongs to
+  const cert = allCerts.find(c => c.id === certId);
+  if (!cert) return;
+
+  // Expand the certificates section if collapsed
+  const certBody = document.getElementById('certificates-body');
+  if (certBody && certBody.classList.contains('collapsed')) {
+    certBody.classList.remove('collapsed');
+    const header = document.querySelector('[data-target="certificates-body"]');
+    if (header) {
+      const icon = header.querySelector('.collapse-toggle i');
+      if (icon) icon.className = 'fas fa-chevron-up';
+      saveSectionState('certificates-body', false);
+    }
+  }
+
+  // Select the category
+  selectCategory(cert.category_id);
+
   setTimeout(() => {
     const card = document.getElementById(`cert-${certId}`);
     if (card) {
       card.scrollIntoView({ behavior: 'smooth', block: 'center' });
       card.classList.add('cert-highlight');
       setTimeout(() => card.classList.remove('cert-highlight'), 3000);
-      // Open the modal automatically
       card.click();
     }
   }, 500);

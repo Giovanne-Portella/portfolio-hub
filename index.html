@@ -136,15 +136,33 @@
   <!-- CERTIFICATES SECTION -->
   <section class="section section-alt" id="certificates">
     <div class="container">
-      <div class="section-header">
-        <h2 class="section-title type-in">Certificados</h2>
+      <div class="section-header collapsible-header" data-target="certificates-body">
+        <div class="section-header-top">
+          <h2 class="section-title type-in">Certificados</h2>
+          <button class="collapse-toggle" aria-label="Expandir/Minimizar">
+            <i class="fas fa-chevron-up"></i>
+          </button>
+        </div>
         <div class="section-line"></div>
         <p class="section-subtitle type-in">Minhas certificações organizadas por área de conhecimento</p>
       </div>
-      <div id="certificates-container">
-        <!-- Populated by JS - Each category with its carousel -->
-        <div class="loading-spinner">
-          <i class="fas fa-spinner fa-spin"></i> Carregando certificados...
+      <div class="collapsible-body" id="certificates-body">
+        <div class="cert-layout">
+          <aside class="cert-sidebar" id="cert-sidebar">
+            <!-- Populated by JS - category list items -->
+            <div class="loading-spinner">
+              <i class="fas fa-spinner fa-spin"></i> Carregando...
+            </div>
+          </aside>
+          <main class="cert-main" id="cert-main">
+            <div class="cert-main-placeholder" id="cert-placeholder">
+              <i class="fas fa-hand-pointer"></i>
+              <p>Toque em um item para visualizar os certificados</p>
+            </div>
+            <div class="cert-main-content" id="cert-main-content" style="display:none">
+              <!-- Populated by JS when a category is selected -->
+            </div>
+          </main>
         </div>
       </div>
     </div>
