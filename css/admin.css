@@ -3,22 +3,22 @@
    ============================================ */
 
 :root {
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
-  --primary-light: #3b82f6;
-  --accent: #10b981;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --bg: #f1f5f9;
-  --card-bg: #ffffff;
-  --text: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  --border: #e2e8f0;
-  --sidebar-bg: #0f172a;
+  --primary: #58a6ff;
+  --primary-dark: #388bfd;
+  --primary-light: #79c0ff;
+  --accent: #3fb950;
+  --danger: #f85149;
+  --warning: #d29922;
+  --bg: #0d1117;
+  --card-bg: #161b22;
+  --text: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --border: #30363d;
+  --sidebar-bg: #010409;
   --sidebar-width: 260px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --shadow: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
   --radius: 10px;
   --transition: all 0.2s ease;
 }
@@ -92,7 +92,7 @@ body {
 }
 
 .nav-item.active {
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
   color: white;
 }
 
@@ -223,14 +223,15 @@ body {
   font-family: inherit;
   transition: var(--transition);
   outline: none;
-  background: white;
+  background: #0d1117;
+  color: var(--text);
 }
 
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
 }
 
 .form-group small {
@@ -324,7 +325,8 @@ body {
 }
 
 .btn-danger:hover {
-  background: #dc2626;
+  background: #da3633;
+  box-shadow: 0 0 12px rgba(248, 81, 73, 0.3);
 }
 
 .btn-sm {
@@ -441,18 +443,18 @@ body {
 }
 
 .badge-completed {
-  background: #d1fae5;
-  color: #065f46;
+  background: rgba(63, 185, 80, 0.15);
+  color: #3fb950;
 }
 
 .badge-progress {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(210, 153, 34, 0.15);
+  color: #d29922;
 }
 
 .badge-featured {
-  background: #dbeafe;
-  color: #1e40af;
+  background: rgba(88, 166, 255, 0.15);
+  color: #58a6ff;
 }
 
 /* ============================================
@@ -461,7 +463,7 @@ body {
 .admin-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(1, 4, 9, 0.7);
   backdrop-filter: blur(4px);
   z-index: 200;
   display: none;
@@ -604,7 +606,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 10px 14px;
-  background: var(--bg-primary);
+  background: #0d1117;
   border: 1px solid var(--border);
   border-radius: 8px;
   margin-bottom: 8px;
