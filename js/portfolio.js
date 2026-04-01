@@ -776,37 +776,33 @@ async function loadGitHubData(username) {
 }
 
 async function loadContributionGraph(username, wrapper) {
-  // Use GitHub's public contribution data via a CORS-friendly approach
-  // We'll generate a contribution-like graph from the user's recent events
   try {
-    // Fetch events for contribution approximation
-    const events = [];
-    for (let page = 1; page <= 3; page++) {
-      const res = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}/events/public?per_page=100&page=${page}`);
-      if (!res.ok) break;
-      const data = await res.json();
-      if (data.length === 0) break;
-      events.push(...data);
-    }
+    // Use github-contributions-api to get real contribution data (includes private if enabled)
+    const res = await fetch(`https://github-contributions-api.jogruber.de/v4/${encodeURIComponent(username)}?y=last`);
+    if (!res.ok) throw new Error('Failed to fetch contributions');
+    const data = await res.json();
 
-    // Count contributions by day from events
-    const contribMap = {};
-    events.forEach(event => {
-      const day = event.created_at.substring(0, 10);
-      contribMap[day] = (contribMap[day] || 0) + 1;
-    });
+    const contributions = data.contributions || [];
+    const totalContrib = data.total && data.total['lastYear'] != null ? data.total['lastYear'] : contributions.reduce((s, d) => s + d.count, 0);
 
-    // Generate 52 weeks of data
+    document.getElementById('gh-total-contributions').textContent = totalContrib;
+
+    // Build weekly columns from contribution data
     const today = new Date();
-    const weeks = [];
     const dayLabels = ['Dom', 'Seg', '', 'Qua', '', 'Sex', ''];
     const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+    // Create a map of date -> { count, level }
+    const contribMap = {};
+    contributions.forEach(c => {
+      contribMap[c.date] = { count: c.count, level: c.level };
+    });
 
     // Start from 52 weeks ago (Sunday)
     const start = new Date(today);
     start.setDate(start.getDate() - (52 * 7) - start.getDay());
 
-    let totalContrib = 0;
+    const weeks = [];
     const monthMarkers = [];
     let lastMonth = -1;
 
@@ -816,8 +812,8 @@ async function loadContributionGraph(username, wrapper) {
         const date = new Date(start);
         date.setDate(start.getDate() + w * 7 + d);
         const key = date.toISOString().substring(0, 10);
-        const count = contribMap[key] || 0;
-        totalContrib += count;
+        const entry = contribMap[key] || { count: 0, level: 0 };
+        const isFuture = date > today;
 
         // Track months
         if (d === 0 && date.getMonth() !== lastMonth) {
@@ -825,19 +821,10 @@ async function loadContributionGraph(username, wrapper) {
           lastMonth = date.getMonth();
         }
 
-        let level = 0;
-        if (count >= 8) level = 4;
-        else if (count >= 5) level = 3;
-        else if (count >= 2) level = 2;
-        else if (count >= 1) level = 1;
-
-        const isFuture = date > today;
-        week.push({ key, count, level, isFuture });
+        week.push({ key, count: entry.count, level: entry.level, isFuture });
       }
       weeks.push(week);
     }
-
-    document.getElementById('gh-total-contributions').textContent = totalContrib;
 
     // Build the graph HTML
     const monthsHtml = monthMarkers.map(m => {
