@@ -1890,3 +1890,140 @@ iframe.modal-image {
     font-size: 0.85rem;
   }
 }
+
+/* ============================================
+   SPOTIFY FLOATING PLAYER
+   ============================================ */
+.spotify-player {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1500;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.spotify-player.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.spotify-embed-container {
+  display: none;
+}
+
+.spotify-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(22, 27, 34, 0.95);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 8px 16px 8px 12px;
+  box-shadow: var(--shadow-lg);
+}
+
+.spotify-track-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.spotify-icon {
+  font-size: 1.3rem;
+  color: #1DB954;
+  flex-shrink: 0;
+}
+
+.spotify-track-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.spotify-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #1DB954;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.spotify-btn:hover {
+  background: #1ed760;
+  transform: scale(1.1);
+}
+
+/* Spotify toast */
+.spotify-toast {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  background: rgba(22, 27, 34, 0.95);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(29, 185, 84, 0.3);
+  color: var(--text);
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  z-index: 10001;
+  opacity: 0;
+  transform: translateX(100px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  box-shadow: 0 4px 16px rgba(29, 185, 84, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.spotify-toast i {
+  color: #1DB954;
+  font-size: 1.2rem;
+}
+
+.spotify-toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (max-width: 480px) {
+  .spotify-player {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+  }
+
+  .spotify-controls {
+    width: 100%;
+  }
+
+  .spotify-track-name {
+    max-width: none;
+    flex: 1;
+  }
+
+  .spotify-toast {
+    right: 16px;
+    left: 16px;
+    top: 70px;
+  }
+}
