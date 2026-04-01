@@ -1892,9 +1892,9 @@ iframe.modal-image {
 }
 
 /* ============================================
-   SPOTIFY FLOATING PLAYER
+   MUSIC FLOATING PLAYER (YouTube)
    ============================================ */
-.spotify-player {
+.music-player {
   position: fixed;
   bottom: 24px;
   right: 24px;
@@ -1905,17 +1905,13 @@ iframe.modal-image {
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-.spotify-player.visible {
+.music-player.visible {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
 }
 
-.spotify-embed-container {
-  display: none;
-}
-
-.spotify-controls {
+.music-controls {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1927,20 +1923,20 @@ iframe.modal-image {
   box-shadow: var(--shadow-lg);
 }
 
-.spotify-track-info {
+.music-track-info {
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
 }
 
-.spotify-icon {
+.music-icon {
   font-size: 1.3rem;
-  color: #1DB954;
+  color: #ff6b6b;
   flex-shrink: 0;
 }
 
-.spotify-track-name {
+.music-track-name {
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--text);
@@ -1950,12 +1946,12 @@ iframe.modal-image {
   max-width: 180px;
 }
 
-.spotify-btn {
+.music-btn {
   width: 32px;
   height: 32px;
   border-radius: 50%;
   border: none;
-  background: #1DB954;
+  background: #ff6b6b;
   color: #fff;
   cursor: pointer;
   display: flex;
@@ -1966,19 +1962,19 @@ iframe.modal-image {
   flex-shrink: 0;
 }
 
-.spotify-btn:hover {
-  background: #1ed760;
+.music-btn:hover {
+  background: #ff8787;
   transform: scale(1.1);
 }
 
-/* Spotify toast */
-.spotify-toast {
+/* Music toast */
+.music-toast {
   position: fixed;
   top: 80px;
   right: 24px;
   background: rgba(22, 27, 34, 0.95);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(29, 185, 84, 0.3);
+  border: 1px solid rgba(255, 107, 107, 0.3);
   color: var(--text);
   padding: 12px 20px;
   border-radius: 10px;
@@ -1989,39 +1985,39 @@ iframe.modal-image {
   transform: translateX(100px);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
-  box-shadow: 0 4px 16px rgba(29, 185, 84, 0.15);
+  box-shadow: 0 4px 16px rgba(255, 107, 107, 0.15);
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.spotify-toast i {
-  color: #1DB954;
+.music-toast i {
+  color: #ff6b6b;
   font-size: 1.2rem;
 }
 
-.spotify-toast.show {
+.music-toast.show {
   opacity: 1;
   transform: translateX(0);
 }
 
 @media (max-width: 480px) {
-  .spotify-player {
+  .music-player {
     bottom: 16px;
     right: 16px;
     left: 16px;
   }
 
-  .spotify-controls {
+  .music-controls {
     width: 100%;
   }
 
-  .spotify-track-name {
+  .music-track-name {
     max-width: none;
     flex: 1;
   }
 
-  .spotify-toast {
+  .music-toast {
     right: 16px;
     left: 16px;
     top: 70px;

@@ -995,91 +995,124 @@ async function loadContributionGraph(username, wrapper, yearParam) {
 }
 
 // ============================================
-// SPOTIFY FLOATING PLAYER
+// YOUTUBE FLOATING PLAYER
 // ============================================
-const SPOTIFY_TRACKS = [
-  { uri: 'spotify:track:3bmL5rU99q7ZA75vqdzDRO', name: 'Fire' },
-  { uri: 'spotify:track:4ZHJU9kCqZK6a39YXIZFxc', name: 'Big Jet Plane' },
-  { uri: 'spotify:track:3QmesrvdbPjwf7i40nht1D', name: 'Everlong' },
-  { uri: 'spotify:track:4cgSBnNzOo9rhwzUczB7HI', name: 'Stone in Love' },
-  { uri: 'spotify:track:3EYOJ48Et32uATr9ZmLnAo', name: 'Roxanne' },
-  { uri: 'spotify:track:1oYYd2gnWZYrt89EBXdFiO', name: 'Message In A Bottle' },
+const YT_TRACKS = [
+  { id: 'W-IzDrJRTo8', name: 'in your arms — mr kitty (slowed & reverb)' },
+  { id: 'AHWUez2Tdpk', name: 'Gemini - Time To Share' },
+  { id: 'c9P9kkcEcdc', name: 'Mr. Kitty - 44 days' },
+  { id: 'SO4GCctPi4U', name: 'Wicked Game | Synthwave Dark Cover' },
 ];
 
-let spotifyController = null;
-let spotifyIsPlaying = false;
+let ytPlayer = null;
+let ytIsPlaying = false;
+let ytCurrentTrack = null;
 
-// Spotify IFrame API calls this globally when ready
-window.onSpotifyIframeApiReady = (IFrameAPI) => {
-  const track = SPOTIFY_TRACKS[Math.floor(Math.random() * SPOTIFY_TRACKS.length)];
-  const container = document.getElementById('spotify-embed-container');
+function loadYouTubePlayer() {
+  ytCurrentTrack = YT_TRACKS[Math.floor(Math.random() * YT_TRACKS.length)];
+  document.getElementById('music-track-name').textContent = ytCurrentTrack.name;
 
-  const options = {
-    uri: track.uri,
-    width: '100%',
-    height: 80,
-    theme: 'dark',
-  };
-
-  const callback = (controller) => {
-    spotifyController = controller;
-
-    // Show track name
-    document.getElementById('spotify-track-name').textContent = track.name;
-
-    // Listen for playback state
-    controller.addListener('playback_update', (e) => {
-      const playing = !e.data.isPaused;
-      if (playing !== spotifyIsPlaying) {
-        spotifyIsPlaying = playing;
-        updateSpotifyIcon();
-        if (playing) showSpotifyToast(track.name);
-      }
-    });
-
-    // Try to autoplay on first user interaction
-    const tryAutoplay = () => {
-      controller.togglePlay();
-      document.removeEventListener('click', tryAutoplay);
-      document.removeEventListener('scroll', tryAutoplay);
-      document.removeEventListener('keydown', tryAutoplay);
-    };
-    document.addEventListener('click', tryAutoplay, { once: false });
-    document.addEventListener('scroll', tryAutoplay, { once: false });
-    document.addEventListener('keydown', tryAutoplay, { once: false });
-
-    // Show the player widget
-    document.getElementById('spotify-player').classList.add('visible');
-  };
-
-  IFrameAPI.createController(container, options, callback);
-};
-
-function updateSpotifyIcon() {
-  const icon = document.getElementById('spotify-toggle-icon');
-  icon.className = spotifyIsPlaying ? 'fas fa-pause' : 'fas fa-play';
+  // Load the YouTube IFrame API
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
 }
 
-function showSpotifyToast(name) {
-  let toast = document.getElementById('spotify-toast');
+// YouTube IFrame API calls this globally when ready
+window.onYouTubeIframeAPIReady = () => {
+  ytPlayer = new YT.Player('yt-player-container', {
+    height: '0',
+    width: '0',
+    videoId: ytCurrentTrack.id,
+    playerVars: {
+      autoplay: 0,
+      controls: 0,
+      disablekb: 1,
+      fs: 0,
+      modestbranding: 1,
+      rel: 0,
+    },
+    events: {
+      onReady: onYTPlayerReady,
+      onStateChange: onYTStateChange,
+    },
+  });
+};
+
+function onYTPlayerReady() {
+  // Autoplay on first user interaction
+  const tryAutoplay = () => {
+    if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+      ytPlayer.playVideo();
+    }
+    document.removeEventListener('click', tryAutoplay);
+    document.removeEventListener('scroll', tryAutoplay);
+    document.removeEventListener('keydown', tryAutoplay);
+  };
+  document.addEventListener('click', tryAutoplay, { once: false });
+  document.addEventListener('scroll', tryAutoplay, { once: false });
+  document.addEventListener('keydown', tryAutoplay, { once: false });
+
+  document.getElementById('music-player').classList.add('visible');
+}
+
+function onYTStateChange(event) {
+  const playing = event.data === YT.PlayerState.PLAYING;
+  const ended = event.data === YT.PlayerState.ENDED;
+
+  if (playing && !ytIsPlaying) {
+    ytIsPlaying = true;
+    updateMusicIcon();
+    showMusicToast(ytCurrentTrack.name);
+  } else if (!playing && ytIsPlaying) {
+    ytIsPlaying = false;
+    updateMusicIcon();
+  }
+
+  // When track ends, play a different random track
+  if (ended) {
+    let next;
+    do {
+      next = YT_TRACKS[Math.floor(Math.random() * YT_TRACKS.length)];
+    } while (next.id === ytCurrentTrack.id && YT_TRACKS.length > 1);
+    ytCurrentTrack = next;
+    document.getElementById('music-track-name').textContent = next.name;
+    ytPlayer.loadVideoById(next.id);
+  }
+}
+
+function updateMusicIcon() {
+  const icon = document.getElementById('music-toggle-icon');
+  icon.className = ytIsPlaying ? 'fas fa-pause' : 'fas fa-play';
+}
+
+function showMusicToast(name) {
+  let toast = document.getElementById('music-toast');
   if (!toast) {
     toast = document.createElement('div');
-    toast.id = 'spotify-toast';
-    toast.className = 'spotify-toast';
+    toast.id = 'music-toast';
+    toast.className = 'music-toast';
     document.body.appendChild(toast);
   }
-  toast.innerHTML = `<i class="fab fa-spotify"></i> Tocando: ${escapeHtml(name)}`;
+  toast.innerHTML = `<i class="fas fa-music"></i> Tocando: ${escapeHtml(name)}`;
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 4000);
 }
 
-// Toggle button
+// Toggle button & init
 document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('spotify-toggle');
+  const btn = document.getElementById('music-toggle');
   if (btn) {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (spotifyController) spotifyController.togglePlay();
+      if (ytPlayer && typeof ytPlayer.getPlayerState === 'function') {
+        if (ytIsPlaying) {
+          ytPlayer.pauseVideo();
+        } else {
+          ytPlayer.playVideo();
+        }
+      }
     });
   }
+  loadYouTubePlayer();
 });

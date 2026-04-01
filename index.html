@@ -280,16 +280,16 @@
     </div>
   </div>
 
-  <!-- SPOTIFY FLOATING PLAYER -->
-  <div class="spotify-player" id="spotify-player">
-    <div class="spotify-embed-container" id="spotify-embed-container"></div>
-    <div class="spotify-controls">
-      <div class="spotify-track-info">
-        <i class="fab fa-spotify spotify-icon"></i>
-        <span class="spotify-track-name" id="spotify-track-name">Carregando...</span>
+  <!-- YOUTUBE FLOATING PLAYER -->
+  <div class="music-player" id="music-player">
+    <div id="yt-player-container" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;"></div>
+    <div class="music-controls">
+      <div class="music-track-info">
+        <i class="fas fa-music music-icon"></i>
+        <span class="music-track-name" id="music-track-name">Carregando...</span>
       </div>
-      <button class="spotify-btn" id="spotify-toggle" title="Pausar/Tocar">
-        <i class="fas fa-pause" id="spotify-toggle-icon"></i>
+      <button class="music-btn" id="music-toggle" title="Pausar/Tocar">
+        <i class="fas fa-pause" id="music-toggle-icon"></i>
       </button>
     </div>
   </div>
@@ -302,7 +302,6 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   </script>
   <script src="js/config.js"></script>
-  <script src="js/portfolio.js?v=5"></script>
-  <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+  <script src="js/portfolio.js?v=6"></script>
 </body>
 </html>
