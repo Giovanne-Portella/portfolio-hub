@@ -474,15 +474,11 @@ function setupCollapsible() {
   const savedState = getSectionsState();
 
   document.querySelectorAll('.collapsible-header').forEach(header => {
-    // Remove old listeners by cloning
-    const newHeader = header.cloneNode(true);
-    header.parentNode.replaceChild(newHeader, header);
-
-    const targetId = newHeader.dataset.target;
+    const targetId = header.dataset.target;
     const body = document.getElementById(targetId);
     if (!body) return;
 
-    const icon = newHeader.querySelector('.collapse-toggle i');
+    const icon = header.querySelector('.collapse-toggle i');
 
     // On first visit (no saved state), default to collapsed
     // If there's saved state, use it
@@ -496,7 +492,11 @@ function setupCollapsible() {
       icon.className = 'fas fa-chevron-up';
     }
 
-    newHeader.addEventListener('click', (e) => {
+    // Only attach listener once (skip if already bound)
+    if (header.dataset.collapseBound) return;
+    header.dataset.collapseBound = '1';
+
+    header.addEventListener('click', (e) => {
       // Don't collapse when clicking copy-link button
       if (e.target.closest('.cert-copy-link')) return;
 
