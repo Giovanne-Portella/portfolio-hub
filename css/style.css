@@ -1358,6 +1358,38 @@ iframe.modal-image {
   overflow-x: auto;
 }
 
+/* Year selector tabs */
+.gh-year-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.gh-year-tab {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.gh-year-tab:hover {
+  border-color: var(--primary-dark);
+  color: var(--text);
+}
+
+.gh-year-tab.active {
+  background: rgba(88, 166, 255, 0.15);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
 .github-graph {
   display: flex;
   gap: 3px;

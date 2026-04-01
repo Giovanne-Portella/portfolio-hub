@@ -747,7 +747,8 @@ function typeElement(el) {
   el.classList.add('typed');
 
   let i = 0;
-  const speed = Math.max(15, Math.min(40, 800 / fullText.length));
+  // Cap total typing time at ~1.2s; short texts get a slight pause per char
+  const speed = Math.min(35, Math.max(3, 1200 / fullText.length));
 
   function typeChar() {
     if (i < fullText.length) {
@@ -756,7 +757,7 @@ function typeElement(el) {
       setTimeout(typeChar, speed);
     } else {
       // Remove cursor after typing is done
-      setTimeout(() => el.classList.remove('typing'), 600);
+      setTimeout(() => el.classList.remove('typing'), 400);
     }
   }
 
@@ -789,7 +790,10 @@ function calcTimeSince(dateStr) {
 // ============================================
 // GITHUB DATA
 // ============================================
+let ghUsername = '';
+
 async function loadGitHubData(username) {
+  ghUsername = username;
   const wrapper = document.getElementById('github-graph-wrapper');
   const statsEl = document.getElementById('github-stats');
 
@@ -816,8 +820,11 @@ async function loadGitHubData(username) {
 
     statsEl.style.display = '';
 
-    // Load contribution graph via GitHub's contribution calendar page
-    await loadContributionGraph(username, wrapper);
+    // Build year selector + load contribution graph
+    const createdYear = new Date(user.created_at).getFullYear();
+    const currentYear = new Date().getFullYear();
+    buildYearSelector(createdYear, currentYear, wrapper);
+    await loadContributionGraph(username, wrapper, 'last');
 
   } catch (err) {
     console.error('Erro ao carregar dados do GitHub:', err);
@@ -829,20 +836,73 @@ async function loadGitHubData(username) {
   }
 }
 
-async function loadContributionGraph(username, wrapper) {
+function buildYearSelector(startYear, endYear, wrapper) {
+  // Insert year tabs before the graph wrapper
+  let tabsEl = document.getElementById('gh-year-tabs');
+  if (tabsEl) tabsEl.remove();
+
+  tabsEl = document.createElement('div');
+  tabsEl.id = 'gh-year-tabs';
+  tabsEl.className = 'gh-year-tabs';
+
+  // "Last year" tab
+  const lastBtn = document.createElement('button');
+  lastBtn.className = 'gh-year-tab active';
+  lastBtn.textContent = 'Último ano';
+  lastBtn.dataset.year = 'last';
+  lastBtn.addEventListener('click', () => switchYear('last'));
+  tabsEl.appendChild(lastBtn);
+
+  // Per-year tabs (newest first)
+  for (let y = endYear; y >= startYear; y--) {
+    const btn = document.createElement('button');
+    btn.className = 'gh-year-tab';
+    btn.textContent = y;
+    btn.dataset.year = y;
+    btn.addEventListener('click', () => switchYear(String(y)));
+    tabsEl.appendChild(btn);
+  }
+
+  wrapper.parentNode.insertBefore(tabsEl, wrapper);
+}
+
+async function switchYear(year) {
+  // Update active tab
+  document.querySelectorAll('.gh-year-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.year === year);
+  });
+
+  const wrapper = document.getElementById('github-graph-wrapper');
+  wrapper.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Carregando...</div>';
+
+  await loadContributionGraph(ghUsername, wrapper, year);
+}
+
+// Helper: format local date as YYYY-MM-DD (avoids UTC shift from toISOString)
+function localDateStr(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+async function loadContributionGraph(username, wrapper, yearParam) {
   try {
-    // Use github-contributions-api to get real contribution data (includes private if enabled)
-    const res = await fetch(`https://github-contributions-api.jogruber.de/v4/${encodeURIComponent(username)}?y=last`);
+    const res = await fetch(`https://github-contributions-api.jogruber.de/v4/${encodeURIComponent(username)}?y=${yearParam}`);
     if (!res.ok) throw new Error('Failed to fetch contributions');
     const data = await res.json();
 
     const contributions = data.contributions || [];
-    const totalContrib = data.total && data.total['lastYear'] != null ? data.total['lastYear'] : contributions.reduce((s, d) => s + d.count, 0);
 
+    // Calculate total from API response
+    let totalContrib;
+    if (yearParam === 'last') {
+      totalContrib = data.total && data.total['lastYear'] != null ? data.total['lastYear'] : contributions.reduce((s, d) => s + d.count, 0);
+    } else {
+      totalContrib = data.total && data.total[yearParam] != null ? data.total[yearParam] : contributions.reduce((s, d) => s + d.count, 0);
+    }
     document.getElementById('gh-total-contributions').textContent = totalContrib;
 
-    // Build weekly columns from contribution data
-    const today = new Date();
     const dayLabels = ['Dom', 'Seg', '', 'Qua', '', 'Sex', ''];
     const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
@@ -852,33 +912,54 @@ async function loadContributionGraph(username, wrapper) {
       contribMap[c.date] = { count: c.count, level: c.level };
     });
 
-    // Start from 52 weeks ago (Sunday)
-    const start = new Date(today);
-    start.setDate(start.getDate() - (52 * 7) - start.getDay());
+    // Determine date range
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    let start, end;
 
+    if (yearParam === 'last') {
+      // Last 12 months: end = today, start = 52 weeks before, aligned to Sunday
+      end = new Date(today);
+      start = new Date(today);
+      start.setDate(start.getDate() - (52 * 7) - start.getDay());
+    } else {
+      // Specific year: Jan 1 to Dec 31 (or today if current year)
+      const yr = parseInt(yearParam);
+      start = new Date(yr, 0, 1);
+      // Align start to previous Sunday
+      start.setDate(start.getDate() - start.getDay());
+      end = yr === today.getFullYear() ? new Date(today) : new Date(yr, 11, 31);
+    }
+
+    // Build weeks
     const weeks = [];
     const monthMarkers = [];
     let lastMonth = -1;
+    let cursor = new Date(start);
+    let w = 0;
 
-    for (let w = 0; w < 53; w++) {
+    while (cursor <= end || weeks.length < 1) {
       const week = [];
       for (let d = 0; d < 7; d++) {
-        const date = new Date(start);
-        date.setDate(start.getDate() + w * 7 + d);
-        const key = date.toISOString().substring(0, 10);
+        const date = new Date(cursor);
+        const key = localDateStr(date);
         const entry = contribMap[key] || { count: 0, level: 0 };
         const isFuture = date > today;
 
-        // Track months
         if (d === 0 && date.getMonth() !== lastMonth) {
           monthMarkers.push({ week: w, month: monthNames[date.getMonth()] });
           lastMonth = date.getMonth();
         }
 
         week.push({ key, count: entry.count, level: entry.level, isFuture });
+        cursor.setDate(cursor.getDate() + 1);
       }
       weeks.push(week);
+      w++;
+      if (cursor > end && week[6] && new Date(cursor) > end) break;
     }
+
+    const totalWeeks = weeks.length;
 
     // Build the graph HTML
     const monthsHtml = monthMarkers.map(m => {
@@ -899,7 +980,7 @@ async function loadContributionGraph(username, wrapper) {
       <div class="github-graph-body">
         <div class="github-graph-days">${daysHtml}</div>
         <div>
-          <div class="github-graph-months" style="display:grid; grid-template-columns: repeat(53, 15px);">
+          <div class="github-graph-months" style="display:grid; grid-template-columns: repeat(${totalWeeks}, 15px);">
             ${monthsHtml}
           </div>
           <div class="github-graph">${colsHtml}</div>
