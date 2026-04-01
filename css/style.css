@@ -856,12 +856,34 @@ canvas.cert-image {
   color: var(--text-secondary);
   font-size: 0.9rem;
   line-height: 1.6;
-  margin-bottom: 16px;
-  flex: 1;
+  margin-bottom: 8px;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.project-body.expanded .project-description {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+.project-desc-toggle {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 16px;
+  transition: var(--transition);
+}
+
+.project-desc-toggle:hover {
+  color: var(--accent);
+  text-decoration: underline;
 }
 
 .project-techs {

@@ -708,6 +708,7 @@ async function loadProjects() {
         <div class="project-body">
           <h3 class="project-title">${escapeHtml(project.title)}</h3>
           <p class="project-description">${escapeHtml(project.description || '')}</p>
+          ${project.description && project.description.length > 120 ? '<button class="project-desc-toggle" onclick="this.parentElement.classList.toggle(\'expanded\'); this.textContent = this.parentElement.classList.contains(\'expanded\') ? \'Ver menos\' : \'Ver mais\'">Ver mais</button>' : ''}
           ${techsHtml ? `<div class="project-techs">${techsHtml}</div>` : ''}
           ${linksHtml.length > 0 ? `<div class="project-links">${linksHtml.join('')}</div>` : ''}
         </div>
