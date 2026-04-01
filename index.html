@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio</title>
+  <meta name="description" content="Portfolio profissional - Certificados, Projetos e Experiências">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="container navbar-content">
+      <a href="#" class="navbar-brand">
+        <i class="fas fa-code"></i>
+        <span id="nav-name">Portfolio</span>
+      </a>
+      <ul class="navbar-links">
+        <li><a href="#about">Sobre</a></li>
+        <li><a href="#certificates">Certificados</a></li>
+        <li><a href="#projects">Projetos</a></li>
+        <li><a href="#contact">Contato</a></li>
+      </ul>
+      <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#about" class="mobile-link">Sobre</a>
+    <a href="#certificates" class="mobile-link">Certificados</a>
+    <a href="#projects" class="mobile-link">Projetos</a>
+    <a href="#contact" class="mobile-link">Contato</a>
+  </div>
+
+  <!-- HERO SECTION -->
+  <section class="hero" id="hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-content">
+      <div class="hero-avatar-wrapper">
+        <img src="https://ui-avatars.com/api/?name=User&size=200&background=2563eb&color=fff" 
+             alt="Foto de perfil" class="hero-avatar" id="hero-avatar">
+        <div class="hero-status"></div>
+      </div>
+      <h1 class="hero-name" id="hero-name">Carregando...</h1>
+      <p class="hero-title" id="hero-title"></p>
+      <p class="hero-location" id="hero-location">
+        <i class="fas fa-map-marker-alt"></i> <span></span>
+      </p>
+      <div class="hero-social" id="hero-social">
+        <!-- Populated by JS -->
+      </div>
+      <div class="hero-actions">
+        <a href="#certificates" class="btn btn-primary">
+          <i class="fas fa-certificate"></i> Ver Certificados
+        </a>
+        <a href="#projects" class="btn btn-outline">
+          <i class="fas fa-code-branch"></i> Ver Projetos
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT SECTION -->
+  <section class="section" id="about">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Sobre Mim</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="about-grid">
+        <div class="about-bio">
+          <p id="about-bio">Carregando informações...</p>
+        </div>
+        <div class="about-info">
+          <div class="info-card">
+            <div class="info-item" id="info-email" style="display:none">
+              <i class="fas fa-envelope"></i>
+              <div>
+                <span class="info-label">Email</span>
+                <span class="info-value"></span>
+              </div>
+            </div>
+            <div class="info-item" id="info-phone" style="display:none">
+              <i class="fas fa-phone"></i>
+              <div>
+                <span class="info-label">Telefone</span>
+                <span class="info-value"></span>
+              </div>
+            </div>
+            <div class="info-item" id="info-location" style="display:none">
+              <i class="fas fa-map-marker-alt"></i>
+              <div>
+                <span class="info-label">Localização</span>
+                <span class="info-value"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATES SECTION -->
+  <section class="section section-alt" id="certificates">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Certificados</h2>
+        <div class="section-line"></div>
+        <p class="section-subtitle">Minhas certificações organizadas por área de conhecimento</p>
+      </div>
+      <div id="certificates-container">
+        <!-- Populated by JS - Each category with its carousel -->
+        <div class="loading-spinner">
+          <i class="fas fa-spinner fa-spin"></i> Carregando certificados...
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS SECTION -->
+  <section class="section" id="projects">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Projetos</h2>
+        <div class="section-line"></div>
+        <p class="section-subtitle">Meus projetos e contribuições no GitHub</p>
+      </div>
+      <div class="projects-grid" id="projects-container">
+        <!-- Populated by JS -->
+        <div class="loading-spinner">
+          <i class="fas fa-spinner fa-spin"></i> Carregando projetos...
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT / FOOTER -->
+  <footer class="footer" id="contact">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-info">
+          <h3 id="footer-name">Portfolio</h3>
+          <p id="footer-title"></p>
+        </div>
+        <div class="footer-social" id="footer-social">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <span id="footer-year"></span> Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CERTIFICATE MODAL (for zoom view) -->
+  <div class="modal-overlay" id="cert-modal">
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close">
+        <i class="fas fa-times"></i>
+      </button>
+      <img src="" alt="Certificado" class="modal-image" id="modal-image">
+      <div class="modal-info">
+        <h3 id="modal-cert-name"></h3>
+        <p id="modal-cert-issuer"></p>
+        <p id="modal-cert-date"></p>
+        <a href="#" id="modal-cert-link" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer" style="display:none">
+          <i class="fas fa-external-link-alt"></i> Ver Credencial
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/portfolio.js"></script>
+</body>
+</html>

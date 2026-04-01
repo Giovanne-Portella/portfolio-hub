@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <i class="fas fa-code"></i>
+      <span>Portfolio Admin</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-section="profile">
+        <i class="fas fa-user"></i> Perfil
+      </a>
+      <a href="#" class="nav-item" data-section="social">
+        <i class="fas fa-share-alt"></i> Redes Sociais
+      </a>
+      <a href="#" class="nav-item" data-section="categories">
+        <i class="fas fa-folder"></i> Categorias
+      </a>
+      <a href="#" class="nav-item" data-section="certificates">
+        <i class="fas fa-certificate"></i> Certificados
+      </a>
+      <a href="#" class="nav-item" data-section="projects">
+        <i class="fas fa-code-branch"></i> Projetos
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="../index.html" class="nav-item" target="_blank">
+        <i class="fas fa-external-link-alt"></i> Ver Site
+      </a>
+      <a href="#" class="nav-item" id="btn-logout">
+        <i class="fas fa-sign-out-alt"></i> Sair
+      </a>
+    </div>
+  </aside>
+
+  <!-- MOBILE HEADER -->
+  <header class="mobile-header">
+    <button class="sidebar-toggle" id="sidebar-toggle">
+      <i class="fas fa-bars"></i>
+    </button>
+    <span>Portfolio Admin</span>
+    <button class="sidebar-toggle" id="btn-logout-mobile">
+      <i class="fas fa-sign-out-alt"></i>
+    </button>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content" id="main-content">
+
+    <!-- ==================== PROFILE SECTION ==================== -->
+    <section class="admin-section active" id="section-profile">
+      <div class="section-top">
+        <h2><i class="fas fa-user"></i> Perfil</h2>
+        <p>Gerencie suas informações pessoais</p>
+      </div>
+      <form id="profile-form" class="admin-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Foto de Perfil</label>
+            <div class="avatar-upload">
+              <img src="https://ui-avatars.com/api/?name=U&size=100&background=2563eb&color=fff" 
+                   alt="Avatar" id="profile-avatar" class="avatar-preview">
+              <div class="avatar-actions">
+                <input type="file" id="avatar-input" accept="image/*" hidden>
+                <button type="button" class="btn btn-sm" onclick="document.getElementById('avatar-input').click()">
+                  <i class="fas fa-upload"></i> Trocar Foto
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="p-name">Nome Completo</label>
+            <input type="text" id="p-name" placeholder="Seu nome completo">
+          </div>
+          <div class="form-group">
+            <label for="p-title">Título / Cargo</label>
+            <input type="text" id="p-title" placeholder="Ex: Desenvolvedor Full Stack">
+          </div>
+        </div>
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="p-email">Email</label>
+            <input type="email" id="p-email" placeholder="seu@email.com">
+          </div>
+          <div class="form-group">
+            <label for="p-phone">Telefone</label>
+            <input type="text" id="p-phone" placeholder="(11) 99999-9999">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-location">Localização</label>
+            <input type="text" id="p-location" placeholder="São Paulo, SP - Brasil">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-bio">Bio / Sobre Mim</label>
+            <textarea id="p-bio" rows="5" placeholder="Conte um pouco sobre você, sua experiência e suas habilidades..."></textarea>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-resume">URL do Currículo (opcional)</label>
+            <input type="url" id="p-resume" placeholder="https://...">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Salvar Perfil
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ==================== SOCIAL LINKS SECTION ==================== -->
+    <section class="admin-section" id="section-social">
+      <div class="section-top">
+        <h2><i class="fas fa-share-alt"></i> Redes Sociais</h2>
+        <p>Adicione links para suas redes sociais</p>
+      </div>
+      <div class="toolbar">
+        <button class="btn btn-primary" id="btn-add-social">
+          <i class="fas fa-plus"></i> Adicionar Rede Social
+        </button>
+      </div>
+      <div class="items-list" id="social-list">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Social Form Modal -->
+      <div class="admin-modal" id="modal-social">
+        <div class="admin-modal-content">
+          <div class="admin-modal-header">
+            <h3 id="modal-social-title">Adicionar Rede Social</h3>
+            <button class="modal-close-btn" data-close="modal-social"><i class="fas fa-times"></i></button>
+          </div>
+          <form id="social-form">
+            <input type="hidden" id="s-id">
+            <div class="form-group">
+              <label for="s-platform">Plataforma</label>
+              <select id="s-platform">
+                <option value="LinkedIn">LinkedIn</option>
+                <option value="GitHub">GitHub</option>
+                <option value="Instagram">Instagram</option>
+                <option value="Twitter/X">Twitter/X</option>
+                <option value="YouTube">YouTube</option>
+                <option value="Facebook">Facebook</option>
+                <option value="Discord">Discord</option>
+                <option value="WhatsApp">WhatsApp</option>
+                <option value="Telegram">Telegram</option>
+                <option value="Website">Website</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="s-url">URL</label>
+              <input type="url" id="s-url" placeholder="https://..." required>
+            </div>
+            <div class="form-group">
+              <label for="s-icon">Ícone (Font Awesome)</label>
+              <input type="text" id="s-icon" placeholder="fa-linkedin" value="fa-linkedin">
+              <small>Ex: fa-linkedin, fa-github, fa-instagram, fa-twitter, fa-youtube</small>
+            </div>
+            <div class="form-group">
+              <label for="s-order">Ordem de exibição</label>
+              <input type="number" id="s-order" value="0" min="0">
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn" data-close="modal-social">Cancelar</button>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Salvar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== CATEGORIES SECTION ==================== -->
+    <section class="admin-section" id="section-categories">
+      <div class="section-top">
+        <h2><i class="fas fa-folder"></i> Categorias de Certificados</h2>
+        <p>Organize seus certificados em categorias</p>
+      </div>
+      <div class="toolbar">
+        <button class="btn btn-primary" id="btn-add-category">
+          <i class="fas fa-plus"></i> Nova Categoria
+        </button>
+      </div>
+      <div class="items-list" id="categories-list">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Category Form Modal -->
+      <div class="admin-modal" id="modal-category">
+        <div class="admin-modal-content">
+          <div class="admin-modal-header">
+            <h3 id="modal-category-title">Nova Categoria</h3>
+            <button class="modal-close-btn" data-close="modal-category"><i class="fas fa-times"></i></button>
+          </div>
+          <form id="category-form">
+            <input type="hidden" id="cat-id">
+            <div class="form-group">
+              <label for="cat-name">Nome da Categoria</label>
+              <input type="text" id="cat-name" placeholder="Ex: Hard Skills" required>
+            </div>
+            <div class="form-group">
+              <label for="cat-description">Descrição (opcional)</label>
+              <textarea id="cat-description" rows="3" placeholder="Descreva esta categoria..."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="cat-order">Ordem de exibição</label>
+              <input type="number" id="cat-order" value="0" min="0">
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn" data-close="modal-category">Cancelar</button>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Salvar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== CERTIFICATES SECTION ==================== -->
+    <section class="admin-section" id="section-certificates">
+      <div class="section-top">
+        <h2><i class="fas fa-certificate"></i> Certificados</h2>
+        <p>Gerencie seus certificados e certificações</p>
+      </div>
+      <div class="toolbar">
+        <div class="toolbar-filter">
+          <label for="cert-filter-cat">Filtrar por categoria:</label>
+          <select id="cert-filter-cat">
+            <option value="">Todas</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="btn-add-cert">
+          <i class="fas fa-plus"></i> Novo Certificado
+        </button>
+      </div>
+      <div class="items-list" id="certs-list">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Certificate Form Modal -->
+      <div class="admin-modal" id="modal-cert">
+        <div class="admin-modal-content">
+          <div class="admin-modal-header">
+            <h3 id="modal-cert-title">Novo Certificado</h3>
+            <button class="modal-close-btn" data-close="modal-cert"><i class="fas fa-times"></i></button>
+          </div>
+          <form id="cert-form">
+            <input type="hidden" id="cert-id">
+            <div class="form-group">
+              <label for="cert-category">Categoria</label>
+              <select id="cert-category" required>
+                <option value="">Selecione uma categoria</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="cert-name">Nome do Certificado</label>
+              <input type="text" id="cert-name" placeholder="Ex: JavaScript Avançado" required>
+            </div>
+            <div class="form-group">
+              <label for="cert-issuer">Emissor (opcional)</label>
+              <input type="text" id="cert-issuer" placeholder="Ex: Alura, Coursera, Udemy">
+            </div>
+            <div class="form-group">
+              <label>Imagem do Certificado</label>
+              <input type="file" id="cert-image-input" accept="image/*">
+              <img id="cert-image-preview" class="image-preview" style="display:none" alt="Preview">
+            </div>
+            <div class="form-group">
+              <label for="cert-credential-url">URL da Credencial (opcional)</label>
+              <input type="url" id="cert-credential-url" placeholder="https://...">
+            </div>
+            <div class="form-row two-cols">
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" id="cert-completed"> Concluído
+                </label>
+              </div>
+              <div class="form-group">
+                <label for="cert-date">Data de Conclusão</label>
+                <input type="date" id="cert-date">
+              </div>
+            </div>
+            <div class="form-group" id="cert-progress-group">
+              <label for="cert-progress">Progresso (%)</label>
+              <input type="number" id="cert-progress" value="0" min="0" max="100">
+            </div>
+            <div class="form-group">
+              <label for="cert-order">Ordem de exibição</label>
+              <input type="number" id="cert-order" value="0" min="0">
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn" data-close="modal-cert">Cancelar</button>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Salvar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PROJECTS SECTION ==================== -->
+    <section class="admin-section" id="section-projects">
+      <div class="section-top">
+        <h2><i class="fas fa-code-branch"></i> Projetos</h2>
+        <p>Gerencie seus projetos e repositórios</p>
+      </div>
+      <div class="toolbar">
+        <button class="btn btn-primary" id="btn-add-project">
+          <i class="fas fa-plus"></i> Novo Projeto
+        </button>
+      </div>
+      <div class="items-list" id="projects-list">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Project Form Modal -->
+      <div class="admin-modal" id="modal-project">
+        <div class="admin-modal-content">
+          <div class="admin-modal-header">
+            <h3 id="modal-project-title">Novo Projeto</h3>
+            <button class="modal-close-btn" data-close="modal-project"><i class="fas fa-times"></i></button>
+          </div>
+          <form id="project-form">
+            <input type="hidden" id="proj-id">
+            <div class="form-group">
+              <label for="proj-title">Título do Projeto</label>
+              <input type="text" id="proj-title" placeholder="Nome do projeto" required>
+            </div>
+            <div class="form-group">
+              <label for="proj-description">Descrição</label>
+              <textarea id="proj-description" rows="3" placeholder="Descreva o projeto..."></textarea>
+            </div>
+            <div class="form-row two-cols">
+              <div class="form-group">
+                <label for="proj-github">URL do GitHub</label>
+                <input type="url" id="proj-github" placeholder="https://github.com/...">
+              </div>
+              <div class="form-group">
+                <label for="proj-demo">URL da Demo</label>
+                <input type="url" id="proj-demo" placeholder="https://...">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Imagem do Projeto</label>
+              <input type="file" id="proj-image-input" accept="image/*">
+              <img id="proj-image-preview" class="image-preview" style="display:none" alt="Preview">
+            </div>
+            <div class="form-group">
+              <label for="proj-techs">Tecnologias (separadas por vírgula)</label>
+              <input type="text" id="proj-techs" placeholder="React, Node.js, PostgreSQL">
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="proj-featured"> Projeto em Destaque
+              </label>
+            </div>
+            <div class="form-group">
+              <label for="proj-order">Ordem de exibição</label>
+              <input type="number" id="proj-order" value="0" min="0">
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn" data-close="modal-project">Cancelar</button>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Salvar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toast-msg">Salvo com sucesso!</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>
