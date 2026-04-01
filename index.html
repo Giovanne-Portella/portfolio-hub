@@ -175,6 +175,7 @@
         <i class="fas fa-times"></i>
       </button>
       <img src="" alt="Certificado" class="modal-image" id="modal-image">
+      <iframe id="modal-pdf" class="modal-image" style="display:none; height:80vh; border:none;" title="Certificado PDF"></iframe>
       <div class="modal-info">
         <h3 id="modal-cert-name"></h3>
         <p id="modal-cert-issuer"></p>
@@ -189,6 +190,10 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  </script>
   <script src="js/config.js"></script>
   <script src="js/portfolio.js"></script>
 </body>

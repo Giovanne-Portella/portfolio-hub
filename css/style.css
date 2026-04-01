@@ -554,6 +554,11 @@ a {
   transition: transform 0.4s ease;
 }
 
+canvas.cert-image {
+  object-fit: contain;
+  background: #fff;
+}
+
 .cert-card:hover .cert-image {
   transform: scale(1.05);
 }
@@ -892,6 +897,12 @@ a {
   max-height: 500px;
   object-fit: contain;
   background: var(--bg-alt);
+}
+
+iframe.modal-image {
+  max-height: none;
+  height: 75vh;
+  background: #fff;
 }
 
 .modal-info {

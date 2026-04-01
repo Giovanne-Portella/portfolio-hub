@@ -496,6 +496,7 @@ function setupCertificateForm() {
     document.getElementById('cert-form').reset();
     document.getElementById('cert-id').value = '';
     document.getElementById('cert-image-preview').style.display = 'none';
+    document.getElementById('cert-pdf-preview').style.display = 'none';
     document.getElementById('cert-progress-group').style.display = '';
     openModal('modal-cert');
   });
@@ -513,15 +514,36 @@ function setupCertificateForm() {
     }
   });
 
-  // Image preview
-  document.getElementById('cert-image-input').addEventListener('change', (e) => {
+  // File preview (image or PDF)
+  document.getElementById('cert-image-input').addEventListener('change', async (e) => {
     const file = e.target.files[0];
-    if (file) {
+    if (!file) return;
+
+    const imgPreview = document.getElementById('cert-image-preview');
+    const pdfPreview = document.getElementById('cert-pdf-preview');
+    imgPreview.style.display = 'none';
+    pdfPreview.style.display = 'none';
+
+    if (file.type === 'application/pdf') {
+      // Render first page of PDF as preview
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 0.5 });
+        pdfPreview.width = viewport.width;
+        pdfPreview.height = viewport.height;
+        const ctx = pdfPreview.getContext('2d');
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        pdfPreview.style.display = '';
+      } catch (err) {
+        console.error('Erro ao renderizar PDF:', err);
+      }
+    } else {
       const reader = new FileReader();
       reader.onload = (ev) => {
-        const preview = document.getElementById('cert-image-preview');
-        preview.src = ev.target.result;
-        preview.style.display = '';
+        imgPreview.src = ev.target.result;
+        imgPreview.style.display = '';
       };
       reader.readAsDataURL(file);
     }
@@ -538,7 +560,7 @@ function setupCertificateForm() {
       try {
         imageUrl = await uploadFile('certificates', imageFile);
       } catch (err) {
-        showToast('Erro ao fazer upload da imagem', true);
+        showToast('Erro ao fazer upload do arquivo', true);
         return;
       }
     }
@@ -594,11 +616,29 @@ window.editCert = async function(id) {
   document.getElementById('cert-progress-group').style.display = data.completed ? 'none' : '';
 
   const preview = document.getElementById('cert-image-preview');
+  const pdfPreview = document.getElementById('cert-pdf-preview');
+  preview.style.display = 'none';
+  pdfPreview.style.display = 'none';
+
   if (data.image_url) {
-    preview.src = data.image_url;
-    preview.style.display = '';
-  } else {
-    preview.style.display = 'none';
+    if (data.image_url.toLowerCase().endsWith('.pdf')) {
+      // Render first page of existing PDF as preview
+      try {
+        const pdf = await pdfjsLib.getDocument(data.image_url).promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 0.5 });
+        pdfPreview.width = viewport.width;
+        pdfPreview.height = viewport.height;
+        const ctx = pdfPreview.getContext('2d');
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        pdfPreview.style.display = '';
+      } catch (err) {
+        console.error('Erro ao renderizar PDF:', err);
+      }
+    } else {
+      preview.src = data.image_url;
+      preview.style.display = '';
+    }
   }
 
   openModal('modal-cert');

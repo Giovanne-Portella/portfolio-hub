@@ -221,6 +221,9 @@ async function loadCertificates() {
       });
     }
   });
+
+  // Render PDF thumbnails after all cards are inserted
+  renderPdfThumbnails();
 }
 
 function createCertCard(cert) {
@@ -232,9 +235,18 @@ function createCertCard(cert) {
     ? '<div class="cert-status completed"><i class="fas fa-check"></i></div>'
     : `<div class="cert-status in-progress">${cert.progress}%</div>`;
 
-  const imageHtml = cert.image_url
-    ? `<img src="${escapeAttr(cert.image_url)}" alt="${escapeAttr(cert.name)}" class="cert-image" loading="lazy">`
-    : `<div class="cert-placeholder"><i class="fas fa-certificate"></i></div>`;
+  const isPdf = cert.image_url && cert.image_url.toLowerCase().endsWith('.pdf');
+
+  let imageHtml;
+  if (cert.image_url) {
+    if (isPdf) {
+      imageHtml = `<canvas class="cert-image cert-pdf-thumb" data-pdf-url="${escapeAttr(cert.image_url)}" loading="lazy"></canvas>`;
+    } else {
+      imageHtml = `<img src="${escapeAttr(cert.image_url)}" alt="${escapeAttr(cert.name)}" class="cert-image" loading="lazy">`;
+    }
+  } else {
+    imageHtml = `<div class="cert-placeholder"><i class="fas fa-certificate"></i></div>`;
+  }
 
   return `
     <div class="swiper-slide">
@@ -256,6 +268,34 @@ function createCertCard(cert) {
       </div>
     </div>
   `;
+}
+
+// ============================================
+// PDF THUMBNAIL RENDERING
+// ============================================
+async function renderPdfThumbnails() {
+  const canvases = document.querySelectorAll('.cert-pdf-thumb');
+  for (const canvas of canvases) {
+    const pdfUrl = canvas.dataset.pdfUrl;
+    if (!pdfUrl) continue;
+    try {
+      const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+      const page = await pdf.getPage(1);
+      const viewport = page.getViewport({ scale: 0.4 });
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d');
+      await page.render({ canvasContext: ctx, viewport }).promise;
+    } catch (err) {
+      console.error('Erro ao renderizar thumbnail PDF:', err);
+      // Show fallback icon
+      canvas.style.display = 'none';
+      const placeholder = document.createElement('div');
+      placeholder.className = 'cert-placeholder';
+      placeholder.innerHTML = '<i class="fas fa-file-pdf" style="color:#e74c3c"></i>';
+      canvas.parentElement.insertBefore(placeholder, canvas);
+    }
+  }
 }
 
 // ============================================
@@ -291,11 +331,22 @@ function setupModal() {
     document.getElementById('modal-cert-date').textContent = date ? `Concluído em ${date}` : '';
 
     const modalImage = document.getElementById('modal-image');
-    if (image) {
+    const modalPdf = document.getElementById('modal-pdf');
+    const isPdf = image && image.toLowerCase().endsWith('.pdf');
+
+    if (isPdf) {
+      modalImage.style.display = 'none';
+      modalPdf.src = image;
+      modalPdf.style.display = '';
+    } else if (image) {
+      modalPdf.style.display = 'none';
+      modalPdf.src = '';
       modalImage.src = image;
       modalImage.style.display = '';
     } else {
       modalImage.style.display = 'none';
+      modalPdf.style.display = 'none';
+      modalPdf.src = '';
     }
 
     const linkEl = document.getElementById('modal-cert-link');
