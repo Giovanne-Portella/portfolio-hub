@@ -32,6 +32,7 @@
         <li><a href="#about">Sobre</a></li>
         <li><a href="#certificates">Certificados</a></li>
         <li><a href="#projects">Projetos</a></li>
+        <li><a href="#github-contributions">GitHub</a></li>
         <li><a href="#contact">Contato</a></li>
       </ul>
       <button class="mobile-toggle" id="mobile-toggle">
@@ -45,6 +46,7 @@
     <a href="#about" class="mobile-link">Sobre</a>
     <a href="#certificates" class="mobile-link">Certificados</a>
     <a href="#projects" class="mobile-link">Projetos</a>
+    <a href="#github-contributions" class="mobile-link">GitHub</a>
     <a href="#contact" class="mobile-link">Contato</a>
   </div>
 
@@ -80,15 +82,23 @@
   <section class="section" id="about">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">Sobre Mim</h2>
+        <h2 class="section-title type-in">Sobre Mim</h2>
         <div class="section-line"></div>
       </div>
       <div class="about-grid">
         <div class="about-bio">
-          <p id="about-bio">Carregando informações...</p>
+          <p id="about-bio" class="type-in">Carregando informações...</p>
         </div>
         <div class="about-info">
           <div class="info-card">
+            <div class="info-item" id="info-company" style="display:none">
+              <i class="fas fa-building"></i>
+              <div>
+                <span class="info-label">Empresa Atual</span>
+                <span class="info-value"></span>
+                <span class="info-sub" id="info-company-time"></span>
+              </div>
+            </div>
             <div class="info-item" id="info-email" style="display:none">
               <i class="fas fa-envelope"></i>
               <div>
@@ -101,6 +111,13 @@
               <div>
                 <span class="info-label">Telefone</span>
                 <span class="info-value"></span>
+              </div>
+            </div>
+            <div class="info-item" id="info-whatsapp" style="display:none">
+              <i class="fab fa-whatsapp"></i>
+              <div>
+                <span class="info-label">WhatsApp</span>
+                <a class="info-value info-link" href="#" target="_blank" rel="noopener noreferrer"></a>
               </div>
             </div>
             <div class="info-item" id="info-location" style="display:none">
@@ -120,9 +137,9 @@
   <section class="section section-alt" id="certificates">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">Certificados</h2>
+        <h2 class="section-title type-in">Certificados</h2>
         <div class="section-line"></div>
-        <p class="section-subtitle">Minhas certificações organizadas por área de conhecimento</p>
+        <p class="section-subtitle type-in">Minhas certificações organizadas por área de conhecimento</p>
       </div>
       <div id="certificates-container">
         <!-- Populated by JS - Each category with its carousel -->
@@ -138,13 +155,13 @@
     <div class="container">
       <div class="section-header collapsible-header" data-target="projects-body">
         <div class="section-header-top">
-          <h2 class="section-title">Projetos</h2>
+          <h2 class="section-title type-in">Projetos</h2>
           <button class="collapse-toggle" aria-label="Expandir/Minimizar">
             <i class="fas fa-chevron-up"></i>
           </button>
         </div>
         <div class="section-line"></div>
-        <p class="section-subtitle">Meus projetos e contribuições no GitHub</p>
+        <p class="section-subtitle type-in">Meus projetos e contribuições no GitHub</p>
       </div>
       <div class="collapsible-body" id="projects-body">
         <div class="projects-grid" id="projects-container">
@@ -152,6 +169,46 @@
           <div class="loading-spinner">
             <i class="fas fa-spinner fa-spin"></i> Carregando projetos...
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GITHUB CONTRIBUTIONS SECTION -->
+  <section class="section section-alt" id="github-contributions">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title type-in">Contribuições no GitHub</h2>
+        <div class="section-line"></div>
+        <p class="section-subtitle type-in">Minha atividade de desenvolvimento ao longo do último ano</p>
+      </div>
+      <div class="github-stats" id="github-stats" style="display:none">
+        <div class="github-stats-grid">
+          <div class="github-stat-card">
+            <i class="fas fa-code-commit"></i>
+            <span class="stat-value" id="gh-total-contributions">0</span>
+            <span class="stat-label">Contribuições</span>
+          </div>
+          <div class="github-stat-card">
+            <i class="fas fa-book"></i>
+            <span class="stat-value" id="gh-public-repos">0</span>
+            <span class="stat-label">Repositórios</span>
+          </div>
+          <div class="github-stat-card">
+            <i class="fas fa-users"></i>
+            <span class="stat-value" id="gh-followers">0</span>
+            <span class="stat-label">Seguidores</span>
+          </div>
+          <div class="github-stat-card">
+            <i class="fas fa-star"></i>
+            <span class="stat-value" id="gh-stars">0</span>
+            <span class="stat-label">Stars</span>
+          </div>
+        </div>
+      </div>
+      <div class="github-graph-wrapper" id="github-graph-wrapper">
+        <div class="loading-spinner">
+          <i class="fas fa-spinner fa-spin"></i> Carregando contribuições...
         </div>
       </div>
     </div>

@@ -20,6 +20,10 @@ create table profiles (
   email text,
   phone text,
   resume_url text,
+  github_username text,
+  whatsapp_number text,
+  company_name text,
+  company_start_date date,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );

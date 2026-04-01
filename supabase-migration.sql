@@ -33,3 +33,12 @@ create policy "Public read project-files" on storage.objects for select using (b
 create policy "Auth upload project-files" on storage.objects for insert with check (bucket_id = 'project-files' and auth.role() = 'authenticated');
 create policy "Auth update project-files" on storage.objects for update using (bucket_id = 'project-files' and auth.role() = 'authenticated');
 create policy "Auth delete project-files" on storage.objects for delete using (bucket_id = 'project-files' and auth.role() = 'authenticated');
+
+-- ============================================
+-- 4. Novas colunas na tabela profiles
+-- (github_username, whatsapp_number, company_name, company_start_date)
+-- ============================================
+alter table profiles add column if not exists github_username text;
+alter table profiles add column if not exists whatsapp_number text;
+alter table profiles add column if not exists company_name text;
+alter table profiles add column if not exists company_start_date date;

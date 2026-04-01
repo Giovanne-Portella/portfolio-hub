@@ -129,6 +129,10 @@ async function loadProfile() {
   document.getElementById('p-location').value = data.location || '';
   document.getElementById('p-bio').value = data.bio || '';
   document.getElementById('p-resume').value = data.resume_url || '';
+  document.getElementById('p-github').value = data.github_username || '';
+  document.getElementById('p-whatsapp').value = data.whatsapp_number || '';
+  document.getElementById('p-company').value = data.company_name || '';
+  document.getElementById('p-company-start').value = data.company_start_date || '';
 
   if (data.photo_url) {
     document.getElementById('profile-avatar').src = data.photo_url;
@@ -176,6 +180,10 @@ function setupProfileForm() {
       location: document.getElementById('p-location').value.trim(),
       bio: document.getElementById('p-bio').value.trim(),
       resume_url: document.getElementById('p-resume').value.trim() || null,
+      github_username: document.getElementById('p-github').value.trim() || null,
+      whatsapp_number: document.getElementById('p-whatsapp').value.trim() || null,
+      company_name: document.getElementById('p-company').value.trim() || null,
+      company_start_date: document.getElementById('p-company-start').value || null,
     };
 
     if (photoUrl) profileData.photo_url = photoUrl;

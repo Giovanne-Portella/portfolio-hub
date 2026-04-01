@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupNavbar();
   setupModal();
   setupCollapsible();
+  setupTypeInAnimation();
 
   document.getElementById('footer-year').textContent = new Date().getFullYear();
 });
@@ -94,6 +95,33 @@ async function loadProfile() {
     const el = document.getElementById('info-phone');
     el.querySelector('.info-value').textContent = data.phone;
     el.style.display = '';
+  }
+
+  // WhatsApp
+  if (data.whatsapp_number) {
+    const el = document.getElementById('info-whatsapp');
+    const link = el.querySelector('.info-link');
+    const cleanNum = data.whatsapp_number.replace(/\D/g, '');
+    link.href = `https://wa.me/${cleanNum}`;
+    link.textContent = data.whatsapp_number;
+    el.style.display = '';
+  }
+
+  // Company
+  if (data.company_name) {
+    const el = document.getElementById('info-company');
+    el.querySelector('.info-value').textContent = data.company_name;
+    el.style.display = '';
+
+    if (data.company_start_date) {
+      const timeEl = document.getElementById('info-company-time');
+      timeEl.textContent = calcTimeSince(data.company_start_date);
+    }
+  }
+
+  // GitHub contributions
+  if (data.github_username) {
+    loadGitHubData(data.github_username);
   }
 }
 
@@ -638,4 +666,223 @@ function escapeAttr(str) {
             .replace(/'/g, '&#39;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
+}
+
+// ============================================
+// TERMINAL TYPING ANIMATION ON SCROLL
+// ============================================
+function setupTypeInAnimation() {
+  const elements = document.querySelectorAll('.type-in');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !entry.target.classList.contains('typed')) {
+        typeElement(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  elements.forEach(el => observer.observe(el));
+}
+
+function typeElement(el) {
+  const fullText = el.textContent;
+  el.textContent = '';
+  el.classList.add('visible', 'typing');
+  el.classList.add('typed');
+
+  let i = 0;
+  const speed = Math.max(15, Math.min(40, 800 / fullText.length));
+
+  function typeChar() {
+    if (i < fullText.length) {
+      el.textContent += fullText.charAt(i);
+      i++;
+      setTimeout(typeChar, speed);
+    } else {
+      // Remove cursor after typing is done
+      setTimeout(() => el.classList.remove('typing'), 600);
+    }
+  }
+
+  typeChar();
+}
+
+// ============================================
+// TIME SINCE CALCULATOR (Company duration)
+// ============================================
+function calcTimeSince(dateStr) {
+  const start = new Date(dateStr);
+  const now = new Date();
+  let years = now.getFullYear() - start.getFullYear();
+  let months = now.getMonth() - start.getMonth();
+
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+
+  const parts = [];
+  if (years > 0) parts.push(`${years} ano${years > 1 ? 's' : ''}`);
+  if (months > 0) parts.push(`${months} ${months > 1 ? 'meses' : 'mês'}`);
+  if (parts.length === 0) parts.push('Menos de 1 mês');
+
+  const formatted = start.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
+  return `${formatted} — presente · ${parts.join(' e ')}`;
+}
+
+// ============================================
+// GITHUB DATA
+// ============================================
+async function loadGitHubData(username) {
+  const wrapper = document.getElementById('github-graph-wrapper');
+  const statsEl = document.getElementById('github-stats');
+
+  try {
+    // Fetch user profile from GitHub API
+    const userRes = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}`);
+    if (!userRes.ok) throw new Error('GitHub user not found');
+    const user = await userRes.json();
+
+    // Stats
+    document.getElementById('gh-public-repos').textContent = user.public_repos || 0;
+    document.getElementById('gh-followers').textContent = user.followers || 0;
+
+    // Get total stars from repos
+    let totalStars = 0;
+    try {
+      const reposRes = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&sort=stargazers_count`);
+      if (reposRes.ok) {
+        const repos = await reposRes.json();
+        totalStars = repos.reduce((sum, r) => sum + (r.stargazers_count || 0), 0);
+      }
+    } catch {}
+    document.getElementById('gh-stars').textContent = totalStars;
+
+    statsEl.style.display = '';
+
+    // Load contribution graph via GitHub's contribution calendar page
+    await loadContributionGraph(username, wrapper);
+
+  } catch (err) {
+    console.error('Erro ao carregar dados do GitHub:', err);
+    wrapper.innerHTML = `
+      <div class="empty-state">
+        <i class="fab fa-github"></i>
+        <p>Não foi possível carregar as contribuições do GitHub.</p>
+      </div>`;
+  }
+}
+
+async function loadContributionGraph(username, wrapper) {
+  // Use GitHub's public contribution data via a CORS-friendly approach
+  // We'll generate a contribution-like graph from the user's recent events
+  try {
+    // Fetch events for contribution approximation
+    const events = [];
+    for (let page = 1; page <= 3; page++) {
+      const res = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}/events/public?per_page=100&page=${page}`);
+      if (!res.ok) break;
+      const data = await res.json();
+      if (data.length === 0) break;
+      events.push(...data);
+    }
+
+    // Count contributions by day from events
+    const contribMap = {};
+    events.forEach(event => {
+      const day = event.created_at.substring(0, 10);
+      contribMap[day] = (contribMap[day] || 0) + 1;
+    });
+
+    // Generate 52 weeks of data
+    const today = new Date();
+    const weeks = [];
+    const dayLabels = ['Dom', 'Seg', '', 'Qua', '', 'Sex', ''];
+    const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+    // Start from 52 weeks ago (Sunday)
+    const start = new Date(today);
+    start.setDate(start.getDate() - (52 * 7) - start.getDay());
+
+    let totalContrib = 0;
+    const monthMarkers = [];
+    let lastMonth = -1;
+
+    for (let w = 0; w < 53; w++) {
+      const week = [];
+      for (let d = 0; d < 7; d++) {
+        const date = new Date(start);
+        date.setDate(start.getDate() + w * 7 + d);
+        const key = date.toISOString().substring(0, 10);
+        const count = contribMap[key] || 0;
+        totalContrib += count;
+
+        // Track months
+        if (d === 0 && date.getMonth() !== lastMonth) {
+          monthMarkers.push({ week: w, month: monthNames[date.getMonth()] });
+          lastMonth = date.getMonth();
+        }
+
+        let level = 0;
+        if (count >= 8) level = 4;
+        else if (count >= 5) level = 3;
+        else if (count >= 2) level = 2;
+        else if (count >= 1) level = 1;
+
+        const isFuture = date > today;
+        week.push({ key, count, level, isFuture });
+      }
+      weeks.push(week);
+    }
+
+    document.getElementById('gh-total-contributions').textContent = totalContrib;
+
+    // Build the graph HTML
+    const monthsHtml = monthMarkers.map(m => {
+      return `<span class="github-graph-month" style="grid-column:${m.week + 1}">${m.month}</span>`;
+    }).join('');
+
+    const colsHtml = weeks.map(week => {
+      const cells = week.map(day => {
+        if (day.isFuture) return `<div class="github-graph-cell" style="visibility:hidden"></div>`;
+        return `<div class="github-graph-cell" data-level="${day.level}" title="${day.count} contribuições em ${day.key}"></div>`;
+      }).join('');
+      return `<div class="github-graph-col">${cells}</div>`;
+    }).join('');
+
+    const daysHtml = dayLabels.map(l => `<div class="github-graph-day">${l}</div>`).join('');
+
+    wrapper.innerHTML = `
+      <div class="github-graph-body">
+        <div class="github-graph-days">${daysHtml}</div>
+        <div>
+          <div class="github-graph-months" style="display:grid; grid-template-columns: repeat(53, 15px);">
+            ${monthsHtml}
+          </div>
+          <div class="github-graph">${colsHtml}</div>
+        </div>
+      </div>
+      <div class="github-graph-legend">
+        <span>Menos</span>
+        <div class="github-graph-cell"></div>
+        <div class="github-graph-cell" data-level="1"></div>
+        <div class="github-graph-cell" data-level="2"></div>
+        <div class="github-graph-cell" data-level="3"></div>
+        <div class="github-graph-cell" data-level="4"></div>
+        <span>Mais</span>
+      </div>
+      <a href="https://github.com/${escapeAttr(username)}" target="_blank" rel="noopener noreferrer" class="github-profile-link">
+        <i class="fab fa-github"></i> Ver perfil no GitHub
+      </a>
+    `;
+  } catch (err) {
+    console.error('Erro ao gerar gráfico de contribuições:', err);
+    wrapper.innerHTML = `
+      <div class="empty-state">
+        <i class="fab fa-github"></i>
+        <p>Não foi possível carregar o gráfico de contribuições.</p>
+      </div>`;
+  }
 }
