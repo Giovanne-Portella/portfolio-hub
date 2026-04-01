@@ -949,6 +949,206 @@ iframe.modal-image {
 }
 
 /* ============================================
+   COLLAPSIBLE SECTIONS
+   ============================================ */
+.collapsible-header {
+  cursor: pointer;
+  user-select: none;
+}
+
+.collapsible-header:hover .collapse-toggle {
+  color: var(--primary);
+}
+
+.category-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.collapse-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.collapse-toggle:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.collapsible-body {
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  max-height: 5000px;
+  opacity: 1;
+}
+
+.collapsible-body.collapsed {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================
+   COPY LINK BUTTON (on cert card)
+   ============================================ */
+.cert-copy-link {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: var(--transition);
+  z-index: 3;
+  font-size: 0.75rem;
+}
+
+.cert-card {
+  position: relative;
+}
+
+.cert-card:hover .cert-copy-link {
+  opacity: 1;
+}
+
+.cert-copy-link:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+/* ============================================
+   COPY TOAST
+   ============================================ */
+.copy-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--primary);
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  z-index: 10001;
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.copy-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ============================================
+   CERT HIGHLIGHT (deep link)
+   ============================================ */
+@keyframes certHighlight {
+  0%, 100% { box-shadow: var(--shadow); }
+  50% { box-shadow: 0 0 0 4px var(--primary), 0 0 20px rgba(37, 99, 235, 0.4); }
+}
+
+.cert-highlight {
+  animation: certHighlight 0.8s ease 3;
+}
+
+/* ============================================
+   MODAL ACTIONS / PROJECT FILES
+   ============================================ */
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.modal-project-files {
+  margin-top: 20px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.project-files-header {
+  font-weight: 600;
+  color: var(--secondary);
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.project-files-header i {
+  color: var(--primary);
+  margin-right: 6px;
+}
+
+.project-file-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg-alt);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  text-decoration: none;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  transition: var(--transition);
+}
+
+.project-file-item:hover {
+  border-color: var(--primary);
+  background: rgba(37, 99, 235, 0.05);
+}
+
+.project-file-item i {
+  font-size: 1.2rem;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.project-file-item span {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.project-file-item small {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-left: auto;
+}
+
+/* ============================================
    RESPONSIVE
    ============================================ */
 

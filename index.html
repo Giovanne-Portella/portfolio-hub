@@ -136,15 +136,22 @@
   <!-- PROJECTS SECTION -->
   <section class="section" id="projects">
     <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Projetos</h2>
+      <div class="section-header collapsible-header" data-target="projects-body">
+        <div class="section-header-top">
+          <h2 class="section-title">Projetos</h2>
+          <button class="collapse-toggle" aria-label="Expandir/Minimizar">
+            <i class="fas fa-chevron-up"></i>
+          </button>
+        </div>
         <div class="section-line"></div>
         <p class="section-subtitle">Meus projetos e contribuições no GitHub</p>
       </div>
-      <div class="projects-grid" id="projects-container">
-        <!-- Populated by JS -->
-        <div class="loading-spinner">
-          <i class="fas fa-spinner fa-spin"></i> Carregando projetos...
+      <div class="collapsible-body" id="projects-body">
+        <div class="projects-grid" id="projects-container">
+          <!-- Populated by JS -->
+          <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i> Carregando projetos...
+          </div>
         </div>
       </div>
     </div>
@@ -180,9 +187,17 @@
         <h3 id="modal-cert-name"></h3>
         <p id="modal-cert-issuer"></p>
         <p id="modal-cert-date"></p>
-        <a href="#" id="modal-cert-link" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer" style="display:none">
-          <i class="fas fa-external-link-alt"></i> Ver Credencial
-        </a>
+        <div class="modal-actions">
+          <a href="#" id="modal-cert-link" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer" style="display:none">
+            <i class="fas fa-external-link-alt"></i> Ver Credencial
+          </a>
+          <button id="modal-copy-link" class="btn btn-outline btn-sm" type="button">
+            <i class="fas fa-link"></i> Copiar Link
+          </button>
+        </div>
+        <div id="modal-project-files" class="modal-project-files" style="display:none">
+          <!-- Project files loaded by JS -->
+        </div>
       </div>
     </div>
   </div>

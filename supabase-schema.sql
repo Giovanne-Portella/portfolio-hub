@@ -85,6 +85,20 @@ create table projects (
 );
 
 -- ============================================
+-- 6. CERTIFICATE PROJECT FILES TABLE
+-- ============================================
+-- Stores physical project files linked to certificates
+-- (e.g., Excel, PowerBI, SQL files from courses)
+create table certificate_project_files (
+  id uuid default uuid_generate_v4() primary key,
+  certificate_id uuid references certificates(id) on delete cascade,
+  file_name text not null,
+  file_url text not null,
+  description text,
+  created_at timestamptz default now()
+);
+
+-- ============================================
 -- ROW LEVEL SECURITY (RLS)
 -- ============================================
 
@@ -94,6 +108,7 @@ alter table social_links enable row level security;
 alter table certificate_categories enable row level security;
 alter table certificates enable row level security;
 alter table projects enable row level security;
+alter table certificate_project_files enable row level security;
 
 -- PUBLIC READ POLICIES (anyone can view the portfolio)
 create policy "Public read profiles" on profiles for select using (true);
@@ -101,6 +116,7 @@ create policy "Public read social_links" on social_links for select using (true)
 create policy "Public read certificate_categories" on certificate_categories for select using (true);
 create policy "Public read certificates" on certificates for select using (true);
 create policy "Public read projects" on projects for select using (true);
+create policy "Public read certificate_project_files" on certificate_project_files for select using (true);
 
 -- OWNER WRITE POLICIES (only authenticated owner can modify)
 create policy "Owner insert profiles" on profiles for insert with check (auth.uid() = user_id);
@@ -123,6 +139,13 @@ create policy "Owner insert projects" on projects for insert with check (auth.ui
 create policy "Owner update projects" on projects for update using (auth.uid() = user_id);
 create policy "Owner delete projects" on projects for delete using (auth.uid() = user_id);
 
+create policy "Owner insert certificate_project_files" on certificate_project_files for insert with check (
+  exists (select 1 from certificates c where c.id = certificate_id and c.user_id = auth.uid())
+);
+create policy "Owner delete certificate_project_files" on certificate_project_files for delete using (
+  exists (select 1 from certificates c where c.id = certificate_id and c.user_id = auth.uid())
+);
+
 -- ============================================
 -- STORAGE BUCKETS
 -- ============================================
@@ -131,6 +154,7 @@ create policy "Owner delete projects" on projects for delete using (auth.uid() =
 insert into storage.buckets (id, name, public) values ('avatars', 'avatars', true);
 insert into storage.buckets (id, name, public) values ('certificates', 'certificates', true);
 insert into storage.buckets (id, name, public) values ('projects', 'projects', true);
+insert into storage.buckets (id, name, public) values ('project-files', 'project-files', true);
 
 -- Storage policies - public read
 create policy "Public read avatars" on storage.objects for select using (bucket_id = 'avatars');
@@ -149,6 +173,11 @@ create policy "Auth delete certificates" on storage.objects for delete using (bu
 create policy "Auth upload projects" on storage.objects for insert with check (bucket_id = 'projects' and auth.role() = 'authenticated');
 create policy "Auth update projects" on storage.objects for update using (bucket_id = 'projects' and auth.role() = 'authenticated');
 create policy "Auth delete projects" on storage.objects for delete using (bucket_id = 'projects' and auth.role() = 'authenticated');
+
+create policy "Public read project-files" on storage.objects for select using (bucket_id = 'project-files');
+create policy "Auth upload project-files" on storage.objects for insert with check (bucket_id = 'project-files' and auth.role() = 'authenticated');
+create policy "Auth update project-files" on storage.objects for update using (bucket_id = 'project-files' and auth.role() = 'authenticated');
+create policy "Auth delete project-files" on storage.objects for delete using (bucket_id = 'project-files' and auth.role() = 'authenticated');
 
 -- ============================================
 -- FUNCTION: Auto-update updated_at

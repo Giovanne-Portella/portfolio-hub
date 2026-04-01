@@ -310,6 +310,34 @@
               <label for="cert-order">Ordem de exibição</label>
               <input type="number" id="cert-order" value="0" min="0">
             </div>
+
+            <!-- PROJECT FILES SECTION -->
+            <div class="form-section-divider">
+              <h4><i class="fas fa-folder-open"></i> Arquivos de Projeto Vinculados</h4>
+              <small>Vincule arquivos físicos de projeto (Excel, PowerBI, SQL, etc.) a este certificado</small>
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="cert-has-project"> Este certificado possui arquivos de projeto vinculados
+              </label>
+            </div>
+            <div id="cert-project-files-area" style="display:none">
+              <div id="cert-project-files-list" class="project-files-list">
+                <!-- Existing files listed here -->
+              </div>
+              <div class="form-group">
+                <label>Adicionar arquivo de projeto</label>
+                <input type="file" id="cert-project-file-input" accept=".xlsx,.xls,.csv,.pdf,.doc,.docx,.ppt,.pptx,.pbix,.sql,.zip,.rar,.py,.ipynb,.json,.txt,.xml">
+              </div>
+              <div class="form-group">
+                <label for="cert-project-file-desc">Descrição do arquivo (opcional)</label>
+                <input type="text" id="cert-project-file-desc" placeholder="Ex: Dashboard de vendas, planilha de análise...">
+              </div>
+              <button type="button" class="btn btn-sm" id="btn-add-project-file">
+                <i class="fas fa-plus"></i> Adicionar Arquivo
+              </button>
+            </div>
+
             <div class="form-actions">
               <button type="button" class="btn" data-close="modal-cert">Cancelar</button>
               <button type="submit" class="btn btn-primary">

@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadProjects();
   setupNavbar();
   setupModal();
+  setupCollapsible();
 
   document.getElementById('footer-year').textContent = new Date().getFullYear();
 });
@@ -164,13 +165,19 @@ async function loadCertificates() {
     const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
     const swiperID = `swiper-${idx}`;
+    const categorySlug = slugify(category.name);
 
     const html = `
-      <div class="cert-category" data-aos="fade-up">
-        <div class="category-header">
+      <div class="cert-category" data-aos="fade-up" id="cat-${categorySlug}">
+        <div class="category-header collapsible-header" data-target="cat-body-${idx}">
           <div class="category-title-row">
             <h3 class="category-title">${escapeHtml(category.name)}</h3>
-            <span class="category-count">${completedCount} de ${totalCount} concluídos</span>
+            <div class="category-header-right">
+              <span class="category-count">${completedCount} de ${totalCount} concluídos</span>
+              <button class="collapse-toggle" aria-label="Expandir/Minimizar">
+                <i class="fas fa-chevron-up"></i>
+              </button>
+            </div>
           </div>
           ${category.description ? `<p class="category-description">${escapeHtml(category.description)}</p>` : ''}
           <div class="category-progress">
@@ -178,6 +185,7 @@ async function loadCertificates() {
           </div>
         </div>
 
+        <div class="collapsible-body" id="cat-body-${idx}">
         ${categoryCerts.length > 0 ? `
           <div class="cert-carousel-wrapper">
             <div class="swiper" id="${swiperID}">
@@ -195,6 +203,7 @@ async function loadCertificates() {
             <p>Nenhum certificado nesta categoria.</p>
           </div>
         `}
+        </div>
       </div>
     `;
 
@@ -224,6 +233,12 @@ async function loadCertificates() {
 
   // Render PDF thumbnails after all cards are inserted
   renderPdfThumbnails();
+
+  // Re-attach collapsible handlers
+  setupCollapsible();
+
+  // Handle deep link to specific certificate
+  handleCertDeepLink();
 }
 
 function createCertCard(cert) {
@@ -251,6 +266,8 @@ function createCertCard(cert) {
   return `
     <div class="swiper-slide">
       <div class="cert-card" 
+           id="cert-${cert.id}"
+           data-cert-id="${escapeAttr(cert.id)}"
            data-cert-name="${escapeAttr(cert.name)}" 
            data-cert-issuer="${escapeAttr(cert.issuer || '')}"
            data-cert-date="${escapeAttr(dateStr)}"
@@ -265,6 +282,9 @@ function createCertCard(cert) {
           ${cert.issuer ? `<p class="cert-issuer">${escapeHtml(cert.issuer)}</p>` : ''}
           ${dateStr ? `<p class="cert-date">${dateStr}</p>` : ''}
         </div>
+        <button class="cert-copy-link" onclick="event.stopPropagation(); copyCertLink('${cert.id}')" title="Copiar link deste certificado">
+          <i class="fas fa-link"></i>
+        </button>
       </div>
     </div>
   `;
@@ -299,6 +319,100 @@ async function renderPdfThumbnails() {
 }
 
 // ============================================
+// COPY CERT LINK
+// ============================================
+function copyCertLink(certId) {
+  const url = `${window.location.origin}${window.location.pathname}?cert=${certId}#certificates`;
+  navigator.clipboard.writeText(url).then(() => {
+    showCopyToast('Link copiado!');
+  }).catch(() => {
+    // Fallback
+    const input = document.createElement('input');
+    input.value = url;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    showCopyToast('Link copiado!');
+  });
+}
+window.copyCertLink = copyCertLink;
+
+function showCopyToast(msg) {
+  let toast = document.getElementById('copy-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'copy-toast';
+    toast.className = 'copy-toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ============================================
+// DEEP LINK HANDLER
+// ============================================
+function handleCertDeepLink() {
+  const params = new URLSearchParams(window.location.search);
+  const certId = params.get('cert');
+  if (!certId) return;
+
+  setTimeout(() => {
+    const card = document.getElementById(`cert-${certId}`);
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      card.classList.add('cert-highlight');
+      setTimeout(() => card.classList.remove('cert-highlight'), 3000);
+      // Open the modal automatically
+      card.click();
+    }
+  }, 500);
+}
+
+// ============================================
+// COLLAPSIBLE SECTIONS
+// ============================================
+function setupCollapsible() {
+  document.querySelectorAll('.collapsible-header').forEach(header => {
+    // Remove old listeners by cloning
+    const newHeader = header.cloneNode(true);
+    header.parentNode.replaceChild(newHeader, header);
+
+    newHeader.addEventListener('click', (e) => {
+      // Don't collapse when clicking copy-link button
+      if (e.target.closest('.cert-copy-link')) return;
+
+      const targetId = newHeader.dataset.target;
+      const body = document.getElementById(targetId);
+      if (!body) return;
+
+      const icon = newHeader.querySelector('.collapse-toggle i');
+      body.classList.toggle('collapsed');
+      
+      if (body.classList.contains('collapsed')) {
+        icon.className = 'fas fa-chevron-down';
+      } else {
+        icon.className = 'fas fa-chevron-up';
+      }
+    });
+  });
+}
+
+// ============================================
+// SLUG HELPER
+// ============================================
+function slugify(str) {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+// ============================================
 // CERTIFICATE MODAL
 // ============================================
 function setupModal() {
@@ -319,7 +433,10 @@ function setupModal() {
   document.addEventListener('click', (e) => {
     const card = e.target.closest('.cert-card');
     if (!card) return;
+    // Don't open modal if clicking copy link
+    if (e.target.closest('.cert-copy-link')) return;
 
+    const certId = card.dataset.certId;
     const name = card.dataset.certName;
     const issuer = card.dataset.certIssuer;
     const date = card.dataset.certDate;
@@ -357,8 +474,66 @@ function setupModal() {
       linkEl.style.display = 'none';
     }
 
+    // Copy link button in modal
+    const copyBtn = document.getElementById('modal-copy-link');
+    if (copyBtn) {
+      copyBtn.onclick = () => copyCertLink(certId);
+    }
+
+    // Load project files
+    loadCertProjectFiles(certId);
+
     modal.classList.add('active');
   });
+}
+
+// ============================================
+// CERTIFICATE PROJECT FILES
+// ============================================
+async function loadCertProjectFiles(certId) {
+  const container = document.getElementById('modal-project-files');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  const { data, error } = await supabase
+    .from('certificate_project_files')
+    .select('*')
+    .eq('certificate_id', certId)
+    .order('created_at', { ascending: true });
+
+  if (error || !data || data.length === 0) {
+    container.style.display = 'none';
+    return;
+  }
+
+  container.style.display = '';
+  const fileIcons = {
+    'xlsx': 'fa-file-excel', 'xls': 'fa-file-excel', 'csv': 'fa-file-csv',
+    'pdf': 'fa-file-pdf', 'doc': 'fa-file-word', 'docx': 'fa-file-word',
+    'ppt': 'fa-file-powerpoint', 'pptx': 'fa-file-powerpoint',
+    'pbix': 'fa-chart-bar', 'sql': 'fa-database',
+    'zip': 'fa-file-archive', 'rar': 'fa-file-archive',
+  };
+
+  const html = data.map(f => {
+    const ext = f.file_name.split('.').pop().toLowerCase();
+    const icon = fileIcons[ext] || 'fa-file';
+    return `
+      <a href="${escapeAttr(f.file_url)}" target="_blank" rel="noopener noreferrer" class="project-file-item" download>
+        <i class="fas ${icon}"></i>
+        <span>${escapeHtml(f.file_name)}</span>
+        ${f.description ? `<small>${escapeHtml(f.description)}</small>` : ''}
+      </a>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="project-files-header">
+      <i class="fas fa-folder-open"></i> Arquivos do Projeto
+    </div>
+    ${html}
+  `;
 }
 
 // ============================================

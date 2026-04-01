@@ -571,6 +571,84 @@ body {
 }
 
 /* ============================================
+   FORM SECTION DIVIDER
+   ============================================ */
+.form-section-divider {
+  border-top: 2px solid var(--border);
+  padding-top: 20px;
+  margin-top: 20px;
+  margin-bottom: 16px;
+}
+
+.form-section-divider h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.form-section-divider small {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* ============================================
+   PROJECT FILES LIST (Admin)
+   ============================================ */
+.project-files-list {
+  margin-bottom: 16px;
+}
+
+.project-file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.project-file-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.project-file-info i {
+  font-size: 1.1rem;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.project-file-info span {
+  font-weight: 500;
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-file-info small {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.project-file-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.text-muted {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ============================================
    RESPONSIVE
    ============================================ */
 @media (max-width: 768px) {
