@@ -878,14 +878,6 @@ async function switchYear(year) {
   await loadContributionGraph(ghUsername, wrapper, year);
 }
 
-// Helper: format local date as YYYY-MM-DD (avoids UTC shift from toISOString)
-function localDateStr(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
-
 async function loadContributionGraph(username, wrapper, yearParam) {
   try {
     const res = await fetch(`https://github-contributions-api.jogruber.de/v4/${encodeURIComponent(username)}?y=${yearParam}`);
@@ -893,6 +885,7 @@ async function loadContributionGraph(username, wrapper, yearParam) {
     const data = await res.json();
 
     const contributions = data.contributions || [];
+    if (contributions.length === 0) throw new Error('No contribution data');
 
     // Calculate total from API response
     let totalContrib;
@@ -906,57 +899,49 @@ async function loadContributionGraph(username, wrapper, yearParam) {
     const dayLabels = ['Dom', 'Seg', '', 'Qua', '', 'Sex', ''];
     const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
-    // Create a map of date -> { count, level }
+    // Use the API's own date range directly — parse as local dates
+    const parseDateLocal = (str) => {
+      const [y, m, d] = str.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    };
+
+    const firstDate = parseDateLocal(contributions[0].date);
+    const lastDate = parseDateLocal(contributions[contributions.length - 1].date);
+
+    // Align firstDate to previous Sunday
+    const startDate = new Date(firstDate);
+    startDate.setDate(startDate.getDate() - startDate.getDay());
+
+    // Build contribution map
     const contribMap = {};
     contributions.forEach(c => {
       contribMap[c.date] = { count: c.count, level: c.level };
     });
 
-    // Determine date range
-    const today = new Date();
-    today.setHours(23, 59, 59, 999);
-    let start, end;
-
-    if (yearParam === 'last') {
-      // Last 12 months: end = today, start = 52 weeks before, aligned to Sunday
-      end = new Date(today);
-      start = new Date(today);
-      start.setDate(start.getDate() - (52 * 7) - start.getDay());
-    } else {
-      // Specific year: Jan 1 to Dec 31 (or today if current year)
-      const yr = parseInt(yearParam);
-      start = new Date(yr, 0, 1);
-      // Align start to previous Sunday
-      start.setDate(start.getDate() - start.getDay());
-      end = yr === today.getFullYear() ? new Date(today) : new Date(yr, 11, 31);
-    }
-
-    // Build weeks
+    // Build weeks from startDate through lastDate
     const weeks = [];
     const monthMarkers = [];
     let lastMonth = -1;
-    let cursor = new Date(start);
+    const cursor = new Date(startDate);
     let w = 0;
 
-    while (cursor <= end || weeks.length < 1) {
+    while (cursor <= lastDate) {
       const week = [];
       for (let d = 0; d < 7; d++) {
-        const date = new Date(cursor);
-        const key = localDateStr(date);
+        const key = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, '0')}-${String(cursor.getDate()).padStart(2, '0')}`;
         const entry = contribMap[key] || { count: 0, level: 0 };
-        const isFuture = date > today;
+        const isPast = cursor > lastDate;
 
-        if (d === 0 && date.getMonth() !== lastMonth) {
-          monthMarkers.push({ week: w, month: monthNames[date.getMonth()] });
-          lastMonth = date.getMonth();
+        if (d === 0 && cursor.getMonth() !== lastMonth) {
+          monthMarkers.push({ week: w, month: monthNames[cursor.getMonth()] });
+          lastMonth = cursor.getMonth();
         }
 
-        week.push({ key, count: entry.count, level: entry.level, isFuture });
+        week.push({ key, count: entry.count, level: entry.level, isFuture: isPast });
         cursor.setDate(cursor.getDate() + 1);
       }
       weeks.push(week);
       w++;
-      if (cursor > end && week[6] && new Date(cursor) > end) break;
     }
 
     const totalWeeks = weeks.length;
