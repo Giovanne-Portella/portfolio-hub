@@ -940,6 +940,8 @@ a {
 /* ============================================
    RESPONSIVE
    ============================================ */
+
+/* Tablet */
 @media (max-width: 768px) {
   .navbar-links {
     display: none;
@@ -949,12 +951,21 @@ a {
     display: block;
   }
 
+  .hero {
+    min-height: auto;
+    padding-top: 70px;
+  }
+
+  .hero-content {
+    padding: 40px 0;
+  }
+
   .hero-name {
     font-size: 2rem;
   }
 
   .hero-title {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 
   .hero-avatar {
@@ -967,20 +978,50 @@ a {
     align-items: center;
   }
 
+  .hero-actions .btn {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+
+  .hero-social {
+    gap: 10px;
+  }
+
+  .social-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
   .about-grid {
     grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .about-bio {
+    font-size: 0.95rem;
   }
 
   .section {
     padding: 60px 0;
   }
 
+  .section-header {
+    margin-bottom: 40px;
+  }
+
   .section-title {
     font-size: 1.75rem;
   }
 
+  .section-subtitle {
+    font-size: 0.95rem;
+  }
+
   .projects-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .footer-content {
@@ -998,23 +1039,280 @@ a {
     display: none !important;
   }
 
+  .category-header {
+    padding: 20px;
+  }
+
   .category-title-row {
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
   }
+
+  .category-title {
+    font-size: 1.15rem;
+  }
+
+  .cert-category {
+    margin-bottom: 40px;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    padding: 12px;
+  }
+
+  .modal-content {
+    max-height: 95vh;
+    border-radius: 10px;
+  }
+
+  .modal-image {
+    max-height: 300px;
+  }
+
+  .modal-info {
+    padding: 16px;
+  }
+
+  .modal-info h3 {
+    font-size: 1.1rem;
+  }
+
+  .footer {
+    padding: 40px 0 16px;
+  }
+
+  .footer-info h3 {
+    font-size: 1.25rem;
+  }
+
+  .footer-social {
+    justify-content: center;
+  }
 }
 
+/* Mobile */
 @media (max-width: 480px) {
   .container {
     padding: 0 16px;
   }
 
+  .navbar-content {
+    height: 60px;
+  }
+
+  .navbar-brand {
+    font-size: 1.1rem;
+  }
+
+  .hero {
+    padding-top: 60px;
+  }
+
+  .hero-content {
+    padding: 32px 0;
+  }
+
+  .hero-avatar-wrapper {
+    margin-bottom: 16px;
+  }
+
+  .hero-avatar {
+    width: 100px;
+    height: 100px;
+    border-width: 3px;
+  }
+
+  .hero-status {
+    width: 16px;
+    height: 16px;
+    bottom: 8px;
+    right: 8px;
+  }
+
   .hero-name {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+  }
+
+  .hero-title {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+  }
+
+  .hero-location {
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+  }
+
+  .hero-social {
+    margin-bottom: 24px;
+  }
+
+  .hero-actions .btn {
+    padding: 10px 20px;
+    font-size: 0.85rem;
+  }
+
+  .section {
+    padding: 40px 0;
+  }
+
+  .section-header {
+    margin-bottom: 28px;
   }
 
   .section-title {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
+  }
+
+  .section-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .section-line {
+    width: 40px;
+    height: 3px;
+  }
+
+  .about-bio {
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .info-card {
+    padding: 16px;
+  }
+
+  .info-item {
+    gap: 12px;
+    padding: 10px 0;
+  }
+
+  .info-label {
+    font-size: 0.7rem;
+  }
+
+  .info-value {
+    font-size: 0.9rem;
+  }
+
+  .category-header {
+    padding: 16px;
+  }
+
+  .category-title {
+    font-size: 1.05rem;
+  }
+
+  .category-count {
+    font-size: 0.75rem;
+  }
+
+  .category-description {
+    font-size: 0.8rem;
+  }
+
+  .cert-info {
+    padding: 12px;
+  }
+
+  .cert-name {
+    font-size: 0.85rem;
+  }
+
+  .cert-issuer {
+    font-size: 0.75rem;
+  }
+
+  .project-body {
+    padding: 16px;
+  }
+
+  .project-title {
+    font-size: 1rem;
+  }
+
+  .project-description {
+    font-size: 0.85rem;
+  }
+
+  .tech-tag {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+  }
+
+  .project-links {
+    padding-top: 12px;
+  }
+
+  .project-link {
+    font-size: 0.8rem;
+  }
+
+  .modal-overlay {
+    padding: 8px;
+    align-items: flex-end;
+  }
+
+  .modal-content {
+    max-height: 85vh;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .modal-image {
+    max-height: 240px;
+  }
+
+  .modal-info {
+    padding: 14px;
+  }
+
+  .modal-info h3 {
+    font-size: 1rem;
+  }
+
+  .footer {
+    padding: 32px 0 12px;
+  }
+
+  .footer-info h3 {
+    font-size: 1.15rem;
+  }
+
+  .footer-bottom {
+    font-size: 0.75rem;
+  }
+}
+
+/* Small Mobile (iPhone SE etc) */
+@media (max-width: 360px) {
+  .container {
+    padding: 0 12px;
+  }
+
+  .hero-name {
+    font-size: 1.3rem;
+  }
+
+  .hero-avatar {
+    width: 85px;
+    height: 85px;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+  }
+
+  .social-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    padding: 10px 16px;
+    font-size: 0.85rem;
   }
 }
