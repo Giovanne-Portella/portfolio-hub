@@ -1033,14 +1033,12 @@ async function buildTechBadges(repos) {
 }
 
 // ============================================
-// MUSIC REACTOR — Wave ocean effect + ambient glow
+// MUSIC REACTOR — Reactive ambient glow
 // ============================================
 const musicReactor = {
   active: false,
   rafId: null,
   el: null,
-  canvas: null,
-  ctx: null,
   glowBass: null,
   glowMid: null,
   glowTreble: null,
@@ -1048,41 +1046,17 @@ const musicReactor = {
   midSmooth: 0,
   trebleSmooth: 0,
 
-  // Color palette matching the portfolio theme
-  colors: [
-    { r: 88, g: 166, b: 255 },   // --primary (blue)
-    { r: 63, g: 185, b: 80 },    // --accent (green)
-    { r: 160, g: 80, b: 255 },   // purple
-    { r: 255, g: 120, b: 50 },   // warm amber
-    { r: 80, g: 200, b: 255 },   // cyan
-  ],
-
   init() {
     this.el = document.getElementById('music-reactor');
-    this.canvas = document.getElementById('reactor-waves');
-    if (!this.canvas) return;
-    this.ctx = this.canvas.getContext('2d');
+    if (!this.el) return;
     this.glowBass = this.el.querySelector('.reactor-glow-bass');
     this.glowMid = this.el.querySelector('.reactor-glow-mid');
     this.glowTreble = this.el.querySelector('.reactor-glow-treble');
-    this.resize();
-    window.addEventListener('resize', () => this.resize());
-  },
-
-  resize() {
-    if (!this.canvas) return;
-    const dpr = window.devicePixelRatio || 1;
-    const rect = this.canvas.getBoundingClientRect();
-    this.canvas.width = rect.width * dpr;
-    this.canvas.height = rect.height * dpr;
-    this.ctx.scale(dpr, dpr);
-    this.w = rect.width;
-    this.h = rect.height;
   },
 
   start() {
-    if (!this.canvas) this.init();
-    if (!this.canvas) return;
+    if (!this.el) this.init();
+    if (!this.el) return;
     this.active = true;
     this.el.classList.add('active');
     if (!this.rafId) this.loop();
@@ -1101,7 +1075,7 @@ const musicReactor = {
     if (!this.active) return;
     const now = performance.now() / 1000;
 
-    // --- Simulated frequency bands ---
+    // Simulated frequency bands
     const bass = Math.max(0,
       0.4 * Math.sin(now * 1.1) +
       0.3 * Math.sin(now * 1.7 + 0.7) +
@@ -1129,55 +1103,12 @@ const musicReactor = {
     this.midSmooth += (mid - this.midSmooth) * 0.12;
     this.trebleSmooth += (treble - this.trebleSmooth) * 0.18;
 
-    // --- Draw waves ---
-    this.drawWaves(now);
-
-    // --- Ambient glow ---
-    this.glowBass.style.opacity = Math.min(this.bassSmooth * 0.7, 0.5);
-    this.glowMid.style.opacity = Math.min(this.midSmooth * 0.5, 0.35);
-    this.glowTreble.style.opacity = Math.min(this.trebleSmooth * 0.4, 0.25);
+    // Glow — more visible intensities
+    this.glowBass.style.opacity = Math.min(this.bassSmooth * 0.9, 0.65);
+    this.glowMid.style.opacity = Math.min(this.midSmooth * 0.7, 0.5);
+    this.glowTreble.style.opacity = Math.min(this.trebleSmooth * 0.55, 0.4);
 
     this.rafId = requestAnimationFrame(() => this.loop());
-  },
-
-  drawWaves(now) {
-    const { ctx, w, h, colors } = this;
-    ctx.clearRect(0, 0, w, h);
-
-    // Draw 5 layered waves, each with its own color, speed, amplitude
-    const waves = [
-      { color: colors[0], speed: 0.4, freq: 1.5,  amp: 0.35, phase: 0,    alpha: 0.12, react: this.bassSmooth },
-      { color: colors[3], speed: 0.6, freq: 2.0,  amp: 0.28, phase: 1.2,  alpha: 0.10, react: this.bassSmooth },
-      { color: colors[2], speed: 0.8, freq: 2.5,  amp: 0.22, phase: 2.5,  alpha: 0.09, react: this.midSmooth },
-      { color: colors[1], speed: 1.0, freq: 3.0,  amp: 0.18, phase: 3.8,  alpha: 0.08, react: this.midSmooth },
-      { color: colors[4], speed: 1.4, freq: 4.0,  amp: 0.12, phase: 5.0,  alpha: 0.07, react: this.trebleSmooth },
-    ];
-
-    for (const wave of waves) {
-      const reactAmp = 1 + wave.react * 1.5;
-      const amplitude = h * wave.amp * reactAmp;
-      const baseY = h * 0.45;
-
-      ctx.beginPath();
-      ctx.moveTo(0, h);
-
-      for (let x = 0; x <= w; x += 3) {
-        const nx = x / w;
-        const y = baseY +
-          Math.sin(nx * Math.PI * 2 * wave.freq + now * wave.speed * Math.PI * 2 + wave.phase) * amplitude * 0.6 +
-          Math.sin(nx * Math.PI * 2 * wave.freq * 1.7 + now * wave.speed * 1.3 * Math.PI * 2 + wave.phase + 1) * amplitude * 0.3 +
-          Math.sin(nx * Math.PI * 2 * wave.freq * 0.5 + now * wave.speed * 0.7 * Math.PI * 2 + wave.phase + 3) * amplitude * 0.1;
-        ctx.lineTo(x, y);
-      }
-
-      ctx.lineTo(w, h);
-      ctx.closePath();
-
-      const { r, g, b } = wave.color;
-      const dynamicAlpha = wave.alpha * (1 + wave.react * 2);
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${Math.min(dynamicAlpha, 0.25)})`;
-      ctx.fill();
-    }
   }
 };
 
