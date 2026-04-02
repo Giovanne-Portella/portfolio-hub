@@ -66,22 +66,31 @@ function setupSplashScreen() {
   const overlay = document.getElementById('splash-overlay');
   if (!overlay) return;
 
+  const hasVisited = localStorage.getItem('portfolio_visited');
+
+  if (hasVisited) {
+    // Return visit — quick welcome back, auto-dismiss
+    runReturnSplash(overlay);
+  } else {
+    // First visit — full boot sequence
+    runFirstVisitSplash(overlay);
+  }
+}
+
+function runFirstVisitSplash(overlay) {
   const body = document.getElementById('splash-body');
   const hint = document.getElementById('splash-click-hint');
   const prompt = document.getElementById('splash-prompt');
 
-  // Phase 0: Wait for user click to start (enables AudioContext)
   const startBoot = () => {
     overlay.removeEventListener('click', startBoot);
     hint.style.display = 'none';
 
-    // Init AudioContext
     try {
       splashAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (splashAudioCtx.state === 'suspended') splashAudioCtx.resume();
     } catch (_) {}
 
-    // Hide initial prompt cursor
     const cursor = prompt.querySelector('.splash-cursor');
     if (cursor) cursor.remove();
 
@@ -89,6 +98,40 @@ function setupSplashScreen() {
   };
 
   overlay.addEventListener('click', startBoot);
+}
+
+function runReturnSplash(overlay) {
+  const body = document.getElementById('splash-body');
+  const hint = document.getElementById('splash-click-hint');
+  const prompt = document.getElementById('splash-prompt');
+
+  // Hide hint and prompt
+  if (hint) hint.style.display = 'none';
+  if (prompt) prompt.style.display = 'none';
+
+  // Show welcome back message with typing effect
+  const welcomeEl = document.createElement('div');
+  welcomeEl.className = 'splash-welcome-text';
+  welcomeEl.style.marginTop = '0';
+  body.appendChild(welcomeEl);
+
+  const msg = 'Seja bem vindo novamente!';
+  let i = 0;
+
+  function typeChar() {
+    if (i < msg.length) {
+      welcomeEl.innerHTML = msg.substring(0, i + 1) + '<span class="splash-welcome-cursor">█</span>';
+      i++;
+      setTimeout(typeChar, 35 + Math.random() * 25);
+    } else {
+      welcomeEl.textContent = msg;
+      // Auto-dismiss after a short pause
+      setTimeout(() => dismissSplash(), 1800);
+    }
+  }
+
+  // Small delay then start typing
+  setTimeout(typeChar, 500);
 }
 
 async function runBootSequence(body) {
@@ -168,6 +211,9 @@ function dismissSplash() {
   const overlay = document.getElementById('splash-overlay');
   overlay.classList.add('dismissed');
 
+  // Mark as visited so next load gets the quick splash
+  localStorage.setItem('portfolio_visited', '1');
+
   // Reveal site content
   document.body.classList.remove('site-loading');
   document.body.classList.add('site-loaded');
@@ -179,10 +225,22 @@ function dismissSplash() {
   }
 
   // Start music playback — the click qualifies as user gesture
+  // On return splash (auto-dismiss), there's no user gesture, so set up fallback
   if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
     ytPlayer.playVideo();
   }
   document.getElementById('music-player').classList.add('visible');
+
+  // Fallback: if playVideo didn't work (no gesture), play on first interaction
+  if (!ytIsPlaying) {
+    const tryPlay = () => {
+      if (ytPlayer && typeof ytPlayer.playVideo === 'function') ytPlayer.playVideo();
+      document.removeEventListener('click', tryPlay);
+      document.removeEventListener('scroll', tryPlay);
+    };
+    document.addEventListener('click', tryPlay, { once: true });
+    document.addEventListener('scroll', tryPlay, { once: true });
+  }
 
   // Remove overlay from DOM after transition
   setTimeout(() => overlay.remove(), 1000);
