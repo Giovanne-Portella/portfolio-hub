@@ -2536,12 +2536,74 @@ iframe.modal-image {
   transform: translateY(-2px);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+  .splash-terminal {
+    width: 95%;
+    max-width: none;
+    max-height: 90vh;
+  }
   .splash-terminal-body {
-    font-size: 0.75rem;
-    padding: 14px;
+    font-size: 0.8rem;
+    padding: 16px;
+    max-height: calc(90vh - 110px);
   }
   .splash-welcome-text {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .splash-terminal {
+    width: 100%;
+    border-radius: 0;
+    max-height: 100vh;
+    height: 100vh;
+    border: none;
+  }
+  .splash-overlay {
+    align-items: stretch;
+  }
+  .splash-terminal-body {
+    font-size: 0.73rem;
+    padding: 12px;
+    max-height: none;
+    flex: 1;
+    line-height: 1.8;
+  }
+  .splash-terminal-header {
+    padding: 10px 14px;
+  }
+  .splash-terminal-dots .dot {
+    width: 10px;
+    height: 10px;
+  }
+  .splash-terminal-title {
+    font-size: 0.7rem;
+  }
+  .splash-welcome-text {
+    font-size: 0.78rem;
+    line-height: 1.7;
+  }
+  .splash-btn {
+    padding: 12px 28px;
+    font-size: 0.85rem;
+    width: 100%;
+  }
+  .splash-click-hint {
+    font-size: 0.75rem;
+    padding: 10px;
+  }
+  .splash-progress-container {
+    margin: 10px 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .splash-terminal-body {
+    font-size: 0.68rem;
+    padding: 10px;
+  }
+  .splash-welcome-text {
+    font-size: 0.72rem;
   }
 }

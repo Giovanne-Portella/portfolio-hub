@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🌐 Portfolio
+# 🌐 Portfolio Hub
 
-**Site pessoal de portfolio com painel administrativo privado**
+**Site pessoal de portfolio com painel administrativo privado — terminal-style, reativo e responsivo**
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/placeholder/deploy-status)](https://netlify.com)
 
@@ -27,7 +27,7 @@
 
 ## 📋 Sobre
 
-Portfolio profissional completo com **página pública** para visitantes e **painel administrativo** privado para gerenciamento de conteúdo. Inspirado no estilo do LinkedIn, com seções de perfil, certificados organizados por categoria em carrosséis, projetos e redes sociais.
+Portfolio profissional completo com **página pública** para visitantes e **painel administrativo** privado para gerenciamento de conteúdo. Inspirado no GitHub Dark Theme, com terminal-style splash screen, player de música ambiente reativo, visualização de certificados e projetos com integração GitHub.
 
 <details>
 <summary><strong>📸 Preview</strong></summary>
@@ -35,33 +35,52 @@ Portfolio profissional completo com **página pública** para visitantes e **pai
 
 | Página Pública | Painel Admin |
 |:-:|:-:|
-| Hero com foto, bio e redes sociais | Dashboard com CRUD completo |
-| Certificados em carrossel por categoria | Upload de imagens via Supabase Storage |
-| Cards de projetos com techs | Gerenciamento de categorias e progresso |
+| Splash screen estilo terminal Linux | Dashboard com CRUD completo |
+| Hero com foto, bio e redes sociais | Upload de imagens/PDFs via Supabase Storage |
+| Certificados organizados por categoria | Gerenciamento de categorias e progresso |
+| Projetos com techs e README viewer | Extração automática de horas de PDFs |
 
 </details>
 
 ## ✨ Funcionalidades
 
+### 🖥️ Splash Screen — Terminal Boot
+- **Tela de entrada** estilo terminal Linux com prompt `guest@portfolio:~$ ./welcome.sh`
+- Sequência de boot com mensagens `[ OK ]` e barra de progresso animada
+- Mensagem de boas-vindas digitada caractere por caractere com **som de tecla** (Web Audio API)
+- Botão "Prosseguir" para transição suave ao site
+- Ao prosseguir, a música ambiente começa automaticamente
+- Totalmente responsivo — fullscreen em mobile
+
 ### 🌍 Página Pública
-- **Hero Section** — Foto, nome, título, localização e redes sociais
-- **Sobre Mim** — Bio estilo LinkedIn com informações de contato
-- **Certificados** — Organizados por categoria com carrossel (Swiper.js), barra de progresso e status de conclusão
-- **Projetos** — Cards com tecnologias, links do GitHub e demo
-- **Modal de Zoom** — Visualização ampliada dos certificados
-- **Design Responsivo** — Mobile-first, funciona em qualquer dispositivo
+- **Hero Section** — Foto, nome, título, localização e redes sociais com ícones dinâmicos
+- **Sobre Mim** — Bio com informações de contato, empresa atual e tempo de serviço
+- **Certificados** — Organizados por categoria com sidebar, barra de progresso, contagem de horas e thumbnails (imagem ou primeira página de PDF via pdf.js)
+- **Projetos** — Cards com badges de destaque, tecnologias auto-detectadas via GitHub API, horas e links
+- **GitHub & Tecnologias** — Estatísticas em tempo real (repos, commits/semana, followers, stars) e badges coloridos de tecnologias
+- **Modal de Certificado** — Zoom com suporte a imagem e PDF, link da credencial, cópia de link e arquivos complementares
+- **README Viewer** — Modal terminal-style que busca e renderiza README.md do GitHub com marked.js + DOMPurify
+- **Deep Linking** — Links diretos para certificados via `?cert={id}` com highlight animado
+- **Seções Colapsáveis** — Estado salvo em localStorage
+- **Animações Type-In** — Texto digitado no scroll com efeito de cursor terminal
+- **Design Responsivo** — Otimizado para desktop, tablet (768px), mobile (480px) e small mobile (360px)
+
+### 🎵 Player de Música & Reactor
+- **YouTube Floating Player** — Playlist de 4 tracks com seleção aleatória
+- **Controles** — Play/pause com toast de nome da música
+- **Music Reactor** — Efeito ambient glow reativo com 3 camadas de frequência (bass, mid, treble) simuladas via osciladores senoidais a 60fps
 
 ### 🔒 Painel Administrativo
 - **Login Seguro** — Autenticação via Supabase Auth
-- **Gerenciamento de Perfil** — Nome, foto, título, bio, contato e currículo
-- **Redes Sociais** — CRUD com auto-preenchimento de ícones por plataforma
-- **Categorias** — Organização de certificados por área (ex: Hard Skills, Soft Skills)
-- **Certificados** — Upload de imagem, progresso, emissor, link da credencial
-- **Projetos** — Título, descrição, GitHub, demo, tecnologias, destaque
+- **Perfil** — Nome, foto, título, bio, contato, currículo, GitHub username, empresa e WhatsApp
+- **Redes Sociais** — CRUD com 11 plataformas pré-definidas e auto-preenchimento de ícones
+- **Categorias** — Organização de certificados por área (Hard Skills, Soft Skills, etc.)
+- **Certificados** — Upload de imagem/PDF, progresso, emissor, credencial, horas (extração automática de PDFs) e arquivos complementares (Excel, SQL, PowerBI, etc.)
+- **Projetos** — Título, descrição, imagem, GitHub, demo, tecnologias (auto-fetch via API), horas e destaque
 
 ### 🛡️ Segurança
 - **RLS (Row Level Security)** — Leitura pública, escrita apenas pelo owner
-- **Proteção XSS** — Sanitização de todo conteúdo renderizado
+- **Proteção XSS** — `escapeHtml()` + `escapeAttr()` em todo conteúdo renderizado + DOMPurify para Markdown
 - **Headers de Segurança** — X-Frame-Options, CSP, Referrer-Policy via Netlify
 
 ---
@@ -72,13 +91,16 @@ Portfolio profissional completo com **página pública** para visitantes e **pai
 |--------|-----------|-----|
 | **Frontend** | HTML5 / CSS3 / JavaScript ES6+ | Interface pública e painel admin |
 | **Estilização** | CSS Custom Properties + Grid/Flexbox | Design system responsivo |
-| **Carrossel** | [Swiper.js](https://swiperjs.com/) v11 | Carrossel de certificados por categoria |
 | **Ícones** | [Font Awesome](https://fontawesome.com/) 6 | Ícones de UI e redes sociais |
 | **Fontes** | [Google Fonts](https://fonts.google.com/) (Inter) | Tipografia |
+| **PDF** | [PDF.js](https://mozilla.github.io/pdf.js/) 3.11 | Thumbnails e extração de texto de PDFs |
+| **Markdown** | [marked.js](https://marked.js.org/) + [DOMPurify](https://github.com/cure53/DOMPurify) v3 | README rendering seguro |
+| **Áudio** | Web Audio API | Som de teclas na splash screen |
+| **Vídeo** | YouTube IFrame API | Player de música ambiente |
 | **Auth** | [Supabase Auth](https://supabase.com/auth) | Login/logout do admin |
 | **Database** | [Supabase PostgreSQL](https://supabase.com/database) | Armazenamento de dados |
-| **Storage** | [Supabase Storage](https://supabase.com/storage) | Upload de imagens |
-| **Hosting** | [Netlify](https://netlify.com/) | Deploy e CDN |
+| **Storage** | [Supabase Storage](https://supabase.com/storage) | Upload de imagens e PDFs |
+| **Hosting** | [Netlify](https://netlify.com/) | Deploy, CDN e headers de segurança |
 
 ---
 
@@ -87,7 +109,7 @@ Portfolio profissional completo com **página pública** para visitantes e **pai
 ```
 Portfolio/
 │
-├── index.html                  # 🌍 Página pública do portfolio
+├── index.html                  # 🌍 Página pública (splash + portfolio)
 │
 ├── admin/
 │   ├── index.html              # 🔒 Painel administrativo (CRUD)
@@ -99,7 +121,7 @@ Portfolio/
 │
 ├── js/
 │   ├── config.js               # ⚙️ Credenciais do Supabase
-│   ├── portfolio.js            # 📄 Lógica da página pública
+│   ├── portfolio.js            # 📄 Lógica da página pública + splash + music
 │   ├── auth.js                 # 🛡️ Guard de autenticação
 │   └── admin.js                # 🔧 CRUD do painel admin
 │
@@ -111,11 +133,12 @@ Portfolio/
 ### 🗄️ Schema do Banco de Dados
 
 ```
-profiles ──────── Perfil do usuário (nome, foto, bio, contato)
-social_links ──── Redes sociais (plataforma, URL, ícone)
+profiles ──────────────── Perfil do usuário (nome, foto, bio, contato, empresa)
+social_links ──────────── Redes sociais (plataforma, URL, ícone, ordem)
 certificate_categories ── Categorias (nome, descrição, ordem)
-certificates ──── Certificados (nome, imagem, emissor, progresso)
-projects ─────── Projetos (título, GitHub, demo, tecnologias)
+certificates ──────────── Certificados (nome, imagem/PDF, emissor, progresso, horas)
+certificate_files ─────── Arquivos complementares (Excel, SQL, PBIX, etc.)
+projects ──────────────── Projetos (título, GitHub, demo, tecnologias, horas)
 ```
 
 ---
@@ -170,11 +193,11 @@ https://seusite.netlify.app/admin/login.html
 
 | Seção | O que gerencia |
 |:-----:|:--------------|
-| 👤 **Perfil** | Nome, foto, título, bio, email, telefone, localização |
-| 🔗 **Redes Sociais** | LinkedIn, GitHub, Instagram, Twitter, YouTube, etc. |
+| 👤 **Perfil** | Nome, foto, título, bio, email, telefone, empresa, currículo e GitHub |
+| 🔗 **Redes Sociais** | LinkedIn, GitHub, Instagram, X, YouTube, Discord, WhatsApp, Telegram, etc. |
 | 📂 **Categorias** | Agrupamentos de certificados (Hard Skills, Soft Skills...) |
-| 📜 **Certificados** | Upload de imagem, emissor, progresso, data, link da credencial |
-| 💻 **Projetos** | Título, descrição, GitHub, demo, tecnologias, destaque |
+| 📜 **Certificados** | Upload de imagem/PDF, emissor, progresso, horas (extração automática), credencial e arquivos complementares |
+| 💻 **Projetos** | Título, descrição, GitHub, demo, tecnologias (auto-fetch), horas e destaque |
 
 ### Fluxo Recomendado
 
@@ -192,6 +215,6 @@ Este projeto é de uso pessoal. Sinta-se livre para usá-lo como base para seu p
 
 <div align="center">
 
-**Feito com ❤️ usando HTML, CSS, JavaScript e Supabase**
+**Feito com ❤️ usando HTML, CSS, JavaScript, Supabase e Web Audio API**
 
 </div>
