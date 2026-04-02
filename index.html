@@ -294,14 +294,34 @@
     </div>
   </div>
 
+  <!-- README MODAL -->
+  <div class="readme-modal-overlay" id="readme-modal-overlay">
+    <div class="readme-modal">
+      <div class="readme-terminal-header">
+        <div class="readme-terminal-dots">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+        </div>
+        <span class="readme-terminal-title" id="readme-terminal-title">~/README.md</span>
+        <button class="readme-close-btn" id="readme-close-btn"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="readme-terminal-body" id="readme-terminal-body">
+        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Carregando README...</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   </script>
   <script src="js/config.js"></script>
-  <script src="js/portfolio.js?v=6"></script>
+  <script src="js/portfolio.js?v=7"></script>
 </body>
 </html>
