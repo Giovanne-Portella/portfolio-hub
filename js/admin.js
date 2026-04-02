@@ -499,6 +499,12 @@ async function loadCertificates(filterCategoryId) {
       </div>
     `;
   }).join('');
+
+  // Auto-detect hours for PDFs missing hours (run once silently)
+  if (!autoDetectCertHours._ran) {
+    autoDetectCertHours._ran = true;
+    autoDetectCertHours().then(() => loadCertificates(filterCategoryId));
+  }
 }
 
 function setupCertificateForm() {
@@ -529,13 +535,7 @@ function setupCertificateForm() {
     }
   });
 
-  // Auto-extract hours from certificate name
-  document.getElementById('cert-name').addEventListener('input', (e) => {
-    const hoursField = document.getElementById('cert-hours');
-    if (hoursField.dataset.manual) return;
-    const match = e.target.value.match(/(\d+)\s*h(?:oras?)?\b/i);
-    hoursField.value = match ? match[1] : '';
-  });
+  // Mark manual edit on hours field
   document.getElementById('cert-hours').addEventListener('input', function() {
     this.dataset.manual = this.value ? '1' : '';
   });
@@ -562,6 +562,13 @@ function setupCertificateForm() {
         const ctx = pdfPreview.getContext('2d');
         await page.render({ canvasContext: ctx, viewport }).promise;
         pdfPreview.style.display = '';
+
+        // Auto-extract hours from PDF text
+        const hoursField = document.getElementById('cert-hours');
+        if (!hoursField.dataset.manual) {
+          const hours = await extractHoursFromPdf(pdf);
+          if (hours) hoursField.value = hours;
+        }
       } catch (err) {
         console.error('Erro ao renderizar PDF:', err);
       }
@@ -624,6 +631,41 @@ function setupCertificateForm() {
       loadCertificates();
     }
   });
+}
+
+// Extract hours from PDF text content
+async function extractHoursFromPdf(pdf) {
+  let fullText = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const textContent = await page.getTextContent();
+    fullText += textContent.items.map(item => item.str).join(' ');
+  }
+  const match = fullText.match(/(\d+)\s*h(?:oras?)?\b/i);
+  return match ? parseInt(match[1]) : null;
+}
+
+// Auto-detect hours for existing certs with PDFs and no hours set
+async function autoDetectCertHours() {
+  const { data: certs } = await supabase
+    .from('certificates')
+    .select('id, image_url, hours')
+    .is('hours', null)
+    .ilike('image_url', '%.pdf');
+
+  if (!certs || certs.length === 0) return;
+
+  for (const cert of certs) {
+    try {
+      const pdf = await pdfjsLib.getDocument(cert.image_url).promise;
+      const hours = await extractHoursFromPdf(pdf);
+      if (hours) {
+        await supabase.from('certificates').update({ hours }).eq('id', cert.id);
+      }
+    } catch (err) {
+      console.error(`Erro ao extrair horas do cert ${cert.id}:`, err);
+    }
+  }
 }
 
 window.editCert = async function(id) {
