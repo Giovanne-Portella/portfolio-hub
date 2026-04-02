@@ -132,10 +132,11 @@ async function loadProfile() {
     }
   }
 
-  // GitHub contributions
+  // GitHub & Tech stats
   if (data.github_username) {
     loadGitHubData(data.github_username);
   }
+  buildTechStats();
 }
 
 // ============================================
@@ -802,26 +803,20 @@ function calcTimeSince(dateStr) {
 }
 
 // ============================================
-// GITHUB DATA
+// GITHUB DATA & TECH STATS
 // ============================================
-let ghUsername = '';
 
 async function loadGitHubData(username) {
-  ghUsername = username;
-  const wrapper = document.getElementById('github-graph-wrapper');
   const statsEl = document.getElementById('github-stats');
 
   try {
-    // Fetch user profile from GitHub API
     const userRes = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}`);
     if (!userRes.ok) throw new Error('GitHub user not found');
     const user = await userRes.json();
 
-    // Stats
     document.getElementById('gh-public-repos').textContent = user.public_repos || 0;
     document.getElementById('gh-followers').textContent = user.followers || 0;
 
-    // Get total stars from repos
     let totalStars = 0;
     try {
       const reposRes = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&sort=stargazers_count`);
@@ -834,178 +829,75 @@ async function loadGitHubData(username) {
 
     statsEl.style.display = '';
 
-    // Build year selector + load contribution graph
-    const createdYear = new Date(user.created_at).getFullYear();
-    const currentYear = new Date().getFullYear();
-    buildYearSelector(createdYear, currentYear, wrapper);
-    await loadContributionGraph(username, wrapper, 'last');
+    // GitHub profile link
+    const linkContainer = document.getElementById('gh-profile-link-container');
+    linkContainer.innerHTML = `
+      <a href="https://github.com/${escapeAttr(username)}" target="_blank" rel="noopener noreferrer" class="github-profile-link">
+        <i class="fab fa-github"></i> Ver perfil no GitHub
+      </a>`;
+    linkContainer.style.display = '';
 
   } catch (err) {
     console.error('Erro ao carregar dados do GitHub:', err);
-    wrapper.innerHTML = `
-      <div class="empty-state">
-        <i class="fab fa-github"></i>
-        <p>Não foi possível carregar as contribuições do GitHub.</p>
-      </div>`;
   }
 }
 
-function buildYearSelector(startYear, endYear, wrapper) {
-  // Insert year tabs before the graph wrapper
-  let tabsEl = document.getElementById('gh-year-tabs');
-  if (tabsEl) tabsEl.remove();
+async function buildTechStats() {
+  const wrapper = document.getElementById('tech-stats-wrapper');
+  const grid = document.getElementById('tech-stats-grid');
 
-  tabsEl = document.createElement('div');
-  tabsEl.id = 'gh-year-tabs';
-  tabsEl.className = 'gh-year-tabs';
+  const { data: projects, error } = await supabase
+    .from('projects')
+    .select('technologies');
 
-  // "Last year" tab
-  const lastBtn = document.createElement('button');
-  lastBtn.className = 'gh-year-tab active';
-  lastBtn.textContent = 'Último ano';
-  lastBtn.dataset.year = 'last';
-  lastBtn.addEventListener('click', () => switchYear('last'));
-  tabsEl.appendChild(lastBtn);
+  if (error || !projects || projects.length === 0) return;
 
-  // Per-year tabs (newest first)
-  for (let y = endYear; y >= startYear; y--) {
-    const btn = document.createElement('button');
-    btn.className = 'gh-year-tab';
-    btn.textContent = y;
-    btn.dataset.year = y;
-    btn.addEventListener('click', () => switchYear(String(y)));
-    tabsEl.appendChild(btn);
-  }
+  // Count total projects for the stat card
+  document.getElementById('gh-total-projects').textContent = projects.length;
 
-  wrapper.parentNode.insertBefore(tabsEl, wrapper);
-}
-
-async function switchYear(year) {
-  // Update active tab
-  document.querySelectorAll('.gh-year-tab').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.year === year);
+  // Count tech usage across all projects
+  const techCount = {};
+  let totalTags = 0;
+  projects.forEach(p => {
+    (p.technologies || []).forEach(t => {
+      const name = t.trim();
+      if (!name) return;
+      techCount[name] = (techCount[name] || 0) + 1;
+      totalTags++;
+    });
   });
 
-  const wrapper = document.getElementById('github-graph-wrapper');
-  wrapper.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Carregando...</div>';
+  if (totalTags === 0) return;
 
-  await loadContributionGraph(ghUsername, wrapper, year);
-}
+  // Sort by count descending, take top 10
+  const sorted = Object.entries(techCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
 
-async function loadContributionGraph(username, wrapper, yearParam) {
-  try {
-    const res = await fetch(`https://github-contributions-api.jogruber.de/v4/${encodeURIComponent(username)}?y=${yearParam}`);
-    if (!res.ok) throw new Error('Failed to fetch contributions');
-    const data = await res.json();
+  const maxCount = sorted[0][1];
 
-    const contributions = data.contributions || [];
-    if (contributions.length === 0) throw new Error('No contribution data');
+  // Color palette for tech bars
+  const colors = ['#58a6ff', '#39d353', '#f0883e', '#bc8cff', '#ff6b6b', '#79c0ff', '#56d4dd', '#e3b341', '#f778ba', '#8b949e'];
 
-    // Calculate total from API response
-    let totalContrib;
-    if (yearParam === 'last') {
-      totalContrib = data.total && data.total['lastYear'] != null ? data.total['lastYear'] : contributions.reduce((s, d) => s + d.count, 0);
-    } else {
-      totalContrib = data.total && data.total[yearParam] != null ? data.total[yearParam] : contributions.reduce((s, d) => s + d.count, 0);
-    }
-    document.getElementById('gh-total-contributions').textContent = totalContrib;
+  grid.innerHTML = sorted.map(([tech, count], i) => {
+    const percent = Math.round((count / projects.length) * 100);
+    const barWidth = Math.round((count / maxCount) * 100);
+    const color = colors[i % colors.length];
 
-    const dayLabels = ['Dom', 'Seg', '', 'Qua', '', 'Sex', ''];
-    const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-
-    // Use the API's own date range directly — parse as local dates
-    const parseDateLocal = (str) => {
-      const [y, m, d] = str.split('-').map(Number);
-      return new Date(y, m - 1, d);
-    };
-
-    const firstDate = parseDateLocal(contributions[0].date);
-    const lastDate = parseDateLocal(contributions[contributions.length - 1].date);
-
-    // Align firstDate to previous Sunday
-    const startDate = new Date(firstDate);
-    startDate.setDate(startDate.getDate() - startDate.getDay());
-
-    // Build contribution map
-    const contribMap = {};
-    contributions.forEach(c => {
-      contribMap[c.date] = { count: c.count, level: c.level };
-    });
-
-    // Build weeks from startDate through lastDate
-    const weeks = [];
-    const monthMarkers = [];
-    let lastMonth = -1;
-    const cursor = new Date(startDate);
-    let w = 0;
-
-    while (cursor <= lastDate) {
-      const week = [];
-      for (let d = 0; d < 7; d++) {
-        const key = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, '0')}-${String(cursor.getDate()).padStart(2, '0')}`;
-        const entry = contribMap[key] || { count: 0, level: 0 };
-        const isPast = cursor > lastDate;
-
-        if (d === 0 && cursor.getMonth() !== lastMonth) {
-          monthMarkers.push({ week: w, month: monthNames[cursor.getMonth()] });
-          lastMonth = cursor.getMonth();
-        }
-
-        week.push({ key, count: entry.count, level: entry.level, isFuture: isPast });
-        cursor.setDate(cursor.getDate() + 1);
-      }
-      weeks.push(week);
-      w++;
-    }
-
-    const totalWeeks = weeks.length;
-
-    // Build the graph HTML
-    const monthsHtml = monthMarkers.map(m => {
-      return `<span class="github-graph-month" style="grid-column:${m.week + 1}">${m.month}</span>`;
-    }).join('');
-
-    const colsHtml = weeks.map(week => {
-      const cells = week.map(day => {
-        if (day.isFuture) return `<div class="github-graph-cell" style="visibility:hidden"></div>`;
-        return `<div class="github-graph-cell" data-level="${day.level}" title="${day.count} contribuições em ${day.key}"></div>`;
-      }).join('');
-      return `<div class="github-graph-col">${cells}</div>`;
-    }).join('');
-
-    const daysHtml = dayLabels.map(l => `<div class="github-graph-day">${l}</div>`).join('');
-
-    wrapper.innerHTML = `
-      <div class="github-graph-body">
-        <div class="github-graph-days">${daysHtml}</div>
-        <div>
-          <div class="github-graph-months" style="display:grid; grid-template-columns: repeat(${totalWeeks}, 15px);">
-            ${monthsHtml}
-          </div>
-          <div class="github-graph">${colsHtml}</div>
+    return `
+      <div class="tech-stat-item">
+        <div class="tech-stat-header">
+          <span class="tech-stat-name">${escapeHtml(tech)}</span>
+          <span class="tech-stat-info">${count} ${count === 1 ? 'projeto' : 'projetos'} · ${percent}%</span>
+        </div>
+        <div class="tech-stat-bar">
+          <div class="tech-stat-fill" style="width:${barWidth}%;background:${color}"></div>
         </div>
       </div>
-      <div class="github-graph-legend">
-        <span>Menos</span>
-        <div class="github-graph-cell"></div>
-        <div class="github-graph-cell" data-level="1"></div>
-        <div class="github-graph-cell" data-level="2"></div>
-        <div class="github-graph-cell" data-level="3"></div>
-        <div class="github-graph-cell" data-level="4"></div>
-        <span>Mais</span>
-      </div>
-      <a href="https://github.com/${escapeAttr(username)}" target="_blank" rel="noopener noreferrer" class="github-profile-link">
-        <i class="fab fa-github"></i> Ver perfil no GitHub
-      </a>
     `;
-  } catch (err) {
-    console.error('Erro ao gerar gráfico de contribuições:', err);
-    wrapper.innerHTML = `
-      <div class="empty-state">
-        <i class="fab fa-github"></i>
-        <p>Não foi possível carregar o gráfico de contribuições.</p>
-      </div>`;
-  }
+  }).join('');
+
+  wrapper.style.display = '';
 }
 
 // ============================================

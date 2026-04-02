@@ -35,7 +35,7 @@
         <li><a href="#about">Sobre</a></li>
         <li><a href="#certificates">Certificados</a></li>
         <li><a href="#projects">Projetos</a></li>
-        <li><a href="#github-contributions">GitHub</a></li>
+        <li><a href="#github-contributions">Tecnologias</a></li>
         <li><a href="#contact">Contato</a></li>
       </ul>
       <button class="mobile-toggle" id="mobile-toggle">
@@ -49,7 +49,7 @@
     <a href="#about" class="mobile-link">Sobre</a>
     <a href="#certificates" class="mobile-link">Certificados</a>
     <a href="#projects" class="mobile-link">Projetos</a>
-    <a href="#github-contributions" class="mobile-link">GitHub</a>
+    <a href="#github-contributions" class="mobile-link">Tecnologias</a>
     <a href="#contact" class="mobile-link">Contato</a>
   </div>
 
@@ -195,21 +195,16 @@
     </div>
   </section>
 
-  <!-- GITHUB CONTRIBUTIONS SECTION -->
+  <!-- GITHUB & TECNOLOGIAS SECTION -->
   <section class="section section-alt" id="github-contributions">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title type-in">Contribuições no GitHub</h2>
+        <h2 class="section-title type-in">GitHub & Tecnologias</h2>
         <div class="section-line"></div>
-        <p class="section-subtitle type-in">Minha atividade de desenvolvimento ao longo do último ano</p>
+        <p class="section-subtitle type-in">Minha atividade e stack de desenvolvimento</p>
       </div>
       <div class="github-stats" id="github-stats" style="display:none">
         <div class="github-stats-grid">
-          <div class="github-stat-card">
-            <i class="fas fa-code-commit"></i>
-            <span class="stat-value" id="gh-total-contributions">0</span>
-            <span class="stat-label">Contribuições</span>
-          </div>
           <div class="github-stat-card">
             <i class="fas fa-book"></i>
             <span class="stat-value" id="gh-public-repos">0</span>
@@ -225,13 +220,18 @@
             <span class="stat-value" id="gh-stars">0</span>
             <span class="stat-label">Stars</span>
           </div>
+          <div class="github-stat-card">
+            <i class="fas fa-code-branch"></i>
+            <span class="stat-value" id="gh-total-projects">0</span>
+            <span class="stat-label">Projetos</span>
+          </div>
         </div>
       </div>
-      <div class="github-graph-wrapper" id="github-graph-wrapper">
-        <div class="loading-spinner">
-          <i class="fas fa-spinner fa-spin"></i> Carregando contribuições...
-        </div>
+      <div class="tech-stats-wrapper" id="tech-stats-wrapper" style="display:none">
+        <h3 class="tech-stats-title"><i class="fas fa-laptop-code"></i> Principais Tecnologias</h3>
+        <div class="tech-stats-grid" id="tech-stats-grid"></div>
       </div>
+      <div id="gh-profile-link-container" style="display:none"></div>
     </div>
   </section>
 
