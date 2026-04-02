@@ -334,7 +334,7 @@ function createCertCard(cert) {
     if (isPdf) {
       imageHtml = `<canvas class="cert-image cert-pdf-thumb" data-pdf-url="${escapeAttr(cert.image_url)}" loading="lazy"></canvas>`;
     } else {
-      imageHtml = `<img src="${escapeAttr(cert.image_url)}" alt="${escapeAttr(cert.name)}" class="cert-image" loading="lazy">`;
+      imageHtml = `<img src="${escapeAttr(cert.image_url)}" alt="${escapeAttr(cert.name)}" class="cert-image">`;
     }
   } else {
     imageHtml = `<div class="cert-placeholder"><i class="fas fa-certificate"></i></div>`;
@@ -376,16 +376,26 @@ async function renderPdfThumbnails() {
     const pdfUrl = canvas.dataset.pdfUrl;
     if (!pdfUrl) continue;
     try {
+      // Get wrapper dimensions to set canvas size before rendering
+      const wrapper = canvas.closest('.cert-image-wrapper');
+      const rect = wrapper.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
       const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
       const page = await pdf.getPage(1);
-      const viewport = page.getViewport({ scale: 0.4 });
+      // Scale to fit wrapper size at device pixel ratio
+      const naturalViewport = page.getViewport({ scale: 1 });
+      const scale = (rect.width * dpr) / naturalViewport.width;
+      const viewport = page.getViewport({ scale });
+
       canvas.width = viewport.width;
       canvas.height = viewport.height;
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
       const ctx = canvas.getContext('2d');
       await page.render({ canvasContext: ctx, viewport }).promise;
     } catch (err) {
       console.error('Erro ao renderizar thumbnail PDF:', err);
-      // Show fallback icon
       canvas.style.display = 'none';
       const placeholder = document.createElement('div');
       placeholder.className = 'cert-placeholder';
