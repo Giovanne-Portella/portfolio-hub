@@ -861,6 +861,39 @@ function setupProjectForm() {
     }
   });
 
+  // Auto-fetch technologies from GitHub repo URL
+  const projGithubInput = document.getElementById('proj-github');
+  projGithubInput.addEventListener('change', fetchRepoLanguages);
+  projGithubInput.addEventListener('paste', (e) => {
+    setTimeout(fetchRepoLanguages, 100);
+  });
+
+  async function fetchRepoLanguages() {
+    const url = projGithubInput.value.trim();
+    const match = url.match(/github\.com\/([^/]+)\/([^/\s?#]+)/);
+    if (!match) return;
+
+    const [, owner, repo] = match;
+    const techsInput = document.getElementById('proj-techs');
+
+    try {
+      const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo.replace(/\.git$/, ''))}/languages`);
+      if (!res.ok) return;
+      const languages = await res.json();
+      const langs = Object.keys(languages);
+      if (langs.length === 0) return;
+
+      // Merge with existing techs (don't overwrite manual entries)
+      const existing = techsInput.value.trim()
+        ? techsInput.value.split(',').map(t => t.trim()).filter(Boolean)
+        : [];
+      const merged = [...new Set([...langs, ...existing])];
+      techsInput.value = merged.join(', ');
+
+      showToast(`Tecnologias detectadas: ${langs.join(', ')}`);
+    } catch {}
+  }
+
   document.getElementById('project-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const userId = window.currentUserId;
