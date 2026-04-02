@@ -2256,45 +2256,57 @@ iframe.modal-image {
 }
 
 /* ============================================
-   MUSIC REACTOR — Reactive ambient glow
+   MUSIC REACTOR — Reactive ambient glow + waves
    ============================================ */
 .music-reactor {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: 9998;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 1.2s ease;
+  transition: opacity 1.5s ease;
 }
 
 .music-reactor.active {
   opacity: 1;
 }
 
-.reactor-layer {
+/* Canvas waves at the bottom */
+.reactor-waves {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 180px;
+  opacity: 0.6;
+}
+
+/* Ambient glow layers */
+.reactor-glow {
   position: absolute;
   inset: 0;
+  transition: opacity 0.08s linear;
+}
+
+.reactor-glow-bass {
+  background: radial-gradient(ellipse 140% 45% at 50% 105%, rgba(255, 120, 50, 0.25) 0%, transparent 65%);
   opacity: 0;
-  transition: opacity 0.05s linear;
 }
 
-/* Bass — warm amber/red from bottom */
-.reactor-bass {
-  background: radial-gradient(ellipse 120% 50% at 50% 100%, rgba(255, 140, 50, var(--bass, 0)) 0%, transparent 70%);
-}
-
-/* Mids — soft purple/magenta from sides */
-.reactor-mid {
+.reactor-glow-mid {
   background:
-    radial-gradient(ellipse 40% 80% at 0% 50%, rgba(180, 80, 255, var(--mid, 0)) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 80% at 100% 50%, rgba(180, 80, 255, var(--mid, 0)) 0%, transparent 70%);
+    radial-gradient(ellipse 35% 70% at -5% 50%, rgba(160, 80, 255, 0.2) 0%, transparent 65%),
+    radial-gradient(ellipse 35% 70% at 105% 50%, rgba(160, 80, 255, 0.2) 0%, transparent 65%);
+  opacity: 0;
 }
 
-/* Treble — subtle cyan shimmer from top */
-.reactor-treble {
-  position: absolute;
-  inset: 0;
+.reactor-glow-treble {
+  background: radial-gradient(ellipse 90% 35% at 50% -5%, rgba(80, 200, 255, 0.15) 0%, transparent 55%);
   opacity: 0;
-  background: radial-gradient(ellipse 100% 40% at 50% 0%, rgba(80, 200, 255, var(--treble, 0)) 0%, transparent 60%);
-  transition: opacity 0.03s linear;
+}
+
+@media (max-width: 768px) {
+  .reactor-waves {
+    height: 120px;
+  }
 }
