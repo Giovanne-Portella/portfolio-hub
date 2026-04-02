@@ -503,7 +503,9 @@ async function loadCertificates(filterCategoryId) {
   // Auto-detect hours for PDFs missing hours (run once silently)
   if (!autoDetectCertHours._ran) {
     autoDetectCertHours._ran = true;
-    autoDetectCertHours().then(() => loadCertificates(filterCategoryId));
+    autoDetectCertHours().then(updated => {
+      if (updated) loadCertificates(filterCategoryId);
+    });
   }
 }
 
@@ -639,8 +641,13 @@ async function extractHoursFromPdf(pdf) {
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const textContent = await page.getTextContent();
-    fullText += textContent.items.map(item => item.str).join(' ');
+    // Join without separator — PDF.js items often include their own spacing
+    // Then normalize whitespace to avoid split characters like "8 0" → "80"
+    const pageText = textContent.items.map(item => item.str).join('');
+    fullText += ' ' + pageText;
   }
+  fullText = fullText.replace(/\s+/g, ' ');
+  // Match patterns: "80 horas", "80horas", "80 Horas", "80h", "80 HORAS", "80 Hora"
   const match = fullText.match(/(\d+)\s*h(?:oras?)?\b/i);
   return match ? parseInt(match[1]) : null;
 }
@@ -653,19 +660,22 @@ async function autoDetectCertHours() {
     .is('hours', null)
     .ilike('image_url', '%.pdf');
 
-  if (!certs || certs.length === 0) return;
+  if (!certs || certs.length === 0) return false;
 
+  let updated = false;
   for (const cert of certs) {
     try {
       const pdf = await pdfjsLib.getDocument(cert.image_url).promise;
       const hours = await extractHoursFromPdf(pdf);
       if (hours) {
         await supabase.from('certificates').update({ hours }).eq('id', cert.id);
+        updated = true;
       }
     } catch (err) {
       console.error(`Erro ao extrair horas do cert ${cert.id}:`, err);
     }
   }
+  return updated;
 }
 
 window.editCert = async function(id) {
