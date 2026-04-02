@@ -231,6 +231,13 @@ async function loadCertificates() {
     sidebar.appendChild(item);
   });
 
+  // Update section title with total hours
+  const certTotalHours = allCerts.reduce((sum, c) => sum + (c.hours || 0), 0);
+  const certTitle = document.getElementById('cert-section-title');
+  if (certTitle) {
+    certTitle.textContent = certTotalHours > 0 ? `Certificados • ${certTotalHours}h` : 'Certificados';
+  }
+
   // Re-attach collapsible handlers
   setupCollapsible();
 
@@ -663,6 +670,13 @@ async function loadProjects() {
     return;
   }
 
+  // Update section title with total hours
+  const projTotalHours = data.reduce((sum, p) => sum + (p.hours || 0), 0);
+  const projTitle = document.getElementById('proj-section-title');
+  if (projTitle) {
+    projTitle.textContent = projTotalHours > 0 ? `Projetos • ${projTotalHours}h` : 'Projetos';
+  }
+
   container.innerHTML = data.map(project => {
     const imageHtml = project.image_url
       ? `<img src="${escapeAttr(project.image_url)}" alt="${escapeAttr(project.title)}" class="project-image" loading="lazy">`
@@ -698,6 +712,7 @@ async function loadProjects() {
           <p class="project-description">${escapeHtml(project.description || '')}</p>
           ${project.description && project.description.length > 120 ? '<button class="project-desc-toggle" onclick="this.parentElement.classList.toggle(\'expanded\'); this.textContent = this.parentElement.classList.contains(\'expanded\') ? \'Ver menos\' : \'Ver mais\'">Ver mais</button>' : ''}
           ${techsHtml ? `<div class="project-techs">${techsHtml}</div>` : ''}
+          ${project.hours ? `<p class="cert-hours"><i class="fas fa-clock"></i> ${project.hours}h</p>` : ''}
           ${linksHtml.length > 0 ? `<div class="project-links">${linksHtml.join('')}</div>` : ''}
         </div>
       </div>

@@ -911,6 +911,7 @@ function setupProjectForm() {
     document.getElementById('project-form').reset();
     document.getElementById('proj-id').value = '';
     document.getElementById('proj-image-preview').style.display = 'none';
+    document.getElementById('proj-hours').value = '';
     openModal('modal-project');
   });
 
@@ -989,6 +990,7 @@ function setupProjectForm() {
       technologies: technologies,
       featured: document.getElementById('proj-featured').checked,
       display_order: parseInt(document.getElementById('proj-order').value) || 0,
+      hours: parseInt(document.getElementById('proj-hours').value) || null,
     };
 
     if (imageUrl) projData.image_url = imageUrl;
@@ -1023,6 +1025,7 @@ window.editProject = async function(id) {
   document.getElementById('proj-techs').value = (data.technologies || []).join(', ');
   document.getElementById('proj-featured').checked = data.featured;
   document.getElementById('proj-order').value = data.display_order;
+  document.getElementById('proj-hours').value = data.hours || '';
 
   const preview = document.getElementById('proj-image-preview');
   if (data.image_url) {
