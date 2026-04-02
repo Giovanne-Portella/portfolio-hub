@@ -1188,7 +1188,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Hover sobre cards e links: glow mais forte e muda cor
   document.addEventListener('mouseover', (e) => {
-    const card = e.target.closest('.project-card, .cert-card, .stat-card, .tech-badge');
+    const card = e.target.closest('.project-card, .stat-card, .tech-badge');
     if (card) {
       glow.style.background = 'radial-gradient(circle, rgba(88,166,255,0.13) 0%, rgba(88,166,255,0.05) 30%, transparent 70%)';
       glow.style.width = '100px';
@@ -1197,7 +1197,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('mouseout', (e) => {
-    const card = e.target.closest('.project-card, .cert-card, .stat-card, .tech-badge');
+    const card = e.target.closest('.project-card, .stat-card, .tech-badge');
     if (card) {
       glow.style.background = '';
       glow.style.width = '';
