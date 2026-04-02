@@ -891,42 +891,29 @@ function buildTechStatsFromRepos(repos) {
 
   // Count repos per language (primary language)
   const langCount = {};
-  let totalRepos = 0;
 
   repos.forEach(r => {
-    if (r.fork) return; // skip forks
+    if (r.fork) return;
     const lang = r.language;
     if (!lang || EXCLUDE_LANGS.has(lang)) return;
     langCount[lang] = (langCount[lang] || 0) + 1;
-    totalRepos++;
   });
 
-  if (totalRepos === 0) return;
+  if (Object.keys(langCount).length === 0) return;
 
-  // Sort by count descending
+  // Sort by count descending — show ALL
   const sorted = Object.entries(langCount)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 10);
+    .sort((a, b) => b[1] - a[1]);
 
-  const maxCount = sorted[0][1];
-
-  // Default colors fallback
   const fallbackColors = ['#58a6ff', '#39d353', '#f0883e', '#bc8cff', '#ff6b6b', '#79c0ff', '#56d4dd', '#e3b341', '#f778ba', '#8b949e'];
 
   grid.innerHTML = sorted.map(([lang, count], i) => {
-    const percent = Math.round((count / repos.filter(r => !r.fork).length) * 100);
-    const barWidth = Math.round((count / maxCount) * 100);
     const color = LANG_COLORS[lang] || fallbackColors[i % fallbackColors.length];
-
     return `
-      <div class="tech-stat-item">
-        <div class="tech-stat-header">
-          <span class="tech-stat-name">${escapeHtml(lang)}</span>
-          <span class="tech-stat-info">${count} ${count === 1 ? 'repo' : 'repos'} · ${percent}%</span>
-        </div>
-        <div class="tech-stat-bar">
-          <div class="tech-stat-fill" style="width:${barWidth}%;background:${color}"></div>
-        </div>
+      <div class="tech-badge" style="border-color:${color}">
+        <span class="tech-badge-dot" style="background:${color}"></span>
+        <span class="tech-badge-name">${escapeHtml(lang)}</span>
+        <span class="tech-badge-count">${count}</span>
       </div>
     `;
   }).join('');
