@@ -805,9 +805,6 @@ function calcTimeSince(dateStr) {
 // GITHUB DATA & TECH STATS
 // ============================================
 
-// Languages to exclude (too basic / not meaningful)
-const EXCLUDE_LANGS = new Set(['HTML', 'CSS', 'Makefile', 'Dockerfile', 'Shell', 'Batchfile', 'SCSS', 'Less']);
-
 // Known language colors (GitHub style)
 const LANG_COLORS = {
   'JavaScript': '#f1e05a',
@@ -830,6 +827,28 @@ const LANG_COLORS = {
   'R': '#198CE7',
   'Elixir': '#6e4a7e',
   'Scala': '#c22d40',
+  'HTML': '#e34c26',
+  'HTML5': '#e34c26',
+  'CSS': '#563d7c',
+  'CSS3': '#563d7c',
+  'Supabase': '#3ecf8e',
+  'Netlify': '#00c7b7',
+  'React': '#61dafb',
+  'Node.js': '#339933',
+  'Node': '#339933',
+  'Angular': '#dd0031',
+  'Next.js': '#ffffff',
+  'Docker': '#2496ed',
+  'PostgreSQL': '#336791',
+  'MongoDB': '#47a248',
+  'MySQL': '#4479a1',
+  'Firebase': '#ffca28',
+  'Tailwind': '#06b6d4',
+  'Bootstrap': '#7952b3',
+  'Git': '#f05032',
+  'Linux': '#fcc624',
+  'AWS': '#ff9900',
+  'Azure': '#0078d4',
 };
 
 async function loadGitHubData(username) {
@@ -869,8 +888,8 @@ async function loadGitHubData(username) {
       }
     } catch {}
 
-    // Build tech stats from repo languages
-    buildTechStatsFromRepos(repos);
+    // Build tech badges from repos + projects
+    await buildTechBadges(repos);
 
     // GitHub profile link
     const linkContainer = document.getElementById('gh-profile-link-container');
@@ -885,35 +904,46 @@ async function loadGitHubData(username) {
   }
 }
 
-function buildTechStatsFromRepos(repos) {
+async function buildTechBadges(repos) {
   const wrapper = document.getElementById('tech-stats-wrapper');
   const grid = document.getElementById('tech-stats-grid');
 
-  // Count repos per language (primary language)
-  const langCount = {};
+  const techSet = new Set();
 
+  // 1) Languages from GitHub repos (skip forks)
   repos.forEach(r => {
     if (r.fork) return;
-    const lang = r.language;
-    if (!lang || EXCLUDE_LANGS.has(lang)) return;
-    langCount[lang] = (langCount[lang] || 0) + 1;
+    if (r.language) techSet.add(r.language);
   });
 
-  if (Object.keys(langCount).length === 0) return;
+  // 2) Technologies from Supabase projects
+  try {
+    const { data: projects } = await supabase
+      .from('projects')
+      .select('technologies');
 
-  // Sort by count descending — show ALL
-  const sorted = Object.entries(langCount)
-    .sort((a, b) => b[1] - a[1]);
+    if (projects) {
+      projects.forEach(p => {
+        (p.technologies || []).forEach(t => {
+          const name = t.trim();
+          if (name) techSet.add(name);
+        });
+      });
+    }
+  } catch {}
+
+  if (techSet.size === 0) return;
 
   const fallbackColors = ['#58a6ff', '#39d353', '#f0883e', '#bc8cff', '#ff6b6b', '#79c0ff', '#56d4dd', '#e3b341', '#f778ba', '#8b949e'];
 
-  grid.innerHTML = sorted.map(([lang, count], i) => {
-    const color = LANG_COLORS[lang] || fallbackColors[i % fallbackColors.length];
+  const techs = Array.from(techSet).sort((a, b) => a.localeCompare(b));
+
+  grid.innerHTML = techs.map((tech, i) => {
+    const color = LANG_COLORS[tech] || fallbackColors[i % fallbackColors.length];
     return `
       <div class="tech-badge" style="border-color:${color}">
         <span class="tech-badge-dot" style="background:${color}"></span>
-        <span class="tech-badge-name">${escapeHtml(lang)}</span>
-        <span class="tech-badge-count">${count}</span>
+        <span class="tech-badge-name">${escapeHtml(tech)}</span>
       </div>
     `;
   }).join('');

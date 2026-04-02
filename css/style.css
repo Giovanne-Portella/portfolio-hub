@@ -1429,17 +1429,6 @@ iframe.modal-image {
   color: var(--text);
 }
 
-.tech-badge-count {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.06);
-  padding: 2px 7px;
-  border-radius: 10px;
-  min-width: 20px;
-  text-align: center;
-}
-
 .github-profile-link {
   display: inline-flex;
   align-items: center;
