@@ -512,6 +512,7 @@ function setupCertificateForm() {
     document.getElementById('cert-has-project').checked = false;
     document.getElementById('cert-project-files-area').style.display = 'none';
     document.getElementById('cert-project-files-list').innerHTML = '<p class="text-muted">Salve o certificado primeiro para adicionar arquivos.</p>';
+    document.getElementById('cert-hours').value = '';
     openModal('modal-cert');
   });
 
@@ -526,6 +527,17 @@ function setupCertificateForm() {
     if (e.target.checked) {
       document.getElementById('cert-progress').value = 100;
     }
+  });
+
+  // Auto-extract hours from certificate name
+  document.getElementById('cert-name').addEventListener('input', (e) => {
+    const hoursField = document.getElementById('cert-hours');
+    if (hoursField.dataset.manual) return;
+    const match = e.target.value.match(/(\d+)\s*h(?:oras?)?\b/i);
+    hoursField.value = match ? match[1] : '';
+  });
+  document.getElementById('cert-hours').addEventListener('input', function() {
+    this.dataset.manual = this.value ? '1' : '';
   });
 
   // File preview (image or PDF)
@@ -592,6 +604,7 @@ function setupCertificateForm() {
         : null,
       progress: completed ? 100 : parseInt(document.getElementById('cert-progress').value) || 0,
       display_order: parseInt(document.getElementById('cert-order').value) || 0,
+      hours: parseInt(document.getElementById('cert-hours').value) || null,
     };
 
     if (imageUrl) certData.image_url = imageUrl;
@@ -627,6 +640,8 @@ window.editCert = async function(id) {
   document.getElementById('cert-date').value = data.completed_at ? data.completed_at.split('T')[0] : '';
   document.getElementById('cert-progress').value = data.progress;
   document.getElementById('cert-order').value = data.display_order;
+  document.getElementById('cert-hours').value = data.hours || '';
+  document.getElementById('cert-hours').dataset.manual = data.hours ? '1' : '';
   document.getElementById('cert-progress-group').style.display = data.completed ? 'none' : '';
 
   const preview = document.getElementById('cert-image-preview');

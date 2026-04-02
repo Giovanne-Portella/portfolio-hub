@@ -211,6 +211,7 @@ async function loadCertificates() {
     const categoryCerts = allCerts.filter(c => c.category_id === category.id);
     const completedCount = categoryCerts.filter(c => c.completed).length;
     const totalCount = categoryCerts.length;
+    const totalHours = categoryCerts.reduce((sum, c) => sum + (c.hours || 0), 0);
     const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
     const item = document.createElement('div');
@@ -220,7 +221,7 @@ async function loadCertificates() {
       <div class="cert-sidebar-info">
         <span class="cert-sidebar-name">${escapeHtml(category.name)}</span>
         ${category.description ? `<span class="cert-sidebar-desc">${escapeHtml(category.description)}</span>` : ''}
-        <span class="cert-sidebar-count">${completedCount} de ${totalCount} concluídos</span>
+        <span class="cert-sidebar-count">${completedCount} de ${totalCount} concluídos${totalHours > 0 ? ` • ${totalHours}h` : ''}</span>
       </div>
       <div class="cert-sidebar-progress">
         <div class="cert-sidebar-progress-bar" style="width: ${progress}%"></div>
@@ -313,7 +314,8 @@ function createCertCard(cert) {
            data-cert-issuer="${escapeAttr(cert.issuer || '')}"
            data-cert-date="${escapeAttr(dateStr)}"
            data-cert-image="${escapeAttr(cert.image_url || '')}"
-           data-cert-url="${escapeAttr(cert.credential_url || '')}">
+           data-cert-url="${escapeAttr(cert.credential_url || '')}"
+           data-cert-hours="${cert.hours || ''}">
         <div class="cert-image-wrapper">
           ${imageHtml}
           ${statusHtml}
@@ -322,6 +324,7 @@ function createCertCard(cert) {
           <p class="cert-name">${escapeHtml(cert.name)}</p>
           ${cert.issuer ? `<p class="cert-issuer">${escapeHtml(cert.issuer)}</p>` : ''}
           ${dateStr ? `<p class="cert-date">${dateStr}</p>` : ''}
+          ${cert.hours ? `<p class="cert-hours"><i class="fas fa-clock"></i> ${cert.hours}h</p>` : ''}
         </div>
         <button class="cert-copy-link" onclick="event.stopPropagation(); copyCertLink('${cert.id}')" title="Copiar link deste certificado">
           <i class="fas fa-link"></i>
@@ -537,10 +540,19 @@ function setupModal() {
     const date = card.dataset.certDate;
     const image = card.dataset.certImage;
     const url = card.dataset.certUrl;
+    const hours = card.dataset.certHours;
 
     document.getElementById('modal-cert-name').textContent = name || '';
     document.getElementById('modal-cert-issuer').textContent = issuer || '';
     document.getElementById('modal-cert-date').textContent = date ? `Concluído em ${date}` : '';
+
+    const hoursEl = document.getElementById('modal-cert-hours');
+    if (hours) {
+      hoursEl.innerHTML = `<i class="fas fa-clock"></i> ${hours}h de carga horária`;
+      hoursEl.style.display = '';
+    } else {
+      hoursEl.style.display = 'none';
+    }
 
     const modalImage = document.getElementById('modal-image');
     const modalPdf = document.getElementById('modal-pdf');

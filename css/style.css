@@ -727,6 +727,26 @@ canvas.cert-image {
   margin-top: 8px;
 }
 
+.cert-hours {
+  font-size: 0.75rem;
+  color: var(--accent);
+  margin-top: 4px;
+}
+
+.cert-hours i {
+  margin-right: 4px;
+}
+
+.modal-cert-hours {
+  font-size: 0.9rem;
+  color: var(--accent);
+  margin-top: 4px;
+}
+
+.modal-cert-hours i {
+  margin-right: 4px;
+}
+
 /* ============================================
    PROJECTS SECTION
    ============================================ */
