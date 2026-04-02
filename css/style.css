@@ -49,6 +49,31 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Cursor Glow */
+.cursor-glow {
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(88, 166, 255, 0.07) 0%,
+    rgba(88, 166, 255, 0.03) 30%,
+    transparent 70%
+  );
+  transition: opacity 0.4s ease;
+  will-change: left, top;
+  mix-blend-mode: screen;
+}
+
+body:hover .cursor-glow {
+  opacity: 1;
+}
+
 img {
   max-width: 100%;
   height: auto;
