@@ -1191,8 +1191,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const card = e.target.closest('.project-card, .cert-card, .stat-card, .tech-badge');
     if (card) {
       glow.style.background = 'radial-gradient(circle, rgba(88,166,255,0.13) 0%, rgba(88,166,255,0.05) 30%, transparent 70%)';
-      glow.style.width = '250px';
-      glow.style.height = '250px';
+      glow.style.width = '100px';
+      glow.style.height = '100px';
     }
   });
 
