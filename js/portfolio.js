@@ -136,7 +136,6 @@ async function loadProfile() {
   if (data.github_username) {
     loadGitHubData(data.github_username);
   }
-  buildTechStats();
 }
 
 // ============================================
@@ -806,28 +805,72 @@ function calcTimeSince(dateStr) {
 // GITHUB DATA & TECH STATS
 // ============================================
 
+// Languages to exclude (too basic / not meaningful)
+const EXCLUDE_LANGS = new Set(['HTML', 'CSS', 'Makefile', 'Dockerfile', 'Shell', 'Batchfile', 'SCSS', 'Less']);
+
+// Known language colors (GitHub style)
+const LANG_COLORS = {
+  'JavaScript': '#f1e05a',
+  'TypeScript': '#3178c6',
+  'Python': '#3572A5',
+  'Java': '#b07219',
+  'PHP': '#4F5D95',
+  'C#': '#178600',
+  'C++': '#f34b7d',
+  'C': '#555555',
+  'Ruby': '#701516',
+  'Go': '#00ADD8',
+  'Rust': '#dea584',
+  'Swift': '#F05138',
+  'Kotlin': '#A97BFF',
+  'Dart': '#00B4AB',
+  'Vue': '#41b883',
+  'Svelte': '#ff3e00',
+  'Lua': '#000080',
+  'R': '#198CE7',
+  'Elixir': '#6e4a7e',
+  'Scala': '#c22d40',
+};
+
 async function loadGitHubData(username) {
   const statsEl = document.getElementById('github-stats');
 
   try {
-    const userRes = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}`);
+    // Fetch user profile + repos in parallel
+    const [userRes, reposRes] = await Promise.all([
+      fetch(`https://api.github.com/users/${encodeURIComponent(username)}`),
+      fetch(`https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&sort=updated`),
+    ]);
+
     if (!userRes.ok) throw new Error('GitHub user not found');
     const user = await userRes.json();
+    const repos = reposRes.ok ? await reposRes.json() : [];
 
+    // Basic stats
     document.getElementById('gh-public-repos').textContent = user.public_repos || 0;
     document.getElementById('gh-followers').textContent = user.followers || 0;
 
-    let totalStars = 0;
-    try {
-      const reposRes = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&sort=stargazers_count`);
-      if (reposRes.ok) {
-        const repos = await reposRes.json();
-        totalStars = repos.reduce((sum, r) => sum + (r.stargazers_count || 0), 0);
-      }
-    } catch {}
+    const totalStars = repos.reduce((sum, r) => sum + (r.stargazers_count || 0), 0);
     document.getElementById('gh-stars').textContent = totalStars;
 
     statsEl.style.display = '';
+
+    // Commits per week (from contributions API)
+    try {
+      const contribRes = await fetch(`https://github-contributions-api.jogruber.de/v4/${encodeURIComponent(username)}?y=last`);
+      if (contribRes.ok) {
+        const contribData = await contribRes.json();
+        const contributions = contribData.contributions || [];
+        // Last 4 weeks average
+        const last28 = contributions.slice(-28);
+        const totalLast28 = last28.reduce((s, d) => s + d.count, 0);
+        const avgPerWeek = Math.round(totalLast28 / 4);
+        document.getElementById('gh-commits-week').textContent = avgPerWeek;
+      }
+    } catch {}
+
+    // Build tech stats from repo languages
+    buildTechStatsFromRepos(repos);
 
     // GitHub profile link
     const linkContainer = document.getElementById('gh-profile-link-container');
@@ -842,53 +885,44 @@ async function loadGitHubData(username) {
   }
 }
 
-async function buildTechStats() {
+function buildTechStatsFromRepos(repos) {
   const wrapper = document.getElementById('tech-stats-wrapper');
   const grid = document.getElementById('tech-stats-grid');
 
-  const { data: projects, error } = await supabase
-    .from('projects')
-    .select('technologies');
+  // Count repos per language (primary language)
+  const langCount = {};
+  let totalRepos = 0;
 
-  if (error || !projects || projects.length === 0) return;
-
-  // Count total projects for the stat card
-  document.getElementById('gh-total-projects').textContent = projects.length;
-
-  // Count tech usage across all projects
-  const techCount = {};
-  let totalTags = 0;
-  projects.forEach(p => {
-    (p.technologies || []).forEach(t => {
-      const name = t.trim();
-      if (!name) return;
-      techCount[name] = (techCount[name] || 0) + 1;
-      totalTags++;
-    });
+  repos.forEach(r => {
+    if (r.fork) return; // skip forks
+    const lang = r.language;
+    if (!lang || EXCLUDE_LANGS.has(lang)) return;
+    langCount[lang] = (langCount[lang] || 0) + 1;
+    totalRepos++;
   });
 
-  if (totalTags === 0) return;
+  if (totalRepos === 0) return;
 
-  // Sort by count descending, take top 10
-  const sorted = Object.entries(techCount)
+  // Sort by count descending
+  const sorted = Object.entries(langCount)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10);
 
   const maxCount = sorted[0][1];
 
-  // Color palette for tech bars
-  const colors = ['#58a6ff', '#39d353', '#f0883e', '#bc8cff', '#ff6b6b', '#79c0ff', '#56d4dd', '#e3b341', '#f778ba', '#8b949e'];
+  // Default colors fallback
+  const fallbackColors = ['#58a6ff', '#39d353', '#f0883e', '#bc8cff', '#ff6b6b', '#79c0ff', '#56d4dd', '#e3b341', '#f778ba', '#8b949e'];
 
-  grid.innerHTML = sorted.map(([tech, count], i) => {
-    const percent = Math.round((count / projects.length) * 100);
+  grid.innerHTML = sorted.map(([lang, count], i) => {
+    const percent = Math.round((count / repos.filter(r => !r.fork).length) * 100);
     const barWidth = Math.round((count / maxCount) * 100);
-    const color = colors[i % colors.length];
+    const color = LANG_COLORS[lang] || fallbackColors[i % fallbackColors.length];
 
     return `
       <div class="tech-stat-item">
         <div class="tech-stat-header">
-          <span class="tech-stat-name">${escapeHtml(tech)}</span>
-          <span class="tech-stat-info">${count} ${count === 1 ? 'projeto' : 'projetos'} · ${percent}%</span>
+          <span class="tech-stat-name">${escapeHtml(lang)}</span>
+          <span class="tech-stat-info">${count} ${count === 1 ? 'repo' : 'repos'} · ${percent}%</span>
         </div>
         <div class="tech-stat-bar">
           <div class="tech-stat-fill" style="width:${barWidth}%;background:${color}"></div>
