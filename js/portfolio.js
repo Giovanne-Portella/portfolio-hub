@@ -11,9 +11,186 @@ document.addEventListener('DOMContentLoaded', () => {
   setupModal();
   setupCollapsible();
   setupTypeInAnimation();
+  setupSplashScreen();
 
   document.getElementById('footer-year').textContent = new Date().getFullYear();
 });
+
+// ============================================
+// SPLASH SCREEN — Linux Terminal Boot
+// ============================================
+const splashBootLines = [
+  { status: 'ok',   text: 'Initializing system...' },
+  { status: 'ok',   text: 'Loading kernel modules...' },
+  { status: 'ok',   text: 'Mounting file system...' },
+  { status: 'ok',   text: 'Starting network daemon...' },
+  { status: 'ok',   text: 'Connecting to Supabase...' },
+  { status: 'ok',   text: 'Fetching portfolio data...' },
+  { status: 'ok',   text: 'Loading certificates...' },
+  { status: 'ok',   text: 'Loading projects...' },
+  { status: 'ok',   text: 'Compiling stylesheets...' },
+  { status: 'ok',   text: 'Rendering components...' },
+  { status: 'info', text: 'All systems operational.' },
+];
+
+const splashWelcomeMsg = 'Seja muito bem vindo ao meu cantinho profissional e acadêmico! Aqui você poderá acompanhar os meus projetos e novas qualificações na área da tecnologia!';
+
+let splashAudioCtx = null;
+
+function playKeystroke() {
+  if (!splashAudioCtx) return;
+  try {
+    const dur = 0.035 + Math.random() * 0.015;
+    const bufLen = Math.floor(splashAudioCtx.sampleRate * dur);
+    const buf = splashAudioCtx.createBuffer(1, bufLen, splashAudioCtx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufLen; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufLen, 4);
+    }
+    const src = splashAudioCtx.createBufferSource();
+    src.buffer = buf;
+    const gain = splashAudioCtx.createGain();
+    gain.gain.value = 0.06 + Math.random() * 0.03;
+    const filter = splashAudioCtx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 1800 + Math.random() * 1200;
+    filter.Q.value = 0.8;
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(splashAudioCtx.destination);
+    src.start();
+  } catch (_) {}
+}
+
+function setupSplashScreen() {
+  const overlay = document.getElementById('splash-overlay');
+  if (!overlay) return;
+
+  const body = document.getElementById('splash-body');
+  const hint = document.getElementById('splash-click-hint');
+  const prompt = document.getElementById('splash-prompt');
+
+  // Phase 0: Wait for user click to start (enables AudioContext)
+  const startBoot = () => {
+    overlay.removeEventListener('click', startBoot);
+    hint.style.display = 'none';
+
+    // Init AudioContext
+    try {
+      splashAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (splashAudioCtx.state === 'suspended') splashAudioCtx.resume();
+    } catch (_) {}
+
+    // Hide initial prompt cursor
+    const cursor = prompt.querySelector('.splash-cursor');
+    if (cursor) cursor.remove();
+
+    runBootSequence(body);
+  };
+
+  overlay.addEventListener('click', startBoot);
+}
+
+async function runBootSequence(body) {
+  // Phase 1: Boot lines with progress bar
+  const progressDiv = document.createElement('div');
+  progressDiv.innerHTML = `
+    <div class="splash-progress-container">
+      <div class="splash-progress-bar"><div class="splash-progress-fill" id="splash-fill"></div></div>
+      <span class="splash-progress-pct" id="splash-pct">0%</span>
+    </div>`;
+  body.appendChild(progressDiv);
+
+  const fill = document.getElementById('splash-fill');
+  const pct = document.getElementById('splash-pct');
+
+  for (let i = 0; i < splashBootLines.length; i++) {
+    const line = splashBootLines[i];
+    const el = document.createElement('div');
+    el.className = 'splash-boot-line';
+
+    let tag = '';
+    if (line.status === 'ok') tag = '<span class="splash-ok">[ OK ]</span>';
+    else if (line.status === 'fail') tag = '<span class="splash-fail">[FAIL]</span>';
+    else tag = '<span class="splash-info">[INFO]</span>';
+
+    el.innerHTML = `${tag} ${line.text}`;
+    body.insertBefore(el, progressDiv);
+
+    const progress = Math.round(((i + 1) / splashBootLines.length) * 100);
+    fill.style.width = progress + '%';
+    pct.textContent = progress + '%';
+
+    // Auto-scroll terminal body
+    body.scrollTop = body.scrollHeight;
+
+    await sleep(120 + Math.random() * 180);
+  }
+
+  await sleep(400);
+
+  // Phase 2: Welcome message typing
+  const welcomeEl = document.createElement('div');
+  welcomeEl.className = 'splash-welcome-text';
+  welcomeEl.innerHTML = '<span class="splash-welcome-cursor">█</span>';
+  body.appendChild(welcomeEl);
+  body.scrollTop = body.scrollHeight;
+
+  await sleep(300);
+
+  let typed = '';
+  for (let i = 0; i < splashWelcomeMsg.length; i++) {
+    typed += splashWelcomeMsg[i];
+    welcomeEl.innerHTML = typed + '<span class="splash-welcome-cursor">█</span>';
+    playKeystroke();
+    body.scrollTop = body.scrollHeight;
+    await sleep(25 + Math.random() * 20);
+  }
+
+  // Remove cursor
+  await sleep(200);
+  welcomeEl.textContent = splashWelcomeMsg;
+
+  // Phase 3: Show "Prosseguir" button
+  const btnDiv = document.createElement('div');
+  btnDiv.className = 'splash-btn-container';
+  btnDiv.innerHTML = '<button class="splash-btn" id="splash-proceed">▸ Prosseguir</button>';
+  body.appendChild(btnDiv);
+  body.scrollTop = body.scrollHeight;
+
+  document.getElementById('splash-proceed').addEventListener('click', (e) => {
+    e.stopPropagation();
+    dismissSplash();
+  });
+}
+
+function dismissSplash() {
+  const overlay = document.getElementById('splash-overlay');
+  overlay.classList.add('dismissed');
+
+  // Reveal site content
+  document.body.classList.remove('site-loading');
+  document.body.classList.add('site-loaded');
+
+  // Clean up audio context
+  if (splashAudioCtx) {
+    splashAudioCtx.close().catch(() => {});
+    splashAudioCtx = null;
+  }
+
+  // Start music playback — the click qualifies as user gesture
+  if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+    ytPlayer.playVideo();
+  }
+  document.getElementById('music-player').classList.add('visible');
+
+  // Remove overlay from DOM after transition
+  setTimeout(() => overlay.remove(), 1000);
+}
+
+function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
 
 // ============================================
 // NAVBAR
@@ -1158,20 +1335,22 @@ window.onYouTubeIframeAPIReady = () => {
 };
 
 function onYTPlayerReady() {
-  // Autoplay on first user interaction
-  const tryAutoplay = () => {
-    if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
-      ytPlayer.playVideo();
-    }
-    document.removeEventListener('click', tryAutoplay);
-    document.removeEventListener('scroll', tryAutoplay);
-    document.removeEventListener('keydown', tryAutoplay);
-  };
-  document.addEventListener('click', tryAutoplay, { once: false });
-  document.addEventListener('scroll', tryAutoplay, { once: false });
-  document.addEventListener('keydown', tryAutoplay, { once: false });
-
-  document.getElementById('music-player').classList.add('visible');
+  // Music will start when splash screen is dismissed (dismissSplash calls playVideo)
+  // If splash is already gone (e.g. returning visit), show player and let user control
+  if (!document.getElementById('splash-overlay')) {
+    document.getElementById('music-player').classList.add('visible');
+    const tryAutoplay = () => {
+      if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+        ytPlayer.playVideo();
+      }
+      document.removeEventListener('click', tryAutoplay);
+      document.removeEventListener('scroll', tryAutoplay);
+      document.removeEventListener('keydown', tryAutoplay);
+    };
+    document.addEventListener('click', tryAutoplay, { once: false });
+    document.addEventListener('scroll', tryAutoplay, { once: false });
+    document.addEventListener('keydown', tryAutoplay, { once: false });
+  }
 }
 
 function onYTStateChange(event) {

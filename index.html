@@ -20,9 +20,29 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="css/style.css?v=22">
+  <link rel="stylesheet" href="css/style.css?v=23">
 </head>
-<body>
+<body class="site-loading">
+
+  <!-- SPLASH SCREEN -->
+  <div class="splash-overlay" id="splash-overlay">
+    <div class="splash-terminal">
+      <div class="splash-terminal-header">
+        <div class="splash-terminal-dots">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+        </div>
+        <span class="splash-terminal-title">guest@portfolio:~</span>
+      </div>
+      <div class="splash-terminal-body" id="splash-body">
+        <div class="splash-prompt" id="splash-prompt">
+          <span class="splash-user">guest@portfolio</span>:<span class="splash-path">~</span>$ <span class="splash-cmd">./welcome.sh</span><span class="splash-cursor blink">█</span>
+        </div>
+      </div>
+      <div class="splash-click-hint" id="splash-click-hint">[ Clique para iniciar ]</div>
+    </div>
+  </div>
 
   <!-- NAVBAR -->
   <nav class="navbar" id="navbar">
@@ -330,6 +350,6 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   </script>
   <script src="js/config.js"></script>
-  <script src="js/portfolio.js?v=12"></script>
+  <script src="js/portfolio.js?v=13"></script>
 </body>
 </html>
