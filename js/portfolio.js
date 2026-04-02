@@ -1033,6 +1033,100 @@ async function buildTechBadges(repos) {
 }
 
 // ============================================
+// MUSIC REACTOR — Simulated frequency-reactive visuals
+// ============================================
+const musicReactor = {
+  active: false,
+  rafId: null,
+  el: null,
+  bassEl: null,
+  midEl: null,
+  trebleEl: null,
+  t: 0,
+  // Smoothed values for organic feel
+  bassSmooth: 0,
+  midSmooth: 0,
+  trebleSmooth: 0,
+
+  init() {
+    this.el = document.getElementById('music-reactor');
+    if (!this.el) return;
+    this.bassEl = this.el.querySelector('.reactor-bass');
+    this.midEl = this.el.querySelector('.reactor-mid');
+    this.trebleEl = this.el.querySelector('.reactor-treble');
+  },
+
+  start() {
+    if (!this.el) this.init();
+    if (!this.el) return;
+    this.active = true;
+    this.el.classList.add('active');
+    this.t = performance.now() / 1000;
+    this.loop();
+  },
+
+  stop() {
+    this.active = false;
+    if (this.el) this.el.classList.remove('active');
+    if (this.rafId) cancelAnimationFrame(this.rafId);
+    this.rafId = null;
+  },
+
+  loop() {
+    if (!this.active) return;
+    const now = performance.now() / 1000;
+    const dt = now - this.t;
+    this.t = now;
+
+    // Simulated frequency bands using layered sine waves + noise
+    // Bass: slow, powerful pulses (0.8-2 Hz)
+    const bass = Math.max(0,
+      0.35 * Math.sin(now * 1.2) +
+      0.25 * Math.sin(now * 1.8 + 0.7) +
+      0.15 * Math.sin(now * 0.6 + 2.1) +
+      0.1 * Math.sin(now * 3.5) +
+      0.15 * (Math.random() * 0.3)
+    );
+
+    // Mids: medium rhythm (2-5 Hz)
+    const mid = Math.max(0,
+      0.3 * Math.sin(now * 2.8 + 1.0) +
+      0.25 * Math.sin(now * 3.6 + 0.3) +
+      0.2 * Math.sin(now * 1.5 + 1.8) +
+      0.1 * Math.sin(now * 5.2) +
+      0.15 * (Math.random() * 0.25)
+    );
+
+    // Treble: fast shimmer (5-12 Hz)
+    const treble = Math.max(0,
+      0.25 * Math.sin(now * 7.0 + 0.5) +
+      0.2 * Math.sin(now * 9.3 + 1.2) +
+      0.2 * Math.sin(now * 5.5 + 2.8) +
+      0.15 * Math.sin(now * 12.0) +
+      0.2 * (Math.random() * 0.2)
+    );
+
+    // Smooth with exponential decay for organic feel
+    const lerp = 0.12;
+    this.bassSmooth += (bass - this.bassSmooth) * lerp;
+    this.midSmooth += (mid - this.midSmooth) * (lerp * 1.5);
+    this.trebleSmooth += (treble - this.trebleSmooth) * (lerp * 2.5);
+
+    // Clamp to max intensity (keep it subtle)
+    const bVal = Math.min(this.bassSmooth * 0.18, 0.12);
+    const mVal = Math.min(this.midSmooth * 0.14, 0.08);
+    const tVal = Math.min(this.trebleSmooth * 0.12, 0.06);
+
+    // Apply via inline style (faster than CSS variables on the root)
+    this.bassEl.style.opacity = bVal;
+    this.midEl.style.opacity = mVal;
+    this.trebleEl.style.opacity = tVal;
+
+    this.rafId = requestAnimationFrame(() => this.loop());
+  }
+};
+
+// ============================================
 // YOUTUBE FLOATING PLAYER
 // ============================================
 const YT_TRACKS = [
@@ -1102,9 +1196,11 @@ function onYTStateChange(event) {
     ytIsPlaying = true;
     updateMusicIcon();
     showMusicToast(ytCurrentTrack.name);
+    musicReactor.start();
   } else if (!playing && ytIsPlaying) {
     ytIsPlaying = false;
     updateMusicIcon();
+    musicReactor.stop();
   }
 
   // When track ends, play a different random track
