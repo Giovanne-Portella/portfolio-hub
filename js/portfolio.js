@@ -171,7 +171,6 @@ async function loadSocialLinks() {
 let allCategories = [];
 let allCerts = [];
 let activeCategoryId = null;
-let activeSwiperInstance = null;
 
 async function loadCertificates() {
   const sidebar = document.getElementById('cert-sidebar');
@@ -258,12 +257,6 @@ function selectCategory(categoryId) {
   placeholder.style.display = 'none';
   content.style.display = '';
 
-  // Destroy previous Swiper instance
-  if (activeSwiperInstance) {
-    activeSwiperInstance.destroy(true, true);
-    activeSwiperInstance = null;
-  }
-
   if (categoryCerts.length === 0) {
     content.innerHTML = `
       <div class="cert-main-header">
@@ -276,43 +269,15 @@ function selectCategory(categoryId) {
     return;
   }
 
-  const swiperID = `swiper-active`;
-
   content.innerHTML = `
     <div class="cert-main-header">
       <h3>${escapeHtml(category.name)}</h3>
       ${category.description ? `<p>${escapeHtml(category.description)}</p>` : ''}
     </div>
-    <div class="cert-carousel-wrapper">
-      <div class="swiper" id="${swiperID}">
-        <div class="swiper-wrapper">
-          ${categoryCerts.map(cert => createCertCard(cert)).join('')}
-        </div>
-        <div class="swiper-pagination"></div>
-      </div>
-      <div class="swiper-button-prev swiper-prev-active"></div>
-      <div class="swiper-button-next swiper-next-active"></div>
+    <div class="cert-grid">
+      ${categoryCerts.map(cert => createCertCard(cert)).join('')}
     </div>
   `;
-
-  // Initialize Swiper
-  activeSwiperInstance = new Swiper(`#${swiperID}`, {
-    slidesPerView: 1,
-    spaceBetween: 16,
-    pagination: {
-      el: `#${swiperID} .swiper-pagination`,
-      clickable: true,
-    },
-    navigation: {
-      nextEl: `.swiper-next-active`,
-      prevEl: `.swiper-prev-active`,
-    },
-    breakpoints: {
-      480: { slidesPerView: 2 },
-      768: { slidesPerView: 2 },
-      1024: { slidesPerView: 3 },
-    },
-  });
 
   // Render PDF thumbnails
   renderPdfThumbnails();
@@ -341,7 +306,6 @@ function createCertCard(cert) {
   }
 
   return `
-    <div class="swiper-slide">
       <div class="cert-card" 
            id="cert-${cert.id}"
            data-cert-id="${escapeAttr(cert.id)}"
@@ -363,7 +327,6 @@ function createCertCard(cert) {
           <i class="fas fa-link"></i>
         </button>
       </div>
-    </div>
   `;
 }
 
