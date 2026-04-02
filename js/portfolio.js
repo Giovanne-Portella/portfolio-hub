@@ -299,6 +299,8 @@ function selectCategory(categoryId) {
   activeSwiperInstance = new Swiper(`#${swiperID}`, {
     slidesPerView: 1,
     spaceBetween: 16,
+    observer: true,
+    observeParents: true,
     pagination: {
       el: `#${swiperID} .swiper-pagination`,
       clickable: true,
@@ -314,8 +316,10 @@ function selectCategory(categoryId) {
     },
   });
 
-  // Render PDF thumbnails
-  renderPdfThumbnails();
+  // Render PDF thumbnails then update swiper
+  renderPdfThumbnails().then(() => {
+    if (activeSwiperInstance) activeSwiperInstance.update();
+  });
 }
 
 function createCertCard(cert) {
