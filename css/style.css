@@ -51,30 +51,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Cursor Glow */
-.cursor-glow {
-  position: fixed;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
-    circle,
-    rgba(88, 166, 255, 0.07) 0%,
-    rgba(88, 166, 255, 0.03) 30%,
-    transparent 70%
-  );
-  transition: opacity 0.4s ease;
-  will-change: left, top;
-}
-
-body:hover .cursor-glow {
-  opacity: 1;
-}
-
 img {
   max-width: 100%;
   height: auto;
