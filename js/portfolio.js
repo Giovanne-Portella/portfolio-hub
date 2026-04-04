@@ -456,6 +456,7 @@ async function loadCertificates() {
       <div class="cert-sidebar-info">
         <span class="cert-sidebar-name">${escapeHtml(category.name)}</span>
         ${category.description ? `<span class="cert-sidebar-desc">${escapeHtml(category.description)}</span>` : ''}
+        <span class="cert-sidebar-more">Ver mais</span>
         <span class="cert-sidebar-count">${completedCount} de ${totalCount} concluídos${totalHours > 0 ? ` • ${totalHours}h` : ''}</span>
       </div>
       <div class="cert-sidebar-progress">
@@ -490,26 +491,59 @@ function setupCertSidebarScroll() {
   const sidebar = document.getElementById('cert-sidebar');
   if (!sidebar || window.innerWidth > 768) return;
 
+  // Detect text overflow and add "Ver mais" toggle
+  sidebar.querySelectorAll('.cert-sidebar-item').forEach(item => {
+    const nameEl = item.querySelector('.cert-sidebar-name');
+    const descEl = item.querySelector('.cert-sidebar-desc');
+    const moreEl = item.querySelector('.cert-sidebar-more');
+
+    requestAnimationFrame(() => {
+      const nameOverflows = nameEl && nameEl.scrollHeight > nameEl.clientHeight + 1;
+      const descOverflows = descEl && descEl.scrollHeight > descEl.clientHeight + 1;
+
+      if (nameOverflows || descOverflows) {
+        item.classList.add('has-overflow');
+      }
+    });
+
+    if (moreEl) {
+      moreEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isExpanded = item.classList.toggle('expanded');
+        moreEl.textContent = isExpanded ? 'Ver menos' : 'Ver mais';
+      });
+    }
+  });
+
   if (!sidebar.parentElement.classList.contains('cert-sidebar-wrapper')) {
     const wrapper = document.createElement('div');
     wrapper.className = 'cert-sidebar-wrapper';
     sidebar.parentElement.insertBefore(wrapper, sidebar);
     wrapper.appendChild(sidebar);
 
-    // Floating arrow on the right edge
-    const arrow = document.createElement('div');
-    arrow.className = 'cert-scroll-arrow';
-    arrow.innerHTML = '<i class="fas fa-chevron-right"></i>';
-    wrapper.appendChild(arrow);
+    // Right arrow
+    const arrowRight = document.createElement('div');
+    arrowRight.className = 'cert-scroll-arrow';
+    arrowRight.innerHTML = '<i class="fas fa-chevron-right"></i>';
+    wrapper.appendChild(arrowRight);
 
-    const updateArrow = () => {
+    // Left arrow
+    const arrowLeft = document.createElement('div');
+    arrowLeft.className = 'cert-scroll-arrow-left hidden';
+    arrowLeft.innerHTML = '<i class="fas fa-chevron-left"></i>';
+    wrapper.appendChild(arrowLeft);
+
+    const updateArrows = () => {
       const maxScroll = sidebar.scrollWidth - sidebar.clientWidth;
-      // Hide arrow when scrolled to end or no overflow
-      arrow.classList.toggle('hidden', sidebar.scrollLeft >= maxScroll - 10 || maxScroll <= 0);
+      const scrollPos = sidebar.scrollLeft;
+      // Right arrow: hide when at end or no overflow
+      arrowRight.classList.toggle('hidden', scrollPos >= maxScroll - 10 || maxScroll <= 0);
+      // Left arrow: hide when at start
+      arrowLeft.classList.toggle('hidden', scrollPos <= 10);
     };
 
-    sidebar.addEventListener('scroll', updateArrow, { passive: true });
-    requestAnimationFrame(() => requestAnimationFrame(updateArrow));
+    sidebar.addEventListener('scroll', updateArrows, { passive: true });
+    requestAnimationFrame(() => requestAnimationFrame(updateArrows));
   }
 }
 

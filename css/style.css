@@ -1845,6 +1845,7 @@ iframe.modal-image {
     gap: 8px;
     padding-bottom: 8px;
     padding-right: 40px;
+    padding-left: 40px;
     -webkit-overflow-scrolling: touch;
     position: relative;
     scroll-snap-type: x mandatory;
@@ -1856,47 +1857,120 @@ iframe.modal-image {
   }
 
   .cert-sidebar-item {
-    min-width: 220px;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    height: 110px;
     flex-shrink: 0;
     scroll-snap-align: start;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 12px;
   }
 
-  /* Float scroll arrow on the right edge */
+  .cert-sidebar-name {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cert-sidebar-desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cert-sidebar-item.expanded .cert-sidebar-name,
+  .cert-sidebar-item.expanded .cert-sidebar-desc {
+    -webkit-line-clamp: unset;
+  }
+
+  .cert-sidebar-item.expanded {
+    height: auto;
+    min-height: 110px;
+  }
+
+  .cert-sidebar-more {
+    font-size: 0.7rem;
+    color: var(--primary);
+    cursor: pointer;
+    margin-top: 2px;
+    display: none;
+  }
+
+  .cert-sidebar-more:hover {
+    text-decoration: underline;
+  }
+
+  .cert-sidebar-item.has-overflow .cert-sidebar-more {
+    display: inline-block;
+  }
+
+  /* Float scroll arrows */
   .cert-sidebar-wrapper {
     position: relative;
     min-width: 0;
     overflow: hidden;
   }
 
-  .cert-scroll-arrow {
+  .cert-scroll-arrow,
+  .cert-scroll-arrow-left {
     position: absolute;
-    right: 0;
     top: 0;
     bottom: 8px;
     width: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(to left, #010409 40%, transparent);
     z-index: 3;
     pointer-events: none;
     transition: opacity 0.3s ease;
   }
 
-  .cert-scroll-arrow i {
+  .cert-scroll-arrow {
+    right: 0;
+    background: linear-gradient(to left, #010409 40%, transparent);
+  }
+
+  .cert-scroll-arrow-left {
+    left: 0;
+    background: linear-gradient(to right, #010409 40%, transparent);
+  }
+
+  .cert-scroll-arrow i,
+  .cert-scroll-arrow-left i {
     color: var(--primary);
     font-size: 1rem;
-    animation: scrollArrowBounce 1.2s ease-in-out infinite;
     filter: drop-shadow(0 0 4px rgba(88, 166, 255, 0.4));
   }
 
-  .cert-scroll-arrow.hidden {
+  .cert-scroll-arrow i {
+    animation: scrollArrowBounceRight 1.2s ease-in-out infinite;
+  }
+
+  .cert-scroll-arrow-left i {
+    animation: scrollArrowBounceLeft 1.2s ease-in-out infinite;
+  }
+
+  .cert-scroll-arrow.hidden,
+  .cert-scroll-arrow-left.hidden {
     opacity: 0;
   }
 
-  @keyframes scrollArrowBounce {
+  @keyframes scrollArrowBounceRight {
     0%, 100% { transform: translateX(0); }
     50% { transform: translateX(5px); }
+  }
+
+  @keyframes scrollArrowBounceLeft {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-5px); }
   }
 
   .cert-main-placeholder {
