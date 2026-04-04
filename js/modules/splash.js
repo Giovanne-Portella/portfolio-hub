@@ -206,23 +206,11 @@ function dismissSplash() {
     splashAudioCtx = null;
   }
 
-  // Start music playback â€” the click qualifies as user gesture
-  // On return splash (auto-dismiss), there's no user gesture, so set up fallback
+  // Start music — "Prosseguir" click is a valid user gesture for YouTube autoplay
   if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
     ytPlayer.playVideo();
   }
   document.getElementById('music-player').classList.add('visible');
-
-  // Fallback: if playVideo didn't work (no gesture), play on first interaction
-  if (!ytIsPlaying) {
-    const tryPlay = () => {
-      if (ytPlayer && typeof ytPlayer.playVideo === 'function') ytPlayer.playVideo();
-      document.removeEventListener('click', tryPlay);
-      document.removeEventListener('scroll', tryPlay);
-    };
-    document.addEventListener('click', tryPlay, { once: true });
-    document.addEventListener('scroll', tryPlay, { once: true });
-  }
 
   // Remove overlay from DOM after transition
   setTimeout(() => overlay.remove(), 1000);
