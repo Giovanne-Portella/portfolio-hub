@@ -108,7 +108,7 @@ window.deleteSocial = async function(id) {
   if (error) {
     showToast('Erro ao excluir', true);
   } else {
-    showToast('ExcluÃ­do com sucesso!');
+    showToast('Excluído com sucesso!');
     loadSocialLinks();
   }
 };

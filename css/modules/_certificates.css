@@ -65,6 +65,10 @@
   line-height: 1.4;
 }
 
+.cert-sidebar-more {
+  display: none;
+}
+
 .cert-sidebar-count {
   font-size: 0.75rem;
   color: var(--text-muted);

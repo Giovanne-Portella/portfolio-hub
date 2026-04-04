@@ -55,7 +55,7 @@ async function loadCertificates() {
         <span class="cert-sidebar-name">${escapeHtml(category.name)}</span>
         ${category.description ? `<span class="cert-sidebar-desc">${escapeHtml(category.description)}</span>` : ''}
         <span class="cert-sidebar-more">Ver mais</span>
-        <span class="cert-sidebar-count">${completedCount} de ${totalCount} concluÃ­dos${totalHours > 0 ? ` â€¢ ${totalHours}h` : ''}</span>
+        <span class="cert-sidebar-count">${completedCount} de ${totalCount} concluídos${totalHours > 0 ? ` • ${totalHours}h` : ''}</span>
       </div>
       <div class="cert-sidebar-progress">
         <div class="cert-sidebar-progress-bar" style="width: ${progress}%"></div>
@@ -69,7 +69,7 @@ async function loadCertificates() {
   const certTotalHours = allCerts.reduce((sum, c) => sum + (c.hours || 0), 0);
   const certTitle = document.getElementById('cert-section-title');
   if (certTitle) {
-    certTitle.textContent = certTotalHours > 0 ? `Certificados â€¢ ${certTotalHours}h` : 'Certificados';
+    certTitle.textContent = certTotalHours > 0 ? `Certificados • ${certTotalHours}h` : 'Certificados';
   }
 
   // Re-attach collapsible handlers

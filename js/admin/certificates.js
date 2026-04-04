@@ -27,7 +27,7 @@ async function loadCertificates(filterCategoryId) {
   container.innerHTML = data.map(cert => {
     const catName = cert.certificate_categories?.name || 'Sem categoria';
     const statusBadge = cert.completed
-      ? '<span class="item-badge badge-completed"><i class="fas fa-check"></i> ConcluÃ­do</span>'
+      ? '<span class="item-badge badge-completed"><i class="fas fa-check"></i> Concluído</span>'
       : `<span class="item-badge badge-progress">${cert.progress}%</span>`;
 
     return `
@@ -194,7 +194,7 @@ async function extractHoursFromPdf(pdf) {
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const textContent = await page.getTextContent();
-    // Join without separator â€” PDF.js items often include their own spacing
+    // Join without separator — PDF.js items often include their own spacing
     // Then normalize whitespace to avoid split characters like "8 0" â†’ "80"
     const pageText = textContent.items.map(item => item.str).join('');
     fullText += ' ' + pageText;
@@ -296,7 +296,7 @@ window.deleteCert = async function(id) {
   if (error) {
     showToast('Erro ao excluir', true);
   } else {
-    showToast('Certificado excluÃ­do!');
+    showToast('Certificado excluído!');
     loadCertificates();
   }
 };

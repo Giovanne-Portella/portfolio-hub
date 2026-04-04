@@ -51,10 +51,10 @@ function calcTimeSince(dateStr) {
 
   const parts = [];
   if (years > 0) parts.push(`${years} ano${years > 1 ? 's' : ''}`);
-  if (months > 0) parts.push(`${months} ${months > 1 ? 'meses' : 'mÃªs'}`);
-  if (parts.length === 0) parts.push('Menos de 1 mÃªs');
+  if (months > 0) parts.push(`${months} ${months > 1 ? 'meses' : 'mês'}`);
+  if (parts.length === 0) parts.push('Menos de 1 mês');
 
   const formatted = start.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
-  return `${formatted} â€” presente Â· ${parts.join(' e ')}`;
+  return `${formatted} — presente · ${parts.join(' e ')}`;
 }
 

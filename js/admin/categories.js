@@ -30,7 +30,7 @@ async function loadCategories() {
       <div class="item-info">
         <div class="item-name">${esc(cat.name)}</div>
         <div class="item-meta">
-          ${cat.description ? `<span>${esc(cat.description.substring(0, 80))}${cat.description.length > 80 ? '...' : ''}</span>` : '<span>Sem descriÃ§Ã£o</span>'}
+          ${cat.description ? `<span>${esc(cat.description.substring(0, 80))}${cat.description.length > 80 ? '...' : ''}</span>` : '<span>Sem descrição</span>'}
           <span>Ordem: ${cat.display_order}</span>
         </div>
       </div>
@@ -106,12 +106,12 @@ window.editCategory = async function(id) {
 };
 
 window.deleteCategory = async function(id) {
-  if (!confirm('Excluir esta categoria? Todos os certificados desta categoria tambÃ©m serÃ£o excluÃ­dos.')) return;
+  if (!confirm('Excluir esta categoria? Todos os certificados desta categoria também serão excluídos.')) return;
   const { error } = await supabase.from('certificate_categories').delete().eq('id', id);
   if (error) {
     showToast('Erro ao excluir', true);
   } else {
-    showToast('Categoria excluÃ­da!');
+    showToast('Categoria excluída!');
     loadCategories();
     loadCertificates();
   }

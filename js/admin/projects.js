@@ -185,7 +185,7 @@ window.deleteProject = async function(id) {
   if (error) {
     showToast('Erro ao excluir', true);
   } else {
-    showToast('Projeto excluÃ­do!');
+    showToast('Projeto excluído!');
     loadProjects();
   }
 };

@@ -22,7 +22,7 @@ async function loadProjects() {
   const projTotalHours = data.reduce((sum, p) => sum + (p.hours || 0), 0);
   const projTitle = document.getElementById('proj-section-title');
   if (projTitle) {
-    projTitle.textContent = projTotalHours > 0 ? `Projetos â€¢ ${projTotalHours}h` : 'Projetos';
+    projTitle.textContent = projTotalHours > 0 ? `Projetos • ${projTotalHours}h` : 'Projetos';
   }
 
   container.innerHTML = data.map(project => {

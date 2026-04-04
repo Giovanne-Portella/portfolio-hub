@@ -102,7 +102,7 @@ window.deleteProjectFile = async function(fileId, certId) {
   if (error) {
     showToast('Erro ao excluir arquivo', true);
   } else {
-    showToast('Arquivo excluÃ­do!');
+    showToast('Arquivo excluído!');
     loadCertProjectFiles(certId);
   }
 };

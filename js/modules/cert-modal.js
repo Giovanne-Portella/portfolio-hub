@@ -32,11 +32,11 @@ function setupModal() {
 
     document.getElementById('modal-cert-name').textContent = name || '';
     document.getElementById('modal-cert-issuer').textContent = issuer || '';
-    document.getElementById('modal-cert-date').textContent = date ? `ConcluÃ­do em ${date}` : '';
+    document.getElementById('modal-cert-date').textContent = date ? `Concluído em ${date}` : '';
 
     const hoursEl = document.getElementById('modal-cert-hours');
     if (hours) {
-      hoursEl.innerHTML = `<i class="fas fa-clock"></i> ${hours}h de carga horÃ¡ria`;
+      hoursEl.innerHTML = `<i class="fas fa-clock"></i> ${hours}h de carga horária`;
       hoursEl.style.display = '';
     } else {
       hoursEl.style.display = 'none';

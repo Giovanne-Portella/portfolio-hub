@@ -1,5 +1,5 @@
 ﻿// ============================================
-// MUSIC REACTOR â€” Reactive ambient glow
+// MUSIC REACTOR — Reactive ambient glow
 // ============================================
 const musicReactor = {
   active: false,
@@ -69,7 +69,7 @@ const musicReactor = {
     this.midSmooth += (mid - this.midSmooth) * 0.12;
     this.trebleSmooth += (treble - this.trebleSmooth) * 0.18;
 
-    // Glow â€” more visible intensities
+    // Glow — more visible intensities
     this.glowBass.style.opacity = Math.min(this.bassSmooth * 0.9, 0.65);
     this.glowMid.style.opacity = Math.min(this.midSmooth * 0.7, 0.5);
     this.glowTreble.style.opacity = Math.min(this.trebleSmooth * 0.55, 0.4);
@@ -82,7 +82,7 @@ const musicReactor = {
 // YOUTUBE FLOATING PLAYER
 // ============================================
 const YT_TRACKS = [
-  { id: 'W-IzDrJRTo8', name: 'in your arms â€” mr kitty (slowed & reverb)' },
+  { id: 'W-IzDrJRTo8', name: 'in your arms — mr kitty (slowed & reverb)' },
   { id: 'AHWUez2Tdpk', name: 'Gemini - Time To Share' },
   { id: 'c9P9kkcEcdc', name: 'Mr. Kitty - 44 days' },
   { id: 'SO4GCctPi4U', name: 'Wicked Game | Synthwave Dark Cover' },

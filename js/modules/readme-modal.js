@@ -25,7 +25,7 @@ async function openReadme(githubUrl, projectTitle) {
       headers: { 'Accept': 'application/vnd.github.v3.raw' }
     });
 
-    if (!res.ok) throw new Error('README nÃ£o encontrado');
+    if (!res.ok) throw new Error('README não encontrado');
     const markdown = await res.text();
 
     // Configure marked for safe rendering

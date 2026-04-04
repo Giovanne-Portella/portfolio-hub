@@ -15,7 +15,7 @@ const splashBootLines = [
   { status: 'info', text: 'All systems operational.' },
 ];
 
-const splashWelcomeMsg = 'Seja muito bem vindo ao meu cantinho profissional e acadÃªmico! Aqui vocÃª poderÃ¡ acompanhar os meus projetos e novas qualificaÃ§Ãµes na Ã¡rea da tecnologia!';
+const splashWelcomeMsg = 'Seja muito bem vindo ao meu cantinho profissional e acadêmico! Aqui você poderá acompanhar os meus projetos e novas qualificações na área da tecnologia!';
 
 let splashAudioCtx = null;
 
