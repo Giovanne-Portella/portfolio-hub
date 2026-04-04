@@ -13,7 +13,7 @@
 }
 
 .type-in.typing::after {
-  content: 'â–Œ';
+  content: '▌';
   animation: blink 0.7s step-end infinite;
   color: var(--accent);
   font-weight: 400;
