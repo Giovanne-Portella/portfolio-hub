@@ -1832,7 +1832,7 @@ iframe.modal-image {
   }
 
   .cert-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .cert-layout {
@@ -1844,6 +1844,7 @@ iframe.modal-image {
     overflow-x: auto;
     gap: 8px;
     padding-bottom: 8px;
+    padding-right: 40px;
     -webkit-overflow-scrolling: touch;
     position: relative;
     scroll-snap-type: x mandatory;
@@ -1855,62 +1856,45 @@ iframe.modal-image {
   }
 
   .cert-sidebar-item {
-    min-width: 180px;
+    min-width: 220px;
     flex-shrink: 0;
     scroll-snap-align: start;
   }
 
-  /* Scroll fade indicators wrapper */
-  .cert-layout .cert-sidebar-wrapper {
+  /* Float scroll arrow on the right edge */
+  .cert-sidebar-wrapper {
     position: relative;
   }
 
-  .cert-layout .cert-sidebar-wrapper::before,
-  .cert-layout .cert-sidebar-wrapper::after {
-    content: '';
+  .cert-scroll-arrow {
     position: absolute;
+    right: 0;
     top: 0;
     bottom: 8px;
-    width: 32px;
-    z-index: 2;
+    width: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to left, #010409 40%, transparent);
+    z-index: 3;
     pointer-events: none;
     transition: opacity 0.3s ease;
   }
 
-  .cert-layout .cert-sidebar-wrapper::before {
-    left: 0;
-    background: linear-gradient(to right, #010409, transparent);
+  .cert-scroll-arrow i {
+    color: var(--primary);
+    font-size: 1rem;
+    animation: scrollArrowBounce 1.2s ease-in-out infinite;
+    filter: drop-shadow(0 0 4px rgba(88, 166, 255, 0.4));
+  }
+
+  .cert-scroll-arrow.hidden {
     opacity: 0;
   }
 
-  .cert-layout .cert-sidebar-wrapper.scrolled-start::before {
-    opacity: 1;
-  }
-
-  .cert-layout .cert-sidebar-wrapper::after {
-    right: 0;
-    background: linear-gradient(to left, #010409, transparent);
-    opacity: 1;
-  }
-
-  .cert-layout .cert-sidebar-wrapper.scrolled-end::after {
-    opacity: 0;
-  }
-
-  /* Swipe hint arrow */
-  .cert-scroll-hint {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    padding: 4px 0 0;
-    animation: hintPulse 2s ease-in-out infinite;
-  }
-
-  .cert-scroll-hint i {
-    font-size: 0.65rem;
+  @keyframes scrollArrowBounce {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
   }
 
   .cert-main-placeholder {
@@ -2082,6 +2066,10 @@ iframe.modal-image {
 
   .cert-info {
     padding: 12px;
+  }
+
+  .cert-image-wrapper {
+    padding-top: 60%;
   }
 
   .cert-name {

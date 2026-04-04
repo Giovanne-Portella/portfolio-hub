@@ -490,30 +490,26 @@ function setupCertSidebarScroll() {
   const sidebar = document.getElementById('cert-sidebar');
   if (!sidebar || window.innerWidth > 768) return;
 
-  // Wrap sidebar in a wrapper div for gradient overlays
   if (!sidebar.parentElement.classList.contains('cert-sidebar-wrapper')) {
     const wrapper = document.createElement('div');
     wrapper.className = 'cert-sidebar-wrapper';
     sidebar.parentElement.insertBefore(wrapper, sidebar);
     wrapper.appendChild(sidebar);
 
-    // Add swipe hint below
-    const hint = document.createElement('div');
-    hint.className = 'cert-scroll-hint';
-    hint.innerHTML = '<i class="fas fa-chevron-left"></i> deslize para ver mais <i class="fas fa-chevron-right"></i>';
-    wrapper.appendChild(hint);
+    // Floating arrow on the right edge
+    const arrow = document.createElement('div');
+    arrow.className = 'cert-scroll-arrow';
+    arrow.innerHTML = '<i class="fas fa-chevron-right"></i>';
+    wrapper.appendChild(arrow);
 
-    const updateFades = () => {
-      const sl = sidebar.scrollLeft;
+    const updateArrow = () => {
       const maxScroll = sidebar.scrollWidth - sidebar.clientWidth;
-      wrapper.classList.toggle('scrolled-start', sl > 10);
-      wrapper.classList.toggle('scrolled-end', sl >= maxScroll - 10);
-      // Hide hint after first scroll
-      if (sl > 5) hint.style.display = 'none';
+      // Hide arrow when scrolled to end or no overflow
+      arrow.classList.toggle('hidden', sidebar.scrollLeft >= maxScroll - 10 || maxScroll <= 0);
     };
 
-    sidebar.addEventListener('scroll', updateFades, { passive: true });
-    updateFades();
+    sidebar.addEventListener('scroll', updateArrow, { passive: true });
+    updateArrow();
   }
 }
 
