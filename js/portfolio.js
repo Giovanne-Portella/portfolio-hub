@@ -509,7 +509,7 @@ function setupCertSidebarScroll() {
     };
 
     sidebar.addEventListener('scroll', updateArrow, { passive: true });
-    updateArrow();
+    requestAnimationFrame(() => requestAnimationFrame(updateArrow));
   }
 }
 

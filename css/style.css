@@ -1864,6 +1864,8 @@ iframe.modal-image {
   /* Float scroll arrow on the right edge */
   .cert-sidebar-wrapper {
     position: relative;
+    min-width: 0;
+    overflow: hidden;
   }
 
   .cert-scroll-arrow {
