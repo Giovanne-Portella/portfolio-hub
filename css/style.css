@@ -1845,11 +1845,72 @@ iframe.modal-image {
     gap: 8px;
     padding-bottom: 8px;
     -webkit-overflow-scrolling: touch;
+    position: relative;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .cert-sidebar::-webkit-scrollbar {
+    display: none;
   }
 
   .cert-sidebar-item {
     min-width: 180px;
     flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+
+  /* Scroll fade indicators wrapper */
+  .cert-layout .cert-sidebar-wrapper {
+    position: relative;
+  }
+
+  .cert-layout .cert-sidebar-wrapper::before,
+  .cert-layout .cert-sidebar-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 8px;
+    width: 32px;
+    z-index: 2;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .cert-layout .cert-sidebar-wrapper::before {
+    left: 0;
+    background: linear-gradient(to right, #010409, transparent);
+    opacity: 0;
+  }
+
+  .cert-layout .cert-sidebar-wrapper.scrolled-start::before {
+    opacity: 1;
+  }
+
+  .cert-layout .cert-sidebar-wrapper::after {
+    right: 0;
+    background: linear-gradient(to left, #010409, transparent);
+    opacity: 1;
+  }
+
+  .cert-layout .cert-sidebar-wrapper.scrolled-end::after {
+    opacity: 0;
+  }
+
+  /* Swipe hint arrow */
+  .cert-scroll-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    padding: 4px 0 0;
+    animation: hintPulse 2s ease-in-out infinite;
+  }
+
+  .cert-scroll-hint i {
+    font-size: 0.65rem;
   }
 
   .cert-main-placeholder {
@@ -2431,6 +2492,19 @@ iframe.modal-image {
   cursor: pointer;
 }
 
+.splash-click-hint .hint-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .splash-click-hint .hint-desktop {
+    display: none;
+  }
+  .splash-click-hint .hint-mobile {
+    display: inline;
+  }
+}
+
 @keyframes hintPulse {
   0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
@@ -2558,6 +2632,7 @@ iframe.modal-image {
     border-radius: 0;
     max-height: 100vh;
     height: 100vh;
+    height: 100dvh;
     border: none;
   }
   .splash-overlay {
@@ -2569,6 +2644,9 @@ iframe.modal-image {
     max-height: none;
     flex: 1;
     line-height: 1.8;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   .splash-terminal-header {
     padding: 10px 14px;
@@ -2590,8 +2668,9 @@ iframe.modal-image {
     width: 100%;
   }
   .splash-click-hint {
-    font-size: 0.75rem;
-    padding: 10px;
+    font-size: 0.85rem;
+    padding: 16px 10px;
+    padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
   }
   .splash-progress-container {
     margin: 10px 0;

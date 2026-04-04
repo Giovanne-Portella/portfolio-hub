@@ -479,8 +479,42 @@ async function loadCertificates() {
   // Re-observe type-in elements (setupCollapsible clones headers, removing observers)
   setupTypeInAnimation();
 
+  // Setup mobile scroll indicators for sidebar
+  setupCertSidebarScroll();
+
   // Handle deep link to specific certificate
   handleCertDeepLink();
+}
+
+function setupCertSidebarScroll() {
+  const sidebar = document.getElementById('cert-sidebar');
+  if (!sidebar || window.innerWidth > 768) return;
+
+  // Wrap sidebar in a wrapper div for gradient overlays
+  if (!sidebar.parentElement.classList.contains('cert-sidebar-wrapper')) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'cert-sidebar-wrapper';
+    sidebar.parentElement.insertBefore(wrapper, sidebar);
+    wrapper.appendChild(sidebar);
+
+    // Add swipe hint below
+    const hint = document.createElement('div');
+    hint.className = 'cert-scroll-hint';
+    hint.innerHTML = '<i class="fas fa-chevron-left"></i> deslize para ver mais <i class="fas fa-chevron-right"></i>';
+    wrapper.appendChild(hint);
+
+    const updateFades = () => {
+      const sl = sidebar.scrollLeft;
+      const maxScroll = sidebar.scrollWidth - sidebar.clientWidth;
+      wrapper.classList.toggle('scrolled-start', sl > 10);
+      wrapper.classList.toggle('scrolled-end', sl >= maxScroll - 10);
+      // Hide hint after first scroll
+      if (sl > 5) hint.style.display = 'none';
+    };
+
+    sidebar.addEventListener('scroll', updateFades, { passive: true });
+    updateFades();
+  }
 }
 
 function selectCategory(categoryId) {

@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="css/style.css?v=25">
+  <link rel="stylesheet" href="css/style.css?v=26">
 </head>
 <body class="site-loading">
 
@@ -40,7 +40,10 @@
           <span class="splash-user">guest@portfolio</span>:<span class="splash-path">~</span>$ <span class="splash-cmd">./welcome.sh</span><span class="splash-cursor blink">█</span>
         </div>
       </div>
-      <div class="splash-click-hint" id="splash-click-hint">[ Clique para iniciar ]</div>
+      <div class="splash-click-hint" id="splash-click-hint">
+        <span class="hint-desktop">[ Clique para iniciar ]</span>
+        <span class="hint-mobile">[ Toque para iniciar ]</span>
+      </div>
     </div>
   </div>
 
@@ -350,6 +353,6 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   </script>
   <script src="js/config.js"></script>
-  <script src="js/portfolio.js?v=15"></script>
+  <script src="js/portfolio.js?v=16"></script>
 </body>
 </html>
