@@ -535,11 +535,11 @@ function setupCertSidebarScroll() {
 
     const updateArrows = () => {
       const maxScroll = sidebar.scrollWidth - sidebar.clientWidth;
-      const scrollPos = sidebar.scrollLeft;
-      // Right arrow: hide when at end or no overflow
-      arrowRight.classList.toggle('hidden', scrollPos >= maxScroll - 10 || maxScroll <= 0);
-      // Left arrow: hide when at start
-      arrowLeft.classList.toggle('hidden', scrollPos <= 10);
+      const atEnd = sidebar.scrollLeft >= maxScroll - 10;
+      const noOverflow = maxScroll <= 0;
+      // Only one arrow at a time: right until end, then left
+      arrowRight.classList.toggle('hidden', atEnd || noOverflow);
+      arrowLeft.classList.toggle('hidden', !atEnd || noOverflow);
     };
 
     sidebar.addEventListener('scroll', updateArrows, { passive: true });
