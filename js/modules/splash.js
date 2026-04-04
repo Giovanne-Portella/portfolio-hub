@@ -102,7 +102,7 @@ function runReturnSplash(overlay) {
 
   function typeChar() {
     if (i < msg.length) {
-      welcomeEl.innerHTML = msg.substring(0, i + 1) + '<span class="splash-welcome-cursor">â–ˆ</span>';
+      welcomeEl.innerHTML = msg.substring(0, i + 1) + '<span class="splash-welcome-cursor">█</span>';
       i++;
       setTimeout(typeChar, 35 + Math.random() * 25);
     } else {
@@ -157,7 +157,7 @@ async function runBootSequence(body) {
   // Phase 2: Welcome message typing
   const welcomeEl = document.createElement('div');
   welcomeEl.className = 'splash-welcome-text';
-  welcomeEl.innerHTML = '<span class="splash-welcome-cursor">â–ˆ</span>';
+  welcomeEl.innerHTML = '<span class="splash-welcome-cursor">█</span>';
   body.appendChild(welcomeEl);
   body.scrollTop = body.scrollHeight;
 
@@ -166,7 +166,7 @@ async function runBootSequence(body) {
   let typed = '';
   for (let i = 0; i < splashWelcomeMsg.length; i++) {
     typed += splashWelcomeMsg[i];
-    welcomeEl.innerHTML = typed + '<span class="splash-welcome-cursor">â–ˆ</span>';
+    welcomeEl.innerHTML = typed + '<span class="splash-welcome-cursor">█</span>';
     playKeystroke();
     body.scrollTop = body.scrollHeight;
     await sleep(25 + Math.random() * 20);
@@ -179,7 +179,7 @@ async function runBootSequence(body) {
   // Phase 3: Show "Prosseguir" button
   const btnDiv = document.createElement('div');
   btnDiv.className = 'splash-btn-container';
-  btnDiv.innerHTML = '<button class="splash-btn" id="splash-proceed">â–¸ Prosseguir</button>';
+  btnDiv.innerHTML = '<button class="splash-btn" id="splash-proceed">▸ Prosseguir</button>';
   body.appendChild(btnDiv);
   body.scrollTop = body.scrollHeight;
 
