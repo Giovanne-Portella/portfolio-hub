@@ -9,7 +9,7 @@ async function openReadme(githubUrl, projectTitle) {
   // Extract owner/repo from github URL
   const match = githubUrl.match(/github\.com\/([^/]+)\/([^/\s?#]+)/);
   if (!match) {
-    body.innerHTML = '<p class="readme-error">URL do GitHub invÃ¡lida.</p>';
+    body.innerHTML = '<p class="readme-error">URL do GitHub inválida.</p>';
     overlay.classList.add('active');
     return;
   }

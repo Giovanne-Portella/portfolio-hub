@@ -1,5 +1,5 @@
 ﻿// ============================================
-// SPLASH SCREEN â€” Linux Terminal Boot
+// SPLASH SCREEN — Linux Terminal Boot
 // ============================================
 const splashBootLines = [
   { status: 'ok',   text: 'Initializing system...' },
@@ -51,10 +51,10 @@ function setupSplashScreen() {
   const hasVisited = localStorage.getItem('portfolio_visited');
 
   if (hasVisited) {
-    // Return visit â€” quick welcome back, auto-dismiss
+    // Return visit — quick welcome back, auto-dismiss
     runReturnSplash(overlay);
   } else {
-    // First visit â€” full boot sequence
+    // First visit — full boot sequence
     runFirstVisitSplash(overlay);
   }
 }

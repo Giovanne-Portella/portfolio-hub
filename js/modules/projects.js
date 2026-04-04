@@ -37,7 +37,7 @@ async function loadProjects() {
     const linksHtml = [];
     if (project.github_url) {
       linksHtml.push(`<a href="${escapeAttr(project.github_url)}" target="_blank" rel="noopener noreferrer" class="project-link">
-        <i class="fab fa-github"></i> CÃ³digo
+        <i class="fab fa-github"></i> Código
       </a>`);
       linksHtml.push(`<button class="project-link readme-link" onclick="openReadme('${escapeAttr(project.github_url)}', '${escapeAttr(project.title)}')">
         <i class="fas fa-book-open"></i> README
