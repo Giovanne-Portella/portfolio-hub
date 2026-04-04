@@ -1,0 +1,29 @@
+﻿/* ============================================
+   Portfolio - Main Stylesheet
+   ============================================ */
+
+:root {
+  --primary: #58a6ff;
+  --primary-dark: #388bfd;
+  --primary-light: #79c0ff;
+  --secondary: #e6edf3;
+  --accent: #3fb950;
+  --accent-dark: #2ea043;
+  --bg: #0d1117;
+  --bg-alt: #161b22;
+  --card-bg: #161b22;
+  --text: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --border: #30363d;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -1px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5), 0 4px 6px -2px rgba(0,0,0,0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.5), 0 10px 10px -5px rgba(0,0,0,0.3);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --glow-primary: 0 0 20px rgba(88, 166, 255, 0.15);
+  --glow-accent: 0 0 20px rgba(63, 185, 80, 0.15);
+}
+

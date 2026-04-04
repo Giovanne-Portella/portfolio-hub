@@ -1,0 +1,39 @@
+﻿/* ============================================
+   FOOTER
+   ============================================ */
+.footer {
+  background: #010409;
+  color: var(--text);
+  padding: 60px 0 24px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 24px;
+}
+
+.footer-info h3 {
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+}
+
+.footer-info p {
+  color: rgba(255,255,255,0.6);
+}
+
+.footer-social {
+  display: flex;
+  gap: 12px;
+}
+
+.footer-bottom {
+  text-align: center;
+  color: rgba(255,255,255,0.4);
+  font-size: 0.85rem;
+}
+

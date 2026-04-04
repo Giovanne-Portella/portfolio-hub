@@ -19,19 +19,78 @@ Portfolio/
 │   ├── index.html          # Painel admin (CRUD completo)
 │   └── login.html          # Tela de login Supabase Auth
 ├── css/
-│   ├── style.css           # Estilos públicos (~2600 linhas)
-│   └── admin.css           # Estilos do admin
+│   ├── style.css           # Manifesto @import — carrega css/modules/*
+│   ├── admin.css           # Manifesto @import — carrega css/admin/*
+│   ├── modules/            # Módulos CSS da página pública (18 arquivos)
+│   │   ├── _variables.css  # Design tokens (:root)
+│   │   ├── _base.css       # Reset e elementos base
+│   │   ├── _buttons.css    # Botões
+│   │   ├── _navbar.css     # Navbar
+│   │   ├── _hero.css       # Seção hero
+│   │   ├── _sections.css   # Seções genéricas
+│   │   ├── _about.css      # Sobre mim
+│   │   ├── _certificates.css # Certificados + sidebar
+│   │   ├── _projects.css   # Projetos
+│   │   ├── _readme-modal.css # README viewer modal
+│   │   ├── _footer.css     # Rodapé
+│   │   ├── _cert-modal.css # Modal de certificado
+│   │   ├── _ui.css         # Toast, spinner, collapsible
+│   │   ├── _animations.css # Type-in e keyframes
+│   │   ├── _github.css     # GitHub stats e badges
+│   │   ├── _responsive.css # Todas as media queries (antes de music/splash)
+│   │   ├── _music.css      # Player de música
+│   │   └── _splash.css     # Splash screen terminal
+│   └── admin/              # Módulos CSS do admin (6 arquivos)
+│       ├── _variables-base.css
+│       ├── _sidebar.css
+│       ├── _content.css
+│       ├── _forms.css
+│       ├── _components.css
+│       └── _responsive.css
 ├── js/
 │   ├── config.js           # SUPABASE_URL + SUPABASE_ANON_KEY
-│   ├── portfolio.js        # Toda lógica pública (~1300 linhas)
-│   ├── admin.js            # CRUD do painel admin
-│   └── auth.js             # Guard de autenticação
+│   ├── portfolio.js        # Entry point público — chama init functions no DOMContentLoaded
+│   ├── admin.js            # Entry point admin — chama init functions no DOMContentLoaded
+│   ├── auth.js             # Guard de autenticação
+│   ├── modules/            # Módulos JS da página pública (13 arquivos)
+│   │   ├── utils.js        # slugify, escapeHtml, escapeAttr, calcTimeSince
+│   │   ├── splash.js       # Splash screen boot sequence + áudio
+│   │   ├── navbar.js       # setupNavbar()
+│   │   ├── profile.js      # loadProfile()
+│   │   ├── social.js       # loadSocialLinks()
+│   │   ├── certificates.js # loadCertificates(), sidebar, PDF thumbnails
+│   │   ├── collapsible.js  # setupCollapsible()
+│   │   ├── cert-modal.js   # setupModal(), loadCertProjectFiles()
+│   │   ├── projects.js     # loadProjects()
+│   │   ├── readme-modal.js # openReadme(), closeReadmeModal()
+│   │   ├── animations.js   # setupTypeInAnimation()
+│   │   ├── github.js       # loadGitHubData(), LANG_COLORS, badges
+│   │   └── music.js        # YouTube player, musicReactor, YT_TRACKS
+│   └── admin/              # Módulos JS do admin (7 arquivos)
+│       ├── core.js         # Navegação, modais, toast, uploadFile()
+│       ├── profile.js      # loadProfile(), setupProfileForm()
+│       ├── social.js       # loadSocialLinks(), setupSocialForm()
+│       ├── categories.js   # loadCategories(), updateCategoryDropdowns()
+│       ├── certificates.js # loadCertificates(), setupCertificateForm()
+│       ├── cert-files.js   # setupCertProjectFiles(), loadCertProjectFiles()
+│       └── projects.js     # loadProjects(), setupProjectForm()
 ├── supabase-schema.sql     # Schema DDL (tabelas + RLS + storage)
 ├── supabase-migration.sql  # Migrações adicionais
 ├── netlify.toml            # Headers de segurança + redirects
 ├── favicon.svg
 └── README.md
 ```
+
+### Convenção de Módulos CSS
+- Arquivos em `css/modules/` e `css/admin/` prefixados com `_` (convenção SCSS, sem build tool)
+- `style.css` e `admin.css` são manifestos puros de `@import` — **não adicionar estilos diretamente neles**
+- A ordem dos imports em `style.css` é intencional: `_responsive.css` deve vir **antes** de `_music.css` e `_splash.css` para preservar a cascata original
+
+### Convenção de Módulos JS
+- JS usa `<script>` tags ordenadas (sem ES modules / type="module")
+- Todas as variáveis `let`/`const` de nível superior e funções são acessíveis globalmente pelos scripts carregados depois
+- `portfolio.js` e `admin.js` são **apenas entry points** — contêm somente o `DOMContentLoaded` que chama funções definidas nos módulos
+- `utils.js` deve ser carregado **primeiro** (funções utilitárias usadas por todos os outros módulos)
 
 ---
 

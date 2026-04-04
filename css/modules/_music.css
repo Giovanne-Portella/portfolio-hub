@@ -1,0 +1,173 @@
+﻿/* ============================================
+   MUSIC FLOATING PLAYER (YouTube)
+   ============================================ */
+.music-player {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1500;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.music-player.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.music-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(22, 27, 34, 0.95);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 8px 16px 8px 12px;
+  box-shadow: var(--shadow-lg);
+}
+
+.music-track-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.music-icon {
+  font-size: 1.3rem;
+  color: #ff6b6b;
+  flex-shrink: 0;
+}
+
+.music-track-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.music-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #ff6b6b;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.music-btn:hover {
+  background: #ff8787;
+  transform: scale(1.1);
+}
+
+/* Music toast */
+.music-toast {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  background: rgba(22, 27, 34, 0.95);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  color: var(--text);
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  z-index: 10001;
+  opacity: 0;
+  transform: translateX(100px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  box-shadow: 0 4px 16px rgba(255, 107, 107, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.music-toast i {
+  color: #ff6b6b;
+  font-size: 1.2rem;
+}
+
+.music-toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (max-width: 480px) {
+  .music-player {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+  }
+
+  .music-controls {
+    width: 100%;
+  }
+
+  .music-track-name {
+    max-width: none;
+    flex: 1;
+  }
+
+  .music-toast {
+    right: 16px;
+    left: 16px;
+    top: 70px;
+  }
+}
+
+/* ============================================
+   MUSIC REACTOR â€” Reactive ambient glow
+   ============================================ */
+.music-reactor {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+.music-reactor.active {
+  opacity: 1;
+}
+
+/* Ambient glow layers */
+.reactor-glow {
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.08s linear;
+}
+
+.reactor-glow-bass {
+  background: radial-gradient(ellipse 140% 50% at 50% 110%, rgba(255, 120, 50, 0.4) 0%, transparent 60%);
+  opacity: 0;
+}
+
+.reactor-glow-mid {
+  background:
+    radial-gradient(ellipse 40% 80% at -5% 50%, rgba(160, 80, 255, 0.35) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 80% at 105% 50%, rgba(160, 80, 255, 0.35) 0%, transparent 60%);
+  opacity: 0;
+}
+
+.reactor-glow-treble {
+  background: radial-gradient(ellipse 100% 40% at 50% -5%, rgba(80, 200, 255, 0.3) 0%, transparent 50%);
+  opacity: 0;
+}
+

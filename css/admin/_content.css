@@ -1,0 +1,41 @@
+﻿/* ============================================
+   MAIN CONTENT
+   ============================================ */
+.main-content {
+  margin-left: var(--sidebar-width);
+  padding: 40px;
+  min-height: 100vh;
+}
+
+.admin-section {
+  display: none;
+  max-width: 900px;
+}
+
+.admin-section.active {
+  display: block;
+}
+
+.section-top {
+  margin-bottom: 32px;
+}
+
+.section-top h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-top h2 i {
+  color: var(--primary);
+}
+
+.section-top p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+

@@ -116,17 +116,65 @@ Portfolio/
 │   └── login.html              # 🔑 Tela de login
 │
 ├── css/
-│   ├── style.css               # 🎨 Estilos da página pública
-│   └── admin.css               # 🎨 Estilos do painel admin
+│   ├── style.css               # 🎨 Manifesto de imports (público)
+│   ├── admin.css               # 🎨 Manifesto de imports (admin)
+│   ├── modules/                # 📦 Módulos CSS da página pública
+│   │   ├── _variables.css      #    Variáveis CSS (design tokens)
+│   │   ├── _base.css           #    Reset e elementos base
+│   │   ├── _buttons.css        #    Componentes de botão
+│   │   ├── _navbar.css         #    Barra de navegação
+│   │   ├── _hero.css           #    Seção hero
+│   │   ├── _sections.css       #    Seções genéricas
+│   │   ├── _about.css          #    Seção "Sobre mim"
+│   │   ├── _certificates.css   #    Certificados e sidebar
+│   │   ├── _projects.css       #    Cards de projetos
+│   │   ├── _readme-modal.css   #    Modal README viewer
+│   │   ├── _footer.css         #    Rodapé
+│   │   ├── _cert-modal.css     #    Modal de certificado
+│   │   ├── _ui.css             #    Componentes UI (toast, spinner...)
+│   │   ├── _animations.css     #    Animações type-in
+│   │   ├── _github.css         #    Stats GitHub e badges
+│   │   ├── _responsive.css     #    Todas as media queries
+│   │   ├── _music.css          #    Player de música
+│   │   └── _splash.css         #    Splash screen terminal
+│   └── admin/                  # 📦 Módulos CSS do painel admin
+│       ├── _variables-base.css #    Variáveis e reset
+│       ├── _sidebar.css        #    Sidebar + mobile header
+│       ├── _content.css        #    Área de conteúdo principal
+│       ├── _forms.css          #    Formulários e botões
+│       ├── _components.css     #    Modais, toast, listas
+│       └── _responsive.css     #    Responsividade do admin
 │
 ├── js/
-│   ├── config.js               # ⚙️ Credenciais do Supabase
-│   ├── portfolio.js            # 📄 Lógica da página pública + splash + music
-│   ├── auth.js                 # 🛡️ Guard de autenticação
-│   └── admin.js                # 🔧 CRUD do painel admin
+│   ├── config.js               # ⚙️  Credenciais do Supabase
+│   ├── portfolio.js            # 📄 Entry point da página pública
+│   ├── auth.js                 # 🛡️  Guard de autenticação
+│   ├── admin.js                # 🔧 Entry point do painel admin
+│   ├── modules/                # 📦 Módulos JS públicos
+│   │   ├── utils.js            #    slugify, escapeHtml, calcTimeSince
+│   │   ├── splash.js           #    Splash screen boot sequence
+│   │   ├── navbar.js           #    Barra de navegação
+│   │   ├── profile.js          #    Seção de perfil
+│   │   ├── social.js           #    Redes sociais
+│   │   ├── certificates.js     #    Certificados, sidebar, PDF thumbnails
+│   │   ├── collapsible.js      #    Seções colapsáveis
+│   │   ├── cert-modal.js       #    Modal de certificado
+│   │   ├── projects.js         #    Cards de projetos
+│   │   ├── readme-modal.js     #    README viewer modal
+│   │   ├── animations.js       #    Animação type-in
+│   │   ├── github.js           #    Dados GitHub e badges
+│   │   └── music.js            #    Player YouTube e music reactor
+│   └── admin/                  # 📦 Módulos JS do admin
+│       ├── core.js             #    Navegação, modais, toast, upload
+│       ├── profile.js          #    CRUD de perfil
+│       ├── social.js           #    CRUD de redes sociais
+│       ├── categories.js       #    CRUD de categorias
+│       ├── certificates.js     #    CRUD de certificados + PDF
+│       ├── cert-files.js       #    Arquivos complementares
+│       └── projects.js         #    CRUD de projetos
 │
 ├── supabase-schema.sql         # 🗄️ Schema SQL (tabelas + RLS + storage)
-├── netlify.toml                # ☁️ Configuração do Netlify
+├── netlify.toml                # ☁️  Configuração do Netlify
 └── README.md                   # 📖 Documentação
 ```
 

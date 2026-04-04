@@ -1,0 +1,47 @@
+﻿/* ============================================
+   TERMINAL TYPING ANIMATION
+   ============================================ */
+.type-in {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.type-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.type-in.typing::after {
+  content: 'â–Œ';
+  animation: blink 0.7s step-end infinite;
+  color: var(--accent);
+  font-weight: 400;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ============================================
+   INFO SUB / WHATSAPP LINK
+   ============================================ */
+.info-sub {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.info-link {
+  color: var(--primary) !important;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.info-link:hover {
+  color: var(--primary-light) !important;
+  text-decoration: underline;
+}
+

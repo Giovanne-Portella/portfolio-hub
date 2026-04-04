@@ -1,0 +1,67 @@
+﻿/* ============================================
+   ABOUT SECTION
+   ============================================ */
+.about-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.about-bio {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+
+.about-bio p {
+  white-space: pre-line;
+}
+
+.info-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  transition: var(--transition);
+}
+
+.info-card:hover {
+  border-color: var(--primary-dark);
+  box-shadow: var(--shadow-md), var(--glow-primary);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+}
+
+.info-item:not(:last-child) {
+  border-bottom: 1px solid var(--border);
+}
+
+.info-item i {
+  font-size: 1.2rem;
+  color: var(--primary);
+  width: 24px;
+  text-align: center;
+}
+
+.info-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.info-value {
+  display: block;
+  font-weight: 500;
+  color: var(--text);
+}
+

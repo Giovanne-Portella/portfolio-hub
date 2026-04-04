@@ -1,0 +1,330 @@
+﻿/* ============================================
+   SPLASH SCREEN â€” Linux Terminal Boot
+   ============================================ */
+.site-loading .navbar,
+.site-loading .hero,
+.site-loading .section,
+.site-loading .footer,
+.site-loading .music-player,
+.site-loading .music-reactor {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.site-loaded .navbar,
+.site-loaded .hero,
+.site-loaded .section,
+.site-loaded .footer,
+.site-loaded .music-player {
+  animation: splashFadeIn 1s ease forwards;
+}
+
+@keyframes splashFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.splash-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #0a0a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.splash-overlay.dismissed {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.splash-terminal {
+  width: 90%;
+  max-width: 720px;
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-xl), 0 0 60px rgba(88, 166, 255, 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+}
+
+.splash-terminal-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+
+.splash-terminal-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.splash-terminal-dots .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.splash-terminal-dots .dot.red { background: #ff5f56; }
+.splash-terminal-dots .dot.yellow { background: #ffbd2e; }
+.splash-terminal-dots .dot.green { background: #27c93f; }
+
+.splash-terminal-title {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.splash-terminal-body {
+  padding: 20px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--text);
+  overflow-y: auto;
+  flex: 1;
+  min-height: 200px;
+  max-height: calc(85vh - 120px);
+}
+
+.splash-prompt .splash-user {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.splash-prompt .splash-path {
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.splash-prompt .splash-cmd {
+  color: var(--text);
+}
+
+.splash-cursor {
+  color: var(--accent);
+}
+
+.splash-cursor.blink {
+  animation: cursorBlink 1s step-end infinite;
+}
+
+@keyframes cursorBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.splash-click-hint {
+  text-align: center;
+  padding: 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  animation: hintPulse 2s ease-in-out infinite;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.splash-click-hint .hint-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .splash-click-hint .hint-desktop {
+    display: none;
+  }
+  .splash-click-hint .hint-mobile {
+    display: inline;
+  }
+}
+
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.splash-boot-line {
+  margin: 2px 0;
+  opacity: 0;
+  animation: bootLineIn 0.15s ease forwards;
+}
+
+@keyframes bootLineIn {
+  to { opacity: 1; }
+}
+
+.splash-boot-line .splash-ok {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.splash-boot-line .splash-fail {
+  color: #f85149;
+  font-weight: bold;
+}
+
+.splash-boot-line .splash-info {
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.splash-progress-container {
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.splash-progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.splash-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--primary));
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.splash-progress-pct {
+  color: var(--accent);
+  font-weight: bold;
+  min-width: 40px;
+  text-align: right;
+}
+
+.splash-welcome-text {
+  margin-top: 16px;
+  color: var(--primary-light);
+  line-height: 1.8;
+  font-size: 0.9rem;
+  min-height: 1.5em;
+}
+
+.splash-welcome-cursor {
+  color: var(--accent);
+  animation: cursorBlink 0.6s step-end infinite;
+}
+
+.splash-btn-container {
+  text-align: center;
+  margin-top: 20px;
+  opacity: 0;
+  animation: splashBtnIn 0.6s ease forwards;
+}
+
+@keyframes splashBtnIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.splash-btn {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--bg);
+  background: var(--accent);
+  border: none;
+  padding: 10px 32px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  letter-spacing: 0.5px;
+}
+
+.splash-btn:hover {
+  background: var(--accent-dark);
+  box-shadow: 0 0 20px rgba(63, 185, 80, 0.3);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .splash-terminal {
+    width: 95%;
+    max-width: none;
+    max-height: 90vh;
+  }
+  .splash-terminal-body {
+    font-size: 0.8rem;
+    padding: 16px;
+    max-height: calc(90vh - 110px);
+  }
+  .splash-welcome-text {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .splash-terminal {
+    width: 100%;
+    border-radius: 0;
+    max-height: 100vh;
+    height: 100vh;
+    height: 100dvh;
+    border: none;
+  }
+  .splash-overlay {
+    align-items: stretch;
+  }
+  .splash-terminal-body {
+    font-size: 0.73rem;
+    padding: 12px;
+    max-height: none;
+    flex: 1;
+    line-height: 1.8;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .splash-terminal-header {
+    padding: 10px 14px;
+  }
+  .splash-terminal-dots .dot {
+    width: 10px;
+    height: 10px;
+  }
+  .splash-terminal-title {
+    font-size: 0.7rem;
+  }
+  .splash-welcome-text {
+    font-size: 0.78rem;
+    line-height: 1.7;
+  }
+  .splash-btn {
+    padding: 12px 28px;
+    font-size: 0.85rem;
+    width: 100%;
+  }
+  .splash-click-hint {
+    font-size: 0.85rem;
+    padding: 16px 10px;
+    padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  }
+  .splash-progress-container {
+    margin: 10px 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .splash-terminal-body {
+    font-size: 0.68rem;
+    padding: 10px;
+  }
+  .splash-welcome-text {
+    font-size: 0.72rem;
+  }
+}
