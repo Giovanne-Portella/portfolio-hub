@@ -69,7 +69,13 @@ async function loadCertificates() {
   const certTotalHours = allCerts.reduce((sum, c) => sum + (c.hours || 0), 0);
   const certTitle = document.getElementById('cert-section-title');
   if (certTitle) {
-    certTitle.textContent = certTotalHours > 0 ? `Certificados • ${certTotalHours}h` : 'Certificados';
+    const newCertTitle = certTotalHours > 0 ? `Certificados • ${certTotalHours}h` : 'Certificados';
+    // If type-in animation is mid-flight, update the target it's reading from
+    if (certTitle.classList.contains('typing')) {
+      certTitle.dataset.typeTarget = newCertTitle;
+    } else {
+      certTitle.textContent = newCertTitle;
+    }
   }
 
   // Re-attach collapsible handlers

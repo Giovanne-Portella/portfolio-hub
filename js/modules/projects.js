@@ -22,7 +22,13 @@ async function loadProjects() {
   const projTotalHours = data.reduce((sum, p) => sum + (p.hours || 0), 0);
   const projTitle = document.getElementById('proj-section-title');
   if (projTitle) {
-    projTitle.textContent = projTotalHours > 0 ? `Projetos • ${projTotalHours}h` : 'Projetos';
+    const newProjTitle = projTotalHours > 0 ? `Projetos • ${projTotalHours}h` : 'Projetos';
+    // If type-in animation is mid-flight, update the target it's reading from
+    if (projTitle.classList.contains('typing')) {
+      projTitle.dataset.typeTarget = newProjTitle;
+    } else {
+      projTitle.textContent = newProjTitle;
+    }
   }
 
   container.innerHTML = data.map(project => {
