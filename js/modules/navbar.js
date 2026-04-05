@@ -14,6 +14,16 @@ function setupNavbar() {
     link.addEventListener('click', () => menu.classList.remove('active'));
   });
 
+  // Brand click: scroll to top and clear URL params/hash
+  const brand = document.querySelector('.navbar-brand');
+  if (brand) {
+    brand.addEventListener('click', (e) => {
+      e.preventDefault();
+      history.replaceState(null, '', '/');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
   // Navbar scroll effect
   window.addEventListener('scroll', () => {
     const navbar = document.getElementById('navbar');
