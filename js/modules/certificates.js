@@ -174,17 +174,19 @@ function selectCategory(categoryId) {
     return;
   }
 
+  const hasPdfs = categoryCerts.some(c => c.image_url && c.image_url.toLowerCase().endsWith('.pdf'));
+
   content.innerHTML = `
     <div class="cert-main-header">
       <h3>${escapeHtml(category.name)}</h3>
       ${category.description ? `<p>${escapeHtml(category.description)}</p>` : ''}
     </div>
-    <div class="cert-grid">
+    <div class="cert-grid${hasPdfs ? ' cert-grid-hidden' : ''}">
       ${categoryCerts.map(cert => createCertCard(cert)).join('')}
     </div>
   `;
 
-  // Render PDF thumbnails
+  // Render PDF thumbnails (reveals grid when done)
   renderPdfThumbnails();
 }
 
@@ -238,22 +240,56 @@ function createCertCard(cert) {
 }
 
 // ============================================
-// PDF THUMBNAIL RENDERING
+// PDF THUMBNAIL RENDERING — parallel with progress bar
 // ============================================
 async function renderPdfThumbnails() {
-  const canvases = document.querySelectorAll('.cert-pdf-thumb');
-  for (const canvas of canvases) {
+  const canvases = Array.from(document.querySelectorAll('.cert-pdf-thumb'));
+  const certGrid = document.querySelector('.cert-grid');
+
+  if (canvases.length === 0 || !certGrid) return;
+
+  const total = canvases.length;
+  let done = 0;
+
+  // Insert Linux-style loading overlay before the grid
+  const overlay = document.createElement('div');
+  overlay.className = 'cert-loading-overlay';
+  overlay.innerHTML = `
+    <div class="cert-loading-label">
+      <span class="cert-loading-prompt">$</span>
+      Renderizando certificados PDF...<span class="cert-loading-cursor"></span>
+    </div>
+    <div class="cert-loading-bar-row">
+      <div class="cert-loading-track">
+        <div class="cert-loading-fill" id="cert-loading-fill"></div>
+      </div>
+      <span class="cert-loading-pct" id="cert-loading-pct">0%</span>
+      <span class="cert-loading-count" id="cert-loading-count">0 / ${total}</span>
+    </div>
+  `;
+  certGrid.parentElement.insertBefore(overlay, certGrid);
+
+  function updateProgress() {
+    done++;
+    const pct = Math.round((done / total) * 100);
+    const fill = document.getElementById('cert-loading-fill');
+    const pctEl = document.getElementById('cert-loading-pct');
+    const countEl = document.getElementById('cert-loading-count');
+    if (fill) fill.style.width = pct + '%';
+    if (pctEl) pctEl.textContent = pct + '%';
+    if (countEl) countEl.textContent = `${done} / ${total}`;
+  }
+
+  async function renderOne(canvas) {
     const pdfUrl = canvas.dataset.pdfUrl;
-    if (!pdfUrl) continue;
+    if (!pdfUrl) { updateProgress(); return; }
     try {
-      // Get wrapper dimensions to set canvas size before rendering
       const wrapper = canvas.closest('.cert-image-wrapper');
       const rect = wrapper.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
 
       const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
       const page = await pdf.getPage(1);
-      // Scale to fit wrapper size at device pixel ratio
       const naturalViewport = page.getViewport({ scale: 1 });
       const scale = (rect.width * dpr) / naturalViewport.width;
       const viewport = page.getViewport({ scale });
@@ -272,7 +308,18 @@ async function renderPdfThumbnails() {
       placeholder.innerHTML = '<i class="fas fa-file-pdf" style="color:#e74c3c"></i>';
       canvas.parentElement.insertBefore(placeholder, canvas);
     }
+    updateProgress();
   }
+
+  // Render all PDFs in parallel
+  await Promise.allSettled(canvases.map(renderOne));
+
+  // Let 100% register visually before revealing
+  await new Promise(r => setTimeout(r, 300));
+
+  overlay.remove();
+  certGrid.classList.remove('cert-grid-hidden');
+  certGrid.classList.add('cert-grid-reveal');
 }
 
 // ============================================
