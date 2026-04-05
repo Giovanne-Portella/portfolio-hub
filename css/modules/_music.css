@@ -18,29 +18,96 @@
   pointer-events: auto;
 }
 
+/* -- Controls pill -- */
 .music-controls {
   display: flex;
   align-items: center;
-  gap: 12px;
   background: rgba(22, 27, 34, 0.95);
   backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-radius: 50px;
-  padding: 8px 16px 8px 12px;
+  padding: 7px 16px 7px 7px;
   box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    padding 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
-.music-track-info {
+/* Collapsed: squeeze to circle */
+.music-player.collapsed .music-controls {
+  padding: 7px;
+  border-color: rgba(255, 107, 107, 0.45);
+  box-shadow: var(--shadow-lg), 0 0 18px rgba(255, 107, 107, 0.1);
+}
+
+/* -- Mini icon (always present) -- */
+.music-mini-wrap {
+  position: relative;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-width: 0;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
 }
 
 .music-icon {
-  font-size: 1.3rem;
+  font-size: 1rem;
   color: #ff6b6b;
-  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* -- Pulse rings (visible only when collapsed + playing) -- */
+.music-pulse-ring,
+.music-pulse-ring-2 {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px solid #ff6b6b;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(1);
+}
+
+.music-player.collapsed.playing .music-pulse-ring {
+  animation: musicPulse 2s ease-out infinite;
+}
+
+.music-player.collapsed.playing .music-pulse-ring-2 {
+  animation: musicPulse 2s ease-out 1s infinite;
+}
+
+@keyframes musicPulse {
+  0%   { transform: scale(0.95); opacity: 0.75; }
+  75%  { transform: scale(2.0);  opacity: 0;    }
+  100% { transform: scale(2.0);  opacity: 0;    }
+}
+
+/* -- Expandable content -- */
+.music-expand-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  max-width: 260px;
+  opacity: 1;
+  padding-left: 8px;
+  transition:
+    max-width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.25s ease,
+    padding-left 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.music-player.collapsed .music-expand-content {
+  max-width: 0;
+  opacity: 0;
+  padding-left: 0;
+  pointer-events: none;
 }
 
 .music-track-name {
@@ -50,7 +117,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 180px;
+  max-width: 165px;
 }
 
 .music-btn {
@@ -74,7 +141,7 @@
   transform: scale(1.1);
 }
 
-/* Music toast */
+/* -- Toast -- */
 .music-toast {
   position: fixed;
   top: 80px;
@@ -106,22 +173,13 @@
 .music-toast.show {
   opacity: 1;
   transform: translateX(0);
+  pointer-events: auto;
 }
 
 @media (max-width: 480px) {
   .music-player {
     bottom: 16px;
     right: 16px;
-    left: 16px;
-  }
-
-  .music-controls {
-    width: 100%;
-  }
-
-  .music-track-name {
-    max-width: none;
-    flex: 1;
   }
 
   .music-toast {
@@ -130,6 +188,7 @@
     top: 70px;
   }
 }
+
 
 /* ============================================
    MUSIC REACTOR — Reactive ambient glow

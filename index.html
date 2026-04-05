@@ -318,14 +318,18 @@
   <!-- YOUTUBE FLOATING PLAYER -->
   <div class="music-player" id="music-player">
     <div id="yt-player-container" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;"></div>
-    <div class="music-controls">
-      <div class="music-track-info">
+    <div class="music-controls" id="music-controls">
+      <div class="music-mini-wrap">
+        <div class="music-pulse-ring"></div>
+        <div class="music-pulse-ring music-pulse-ring-2"></div>
         <i class="fas fa-music music-icon"></i>
-        <span class="music-track-name" id="music-track-name">Carregando...</span>
       </div>
-      <button class="music-btn" id="music-toggle" title="Pausar/Tocar">
-        <i class="fas fa-pause" id="music-toggle-icon"></i>
-      </button>
+      <div class="music-expand-content">
+        <span class="music-track-name" id="music-track-name">Carregando...</span>
+        <button class="music-btn" id="music-toggle" title="Pausar/Tocar">
+          <i class="fas fa-pause" id="music-toggle-icon"></i>
+        </button>
+      </div>
     </div>
   </div>
 

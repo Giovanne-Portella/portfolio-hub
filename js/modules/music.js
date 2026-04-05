@@ -145,16 +145,19 @@ function onYTPlayerReady() {
 function onYTStateChange(event) {
   const playing = event.data === YT.PlayerState.PLAYING;
   const ended = event.data === YT.PlayerState.ENDED;
+  const playerEl = document.getElementById('music-player');
 
   if (playing && !ytIsPlaying) {
     ytIsPlaying = true;
     updateMusicIcon();
     showMusicToast(ytCurrentTrack.name);
     musicReactor.start();
+    if (playerEl) playerEl.classList.add('playing');
   } else if (!playing && ytIsPlaying) {
     ytIsPlaying = false;
     updateMusicIcon();
     musicReactor.stop();
+    if (playerEl) playerEl.classList.remove('playing');
   }
 
   // When track ends, play a different random track
@@ -184,6 +187,8 @@ function showMusicToast(name) {
   }
   toast.innerHTML = `<i class="fas fa-music"></i> Tocando: ${escapeHtml(name)}`;
   toast.classList.add('show');
+  // Dismiss on tap (mobile)
+  toast.ontouchstart = () => toast.classList.remove('show');
   setTimeout(() => toast.classList.remove('show'), 4000);
 }
 
@@ -202,5 +207,62 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // ---- Collapse / expand logic ----
+  const playerEl  = document.getElementById('music-player');
+  const controls  = document.getElementById('music-controls');
+  let collapseTimer = null;
+
+  function scheduleCollapse(delay) {
+    clearTimeout(collapseTimer);
+    collapseTimer = setTimeout(() => playerEl.classList.add('collapsed'), delay);
+  }
+
+  // Auto-collapse 2s after the player becomes visible
+  const visibleObserver = new MutationObserver(() => {
+    if (playerEl.classList.contains('visible')) {
+      visibleObserver.disconnect();
+      scheduleCollapse(2000);
+    }
+  });
+  visibleObserver.observe(playerEl, { attributes: true, attributeFilter: ['class'] });
+  // Handle case where it's already visible
+  if (playerEl.classList.contains('visible')) {
+    visibleObserver.disconnect();
+    scheduleCollapse(2000);
+  }
+
+  // Desktop: hover to expand / mouseleave to collapse
+  const isTouchDevice = () => window.matchMedia('(hover: none)').matches;
+
+  controls.addEventListener('mouseenter', () => {
+    if (isTouchDevice()) return;
+    clearTimeout(collapseTimer);
+    playerEl.classList.remove('collapsed');
+  });
+
+  controls.addEventListener('mouseleave', () => {
+    if (isTouchDevice()) return;
+    scheduleCollapse(800);
+  });
+
+  // Mobile: tap to toggle collapse; tap outside when expanded → collapse
+  controls.addEventListener('touchstart', (e) => {
+    if (playerEl.classList.contains('collapsed')) {
+      // Expand
+      e.preventDefault();
+      playerEl.classList.remove('collapsed');
+      scheduleCollapse(4000);
+    }
+    // When expanded, touches on the btn are handled normally (play/pause)
+  }, { passive: false });
+
+  document.addEventListener('touchstart', (e) => {
+    if (!playerEl.classList.contains('collapsed') && !playerEl.contains(e.target)) {
+      playerEl.classList.add('collapsed');
+      clearTimeout(collapseTimer);
+    }
+  }, { passive: true });
+
   loadYouTubePlayer();
 });
