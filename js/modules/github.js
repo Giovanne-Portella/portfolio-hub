@@ -58,6 +58,7 @@ async function loadGitHubData(username) {
       fetch(`https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&sort=updated`),
     ]);
 
+
     if (!userRes.ok) throw new Error('GitHub user not found');
     const user = await userRes.json();
     const repos = reposRes.ok ? await reposRes.json() : [];
@@ -87,6 +88,9 @@ async function loadGitHubData(username) {
 
     // Build tech badges from repos + projects
     await buildTechBadges(repos);
+
+    // Load organizations
+    await loadGitHubOrgs(username);
 
     // GitHub profile link
     const linkContainer = document.getElementById('gh-profile-link-container');
@@ -146,5 +150,33 @@ async function buildTechBadges(repos) {
   }).join('');
 
   wrapper.style.display = '';
+}
+
+// ============================================
+// GITHUB ORGANIZATIONS
+// ============================================
+async function loadGitHubOrgs(username) {
+  const wrapper = document.getElementById('gh-orgs-wrapper');
+  const grid = document.getElementById('gh-orgs-grid');
+  if (!wrapper || !grid) return;
+
+  try {
+    const res = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}/orgs`);
+    if (!res.ok) return;
+    const orgs = await res.json();
+    if (!Array.isArray(orgs) || orgs.length === 0) return;
+
+    grid.innerHTML = orgs.map(org => `
+      <a href="https://github.com/${escapeAttr(org.login)}" target="_blank" rel="noopener noreferrer" class="gh-org-card">
+        <img src="${escapeAttr(org.avatar_url)}" alt="${escapeAttr(org.login)}" class="gh-org-avatar">
+        <div class="gh-org-info">
+          <span class="gh-org-name">${escapeHtml(org.login)}</span>
+          ${org.description ? `<span class="gh-org-desc">${escapeHtml(org.description)}</span>` : ''}
+        </div>
+      </a>
+    `).join('');
+
+    wrapper.style.display = '';
+  } catch {}
 }
 
