@@ -62,3 +62,32 @@ create policy "Public read radio_tracks" on radio_tracks for select using (true)
 create policy "Owner insert radio_tracks" on radio_tracks for insert with check (auth.uid() = user_id);
 create policy "Owner update radio_tracks" on radio_tracks for update using (auth.uid() = user_id);
 create policy "Owner delete radio_tracks" on radio_tracks for delete using (auth.uid() = user_id);
+
+-- ============================================
+-- 6. Nova tabela: companies (empresas contribuídas)
+-- ============================================
+create table companies (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users(id) on delete cascade,
+  name text not null,
+  logo_url text,
+  website_url text,
+  description text,
+  display_order int default 0,
+  created_at timestamptz default now()
+);
+
+alter table companies enable row level security;
+
+create policy "Public read companies" on companies for select using (true);
+create policy "Owner insert companies" on companies for insert with check (auth.uid() = user_id);
+create policy "Owner update companies" on companies for update using (auth.uid() = user_id);
+create policy "Owner delete companies" on companies for delete using (auth.uid() = user_id);
+
+-- Bucket para logos de empresas
+insert into storage.buckets (id, name, public) values ('companies', 'companies', true);
+
+create policy "Public read companies bucket" on storage.objects for select using (bucket_id = 'companies');
+create policy "Auth upload companies bucket" on storage.objects for insert with check (bucket_id = 'companies' and auth.role() = 'authenticated');
+create policy "Auth update companies bucket" on storage.objects for update using (bucket_id = 'companies' and auth.role() = 'authenticated');
+create policy "Auth delete companies bucket" on storage.objects for delete using (bucket_id = 'companies' and auth.role() = 'authenticated');

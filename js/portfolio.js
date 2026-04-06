@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadSocialLinks();
   loadCertificates();
   loadProjects();
+  loadCompanies();
   setupNavbar();
   setupModal();
   setupCollapsible();

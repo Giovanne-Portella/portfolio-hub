@@ -464,6 +464,61 @@
     </section>
 
     <!-- ==================== RADIO SECTION ==================== -->
+    <section class="admin-section" id="section-companies">
+      <div class="section-top">
+        <h2><i class="fas fa-building"></i> Empresas</h2>
+        <p>Gerencie suas contribuições com empresas</p>
+      </div>
+      <div class="toolbar">
+        <button class="btn btn-primary" id="btn-add-company">
+          <i class="fas fa-plus"></i> Nova Empresa
+        </button>
+      </div>
+      <div class="items-list" id="companies-list">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Company Form Modal -->
+      <div class="admin-modal" id="modal-company">
+        <div class="admin-modal-content">
+          <div class="admin-modal-header">
+            <h3 id="modal-company-title">Nova Empresa</h3>
+            <button class="modal-close-btn" data-close="modal-company"><i class="fas fa-times"></i></button>
+          </div>
+          <form id="company-form">
+            <input type="hidden" id="company-id">
+            <div class="form-group">
+              <label for="company-name">Nome da Empresa</label>
+              <input type="text" id="company-name" placeholder="Ex: Acme Corp" required>
+            </div>
+            <div class="form-group">
+              <label for="company-website">Site da Empresa</label>
+              <input type="url" id="company-website" placeholder="https://exemplo.com">
+            </div>
+            <div class="form-group">
+              <label for="company-description">Descrição (opcional)</label>
+              <textarea id="company-description" rows="3" placeholder="Breve descrição da contribuição"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="company-logo-file">Logo da Empresa</label>
+              <input type="file" id="company-logo-file" accept="image/*">
+              <div id="company-logo-preview"></div>
+            </div>
+            <div class="form-group">
+              <label for="company-order">Ordem de exibição</label>
+              <input type="number" id="company-order" value="0" min="0">
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn" data-close="modal-company">Cancelar</button>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Salvar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
     <section class="admin-section" id="section-radio">
       <div class="section-top">
         <h2><i class="fas fa-music"></i> Rádio</h2>
@@ -540,6 +595,7 @@
   <script src="../js/admin/certificates.js"></script>
   <script src="../js/admin/cert-files.js"></script>
   <script src="../js/admin/projects.js"></script>
+  <script src="../js/admin/companies.js"></script>
   <script src="../js/admin/radio.js"></script>
   <script src="../js/admin.js"></script>
 </body>
