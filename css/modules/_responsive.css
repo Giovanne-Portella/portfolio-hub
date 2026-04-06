@@ -97,24 +97,8 @@
 
   .cert-grid {
     grid-template-columns: repeat(2, 1fr);
-    max-height: 680px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
+    max-height: 420px;
     padding-right: 4px;
-  }
-
-  .cert-grid::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  .cert-grid::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .cert-grid::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 2px;
   }
 
   .cert-layout {
@@ -435,6 +419,10 @@
 
   .cert-issuer {
     font-size: 0.75rem;
+  }
+
+  .cert-grid {
+    max-height: 340px;
   }
 
   .project-body {

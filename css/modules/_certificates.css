@@ -170,6 +170,28 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
+  max-height: 520px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  padding-right: 4px;
+}
+
+.cert-grid::-webkit-scrollbar {
+  width: 4px;
+}
+
+.cert-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cert-grid::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.cert-grid::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
 }
 
 .cert-card {
