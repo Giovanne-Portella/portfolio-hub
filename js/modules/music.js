@@ -221,8 +221,12 @@ function updateVolumeUI(vol) {
   const fill = document.getElementById('music-volume-fill');
   const input = document.getElementById('music-volume-input');
   const icon = document.getElementById('music-vol-icon');
-  if (fill) fill.style.width = vol + '%';
+  const label = document.getElementById('music-volume-label');
+  const track = fill ? fill.parentElement : null;
+  if (fill) fill.style.height = vol + '%';
+  if (track) track.style.setProperty('--thumb-pos', vol + '%');
   if (input) input.value = vol;
+  if (label) label.textContent = vol;
   if (icon) {
     if (vol === 0) icon.className = 'fas fa-volume-mute';
     else if (vol < 50) icon.className = 'fas fa-volume-down';
@@ -258,37 +262,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // ---- Volume control ----
-  const volBtn = document.getElementById('music-vol-btn');
-  const volWrap = document.getElementById('music-volume-wrap');
-  const volInput = document.getElementById('music-volume-input');
-  let volPrevious = ytVolume || 100;
-
-  if (volBtn && volWrap) {
-    volBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      // Toggle mute on long-ish tap / right-click, toggle slider on click
-      if (volWrap.classList.contains('vol-open')) {
-        volWrap.classList.remove('vol-open');
-      } else {
-        volWrap.classList.add('vol-open');
-      }
-    });
-  }
-
-  if (volInput) {
-    volInput.addEventListener('input', (e) => {
-      e.stopPropagation();
-      setVolume(parseInt(e.target.value, 10));
-    });
-    // Prevent collapse when interacting with slider
-    volInput.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
-    volInput.addEventListener('mousedown', (e) => e.stopPropagation());
-  }
-
-  // Initialize volume UI with saved value
-  updateVolumeUI(ytVolume);
-
   // ---- Collapse / expand logic ----
   const playerEl  = document.getElementById('music-player');
   const controls  = document.getElementById('music-controls');
@@ -296,8 +269,68 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function scheduleCollapse(delay) {
     clearTimeout(collapseTimer);
-    collapseTimer = setTimeout(() => playerEl.classList.add('collapsed'), delay);
+    collapseTimer = setTimeout(() => {
+      playerEl.classList.add('collapsed');
+      closeVolume();
+    }, delay);
   }
+
+  // ---- Volume control ----
+  const volBtn = document.getElementById('music-vol-btn');
+  const volWrap = document.getElementById('music-volume-wrap');
+  const volInput = document.getElementById('music-volume-input');
+  const volPopup = document.getElementById('music-volume-popup');
+  let volOpen = false;
+
+  function openVolume() {
+    volOpen = true;
+    volWrap.classList.add('vol-open');
+    clearTimeout(collapseTimer);
+  }
+
+  function closeVolume() {
+    volOpen = false;
+    if (volWrap) volWrap.classList.remove('vol-open');
+  }
+
+  if (volBtn && volWrap) {
+    volBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (volOpen) {
+        closeVolume();
+        scheduleCollapse(2000);
+      } else {
+        openVolume();
+      }
+    });
+  }
+
+  if (volPopup) {
+    // Prevent any interaction on the popup from collapsing the player
+    volPopup.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
+    volPopup.addEventListener('mousedown', (e) => e.stopPropagation());
+    volPopup.addEventListener('click', (e) => e.stopPropagation());
+  }
+
+  if (volInput) {
+    volInput.addEventListener('input', (e) => {
+      e.stopPropagation();
+      setVolume(parseInt(e.target.value, 10));
+    });
+    volInput.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
+    volInput.addEventListener('mousedown', (e) => e.stopPropagation());
+    volInput.addEventListener('change', (e) => e.stopPropagation());
+  }
+
+  // Close volume popup when clicking outside
+  document.addEventListener('click', (e) => {
+    if (volOpen && !volWrap.contains(e.target)) {
+      closeVolume();
+    }
+  });
+
+  // Initialize volume UI with saved value
+  updateVolumeUI(ytVolume);
 
   // Auto-collapse 2s after the player becomes visible
   const visibleObserver = new MutationObserver(() => {
@@ -324,6 +357,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   controls.addEventListener('mouseleave', () => {
     if (isTouchDevice()) return;
+    if (volOpen) return; // Don't collapse while adjusting volume
     scheduleCollapse(800);
   });
 
@@ -333,13 +367,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Expand
       e.preventDefault();
       playerEl.classList.remove('collapsed');
-      scheduleCollapse(4000);
+      scheduleCollapse(5000);
     }
     // When expanded, touches on the btn are handled normally (play/pause)
   }, { passive: false });
 
   document.addEventListener('touchstart', (e) => {
     if (!playerEl.classList.contains('collapsed') && !playerEl.contains(e.target)) {
+      closeVolume();
       playerEl.classList.add('collapsed');
       clearTimeout(collapseTimer);
     }

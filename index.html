@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="css/style.css?v=32">
+  <link rel="stylesheet" href="css/style.css?v=33">
 </head>
 <body class="site-loading">
 
@@ -330,11 +330,12 @@
           <button class="music-vol-btn" id="music-vol-btn" title="Volume">
             <i class="fas fa-volume-up" id="music-vol-icon"></i>
           </button>
-          <div class="music-volume-slider" id="music-volume-slider">
+          <div class="music-volume-popup" id="music-volume-popup">
             <div class="music-volume-track">
-              <div class="music-volume-fill" id="music-volume-fill" style="width:100%"></div>
-              <input type="range" min="0" max="100" value="100" class="music-volume-input" id="music-volume-input">
+              <div class="music-volume-fill" id="music-volume-fill" style="height:100%"></div>
+              <input type="range" min="0" max="100" value="100" class="music-volume-input" id="music-volume-input" orient="vertical">
             </div>
+            <span class="music-volume-label" id="music-volume-label">100</span>
           </div>
         </div>
         <button class="music-btn" id="music-toggle" title="Pausar/Tocar">
@@ -385,7 +386,7 @@
   <script src="js/modules/readme-modal.js"></script>
   <script src="js/modules/animations.js"></script>
   <script src="js/modules/github.js"></script>
-  <script src="js/modules/music.js?v=2"></script>
+  <script src="js/modules/music.js?v=3"></script>
   <script src="js/portfolio.js"></script>
 </body>
 </html>
