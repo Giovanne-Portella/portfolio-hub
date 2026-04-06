@@ -277,23 +277,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // ---- Volume control ----
   const volBtn = document.getElementById('music-vol-btn');
-  const volWrap = document.getElementById('music-volume-wrap');
   const volInput = document.getElementById('music-volume-input');
   const volPopup = document.getElementById('music-volume-popup');
   let volOpen = false;
 
   function openVolume() {
     volOpen = true;
-    volWrap.classList.add('vol-open');
+    playerEl.classList.add('vol-open');
     clearTimeout(collapseTimer);
   }
 
   function closeVolume() {
     volOpen = false;
-    if (volWrap) volWrap.classList.remove('vol-open');
+    playerEl.classList.remove('vol-open');
   }
 
-  if (volBtn && volWrap) {
+  if (volBtn) {
     volBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (volOpen) {
@@ -303,6 +302,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         openVolume();
       }
     });
+    volBtn.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
   }
 
   if (volPopup) {
@@ -322,9 +322,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     volInput.addEventListener('change', (e) => e.stopPropagation());
   }
 
-  // Close volume popup when clicking outside
+  // Close volume popup when clicking/tapping outside
   document.addEventListener('click', (e) => {
-    if (volOpen && !volWrap.contains(e.target)) {
+    if (volOpen && !volPopup.contains(e.target) && e.target !== volBtn && !volBtn.contains(e.target)) {
       closeVolume();
     }
   });

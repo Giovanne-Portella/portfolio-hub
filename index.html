@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="css/style.css?v=34">
+  <link rel="stylesheet" href="css/style.css?v=35">
 </head>
 <body class="site-loading">
 
@@ -318,6 +318,14 @@
   <!-- YOUTUBE FLOATING PLAYER -->
   <div class="music-player" id="music-player">
     <div id="yt-player-container" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;"></div>
+    <!-- Volume popup (outside controls to avoid overflow clipping) -->
+    <div class="music-volume-popup" id="music-volume-popup">
+      <div class="music-volume-track">
+        <div class="music-volume-fill" id="music-volume-fill" style="height:100%"></div>
+        <input type="range" min="0" max="100" value="100" class="music-volume-input" id="music-volume-input">
+      </div>
+      <span class="music-volume-label" id="music-volume-label">100</span>
+    </div>
     <div class="music-controls" id="music-controls">
       <div class="music-mini-wrap">
         <div class="music-pulse-ring"></div>
@@ -326,18 +334,9 @@
       </div>
       <div class="music-expand-content">
         <span class="music-track-name" id="music-track-name">Carregando...</span>
-        <div class="music-volume-wrap" id="music-volume-wrap">
-          <button class="music-vol-btn" id="music-vol-btn" title="Volume">
-            <i class="fas fa-volume-up" id="music-vol-icon"></i>
-          </button>
-          <div class="music-volume-popup" id="music-volume-popup">
-            <div class="music-volume-track">
-              <div class="music-volume-fill" id="music-volume-fill" style="height:100%"></div>
-              <input type="range" min="0" max="100" value="100" class="music-volume-input" id="music-volume-input">
-            </div>
-            <span class="music-volume-label" id="music-volume-label">100</span>
-          </div>
-        </div>
+        <button class="music-vol-btn" id="music-vol-btn" title="Volume">
+          <i class="fas fa-volume-up" id="music-vol-icon"></i>
+        </button>
         <button class="music-btn" id="music-toggle" title="Pausar/Tocar">
           <i class="fas fa-pause" id="music-toggle-icon"></i>
         </button>
@@ -386,7 +385,7 @@
   <script src="js/modules/readme-modal.js"></script>
   <script src="js/modules/animations.js"></script>
   <script src="js/modules/github.js"></script>
-  <script src="js/modules/music.js?v=3"></script>
+  <script src="js/modules/music.js?v=4"></script>
   <script src="js/portfolio.js"></script>
 </body>
 </html>

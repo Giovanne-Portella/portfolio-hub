@@ -142,12 +142,6 @@
 }
 
 /* -- Volume control -- */
-.music-volume-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
 .music-vol-btn {
   width: 32px;
   height: 32px;
@@ -170,12 +164,11 @@
   background: rgba(255, 255, 255, 0.06);
 }
 
-/* Vertical popup slider */
+/* Vertical popup slider — child of .music-player, positioned above controls */
 .music-volume-popup {
   position: absolute;
-  bottom: calc(100% + 12px);
-  left: 50%;
-  transform: translateX(-50%) scale(0.9);
+  bottom: calc(100% + 8px);
+  right: 36px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -189,15 +182,17 @@
               0 0 0 1px rgba(255, 255, 255, 0.04);
   opacity: 0;
   pointer-events: none;
+  transform: scale(0.9);
+  transform-origin: bottom center;
   transition: opacity 0.2s ease,
               transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 100;
 }
 
-.music-volume-wrap.vol-open .music-volume-popup {
+.music-player.vol-open .music-volume-popup {
   opacity: 1;
   pointer-events: auto;
-  transform: translateX(-50%) scale(1);
+  transform: scale(1);
 }
 
 .music-volume-track {
