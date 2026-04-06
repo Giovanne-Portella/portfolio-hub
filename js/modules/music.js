@@ -326,6 +326,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.addEventListener('click', (e) => {
     if (volOpen && !volPopup.contains(e.target) && e.target !== volBtn && !volBtn.contains(e.target)) {
       closeVolume();
+      scheduleCollapse(1500);
     }
   });
 
