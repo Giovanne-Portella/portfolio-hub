@@ -39,15 +39,17 @@ async function loadProfile() {
   // About
   if (data.bio) {
     const bioEl = document.getElementById('about-bio');
-    bioEl.textContent = data.bio;
-    // Update type-in target if animation captured the placeholder
-    if (bioEl.dataset.typeTarget) {
-      bioEl.dataset.typeTarget = data.bio;
-    }
-    // If type-in already typed the placeholder, re-trigger with real bio
     if (bioEl.classList.contains('typed')) {
-      bioEl.classList.remove('typed', 'typing', 'visible');
-      typeElement(bioEl);
+      // Already typed (placeholder was animated) — just swap text instantly
+      bioEl.textContent = data.bio;
+      bioEl.dataset.typeTarget = data.bio;
+    } else if (bioEl.dataset.typeTarget) {
+      // Animation queued but hasn't fired yet — update the target text
+      bioEl.textContent = data.bio;
+      bioEl.dataset.typeTarget = data.bio;
+    } else {
+      // No animation interaction yet — set text for future type-in
+      bioEl.textContent = data.bio;
     }
   }
 
