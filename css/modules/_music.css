@@ -30,9 +30,13 @@
   box-shadow: var(--shadow-lg);
   overflow: visible;
   cursor: pointer;
+  width: auto;
+  height: auto;
   transition:
     padding 0.45s cubic-bezier(0.4, 0, 0.2, 1),
     border-radius 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
     border-color 0.3s ease,
     box-shadow 0.3s ease;
 }
@@ -40,7 +44,9 @@
 /* Collapsed: squeeze to circle */
 .music-player.collapsed .music-controls {
   padding: 7px;
-  border-radius: 50px;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
   border-color: rgba(255, 107, 107, 0.45);
   box-shadow: var(--shadow-lg), 0 0 18px rgba(255, 107, 107, 0.1);
 }
