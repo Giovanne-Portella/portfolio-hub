@@ -81,14 +81,9 @@ const musicReactor = {
 // ============================================
 // YOUTUBE FLOATING PLAYER
 // ============================================
-const YT_TRACKS_FALLBACK = [
-  { id: 'W-IzDrJRTo8', name: 'in your arms — mr kitty (slowed & reverb)' },
-  { id: 'AHWUez2Tdpk', name: 'Gemini - Time To Share' },
-  { id: 'c9P9kkcEcdc', name: 'Mr. Kitty - 44 days' },
-  { id: 'SO4GCctPi4U', name: 'Wicked Game | Synthwave Dark Cover' },
-];
-
-let YT_TRACKS = [...YT_TRACKS_FALLBACK];
+let YT_TRACKS = [];
+let ytShuffle = localStorage.getItem('portfolio_shuffle') !== 'false'; // default true
+let ytTrackIndex = 0;
 let ytPlayer = null;
 let ytIsPlaying = false;
 let ytCurrentTrack = null;
@@ -106,12 +101,39 @@ async function loadRadioTracks() {
       YT_TRACKS = data.map(t => ({ id: t.youtube_id, name: t.name }));
     }
   } catch (e) {
-    // Fallback to hardcoded tracks silently
+    // No tracks available
   }
 }
 
+function pickNextTrack() {
+  if (YT_TRACKS.length === 0) return null;
+  if (ytShuffle) {
+    let next;
+    do {
+      next = YT_TRACKS[Math.floor(Math.random() * YT_TRACKS.length)];
+    } while (next.id === (ytCurrentTrack && ytCurrentTrack.id) && YT_TRACKS.length > 1);
+    ytTrackIndex = YT_TRACKS.indexOf(next);
+    return next;
+  } else {
+    ytTrackIndex = (ytTrackIndex + 1) % YT_TRACKS.length;
+    return YT_TRACKS[ytTrackIndex];
+  }
+}
+
+function skipTrack() {
+  const next = pickNextTrack();
+  if (!next || !ytPlayer) return;
+  ytCurrentTrack = next;
+  document.getElementById('music-track-name').textContent = next.name;
+  ytPlayer.loadVideoById(next.id);
+}
+
 function loadYouTubePlayer() {
-  ytCurrentTrack = YT_TRACKS[Math.floor(Math.random() * YT_TRACKS.length)];
+  if (YT_TRACKS.length === 0) return;
+  if (ytShuffle) {
+    ytTrackIndex = Math.floor(Math.random() * YT_TRACKS.length);
+  }
+  ytCurrentTrack = YT_TRACKS[ytTrackIndex];
   document.getElementById('music-track-name').textContent = ytCurrentTrack.name;
 
   // Load the YouTube IFrame API
@@ -184,15 +206,9 @@ function onYTStateChange(event) {
     if (playerEl) playerEl.classList.remove('playing');
   }
 
-  // When track ends, play a different random track
+  // When track ends, play next track
   if (ended) {
-    let next;
-    do {
-      next = YT_TRACKS[Math.floor(Math.random() * YT_TRACKS.length)];
-    } while (next.id === ytCurrentTrack.id && YT_TRACKS.length > 1);
-    ytCurrentTrack = next;
-    document.getElementById('music-track-name').textContent = next.name;
-    ytPlayer.loadVideoById(next.id);
+    skipTrack();
   }
 }
 
@@ -259,6 +275,28 @@ document.addEventListener('DOMContentLoaded', async () => {
           ytPlayer.playVideo();
         }
       }
+    });
+  }
+
+  // Shuffle toggle
+  const shuffleBtn = document.getElementById('music-shuffle');
+  if (shuffleBtn) {
+    if (ytShuffle) shuffleBtn.classList.add('active');
+    else shuffleBtn.classList.remove('active');
+    shuffleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      ytShuffle = !ytShuffle;
+      localStorage.setItem('portfolio_shuffle', String(ytShuffle));
+      shuffleBtn.classList.toggle('active', ytShuffle);
+    });
+  }
+
+  // Skip track
+  const skipBtn = document.getElementById('music-skip');
+  if (skipBtn) {
+    skipBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      skipTrack();
     });
   }
 
