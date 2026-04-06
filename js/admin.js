@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupCertificateForm();
   setupCertProjectFiles();
   setupProjectForm();
+  setupRadioForm();
 
   // Initial data load
   loadProfile();
@@ -18,5 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
   loadCategories();
   loadCertificates();
   loadProjects();
+  loadRadioTracksAdmin();
 });
 

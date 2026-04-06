@@ -109,6 +109,20 @@
   color: #d29922;
 }
 
+.badge-success {
+  background: rgba(63, 185, 80, 0.15);
+  color: #3fb950;
+}
+
+.badge-muted {
+  background: rgba(139, 148, 158, 0.15);
+  color: #8b949e;
+}
+
+.item-card.item-inactive {
+  opacity: 0.55;
+}
+
 .badge-featured {
   background: rgba(88, 166, 255, 0.15);
   color: #58a6ff;

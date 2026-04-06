@@ -42,3 +42,23 @@ alter table profiles add column if not exists github_username text;
 alter table profiles add column if not exists whatsapp_number text;
 alter table profiles add column if not exists company_name text;
 alter table profiles add column if not exists company_start_date date;
+
+-- ============================================
+-- 5. Nova tabela: radio_tracks (músicas da rádio)
+-- ============================================
+create table radio_tracks (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users(id) on delete cascade,
+  name text not null,
+  youtube_id text not null,
+  active boolean default true,
+  display_order int default 0,
+  created_at timestamptz default now()
+);
+
+alter table radio_tracks enable row level security;
+
+create policy "Public read radio_tracks" on radio_tracks for select using (true);
+create policy "Owner insert radio_tracks" on radio_tracks for insert with check (auth.uid() = user_id);
+create policy "Owner update radio_tracks" on radio_tracks for update using (auth.uid() = user_id);
+create policy "Owner delete radio_tracks" on radio_tracks for delete using (auth.uid() = user_id);

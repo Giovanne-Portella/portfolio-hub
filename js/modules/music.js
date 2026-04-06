@@ -81,16 +81,34 @@ const musicReactor = {
 // ============================================
 // YOUTUBE FLOATING PLAYER
 // ============================================
-const YT_TRACKS = [
+const YT_TRACKS_FALLBACK = [
   { id: 'W-IzDrJRTo8', name: 'in your arms — mr kitty (slowed & reverb)' },
   { id: 'AHWUez2Tdpk', name: 'Gemini - Time To Share' },
   { id: 'c9P9kkcEcdc', name: 'Mr. Kitty - 44 days' },
   { id: 'SO4GCctPi4U', name: 'Wicked Game | Synthwave Dark Cover' },
 ];
 
+let YT_TRACKS = [...YT_TRACKS_FALLBACK];
 let ytPlayer = null;
 let ytIsPlaying = false;
 let ytCurrentTrack = null;
+let ytVolume = parseInt(localStorage.getItem('portfolio_volume') ?? '100', 10);
+
+async function loadRadioTracks() {
+  try {
+    const { data, error } = await supabase
+      .from('radio_tracks')
+      .select('*')
+      .eq('active', true)
+      .order('display_order', { ascending: true });
+
+    if (!error && data && data.length > 0) {
+      YT_TRACKS = data.map(t => ({ id: t.youtube_id, name: t.name }));
+    }
+  } catch (e) {
+    // Fallback to hardcoded tracks silently
+  }
+}
 
 function loadYouTubePlayer() {
   ytCurrentTrack = YT_TRACKS[Math.floor(Math.random() * YT_TRACKS.length)];
@@ -124,6 +142,12 @@ window.onYouTubeIframeAPIReady = () => {
 };
 
 function onYTPlayerReady() {
+  // Apply saved volume
+  if (ytPlayer && typeof ytPlayer.setVolume === 'function') {
+    ytPlayer.setVolume(ytVolume);
+  }
+  updateVolumeUI(ytVolume);
+
   // Music will start when splash screen is dismissed (dismissSplash calls playVideo)
   // If splash is already gone (e.g. returning visit), show player and let user control
   if (!document.getElementById('splash-overlay')) {
@@ -192,8 +216,34 @@ function showMusicToast(name) {
   setTimeout(() => toast.classList.remove('show'), 4000);
 }
 
+// Volume UI helpers
+function updateVolumeUI(vol) {
+  const fill = document.getElementById('music-volume-fill');
+  const input = document.getElementById('music-volume-input');
+  const icon = document.getElementById('music-vol-icon');
+  if (fill) fill.style.width = vol + '%';
+  if (input) input.value = vol;
+  if (icon) {
+    if (vol === 0) icon.className = 'fas fa-volume-mute';
+    else if (vol < 50) icon.className = 'fas fa-volume-down';
+    else icon.className = 'fas fa-volume-up';
+  }
+}
+
+function setVolume(vol) {
+  ytVolume = Math.max(0, Math.min(100, vol));
+  if (ytPlayer && typeof ytPlayer.setVolume === 'function') {
+    ytPlayer.setVolume(ytVolume);
+  }
+  localStorage.setItem('portfolio_volume', String(ytVolume));
+  updateVolumeUI(ytVolume);
+}
+
 // Toggle button & init
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Load tracks from Supabase before starting YT
+  await loadRadioTracks();
+
   const btn = document.getElementById('music-toggle');
   if (btn) {
     btn.addEventListener('click', (e) => {
@@ -207,6 +257,37 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // ---- Volume control ----
+  const volBtn = document.getElementById('music-vol-btn');
+  const volWrap = document.getElementById('music-volume-wrap');
+  const volInput = document.getElementById('music-volume-input');
+  let volPrevious = ytVolume || 100;
+
+  if (volBtn && volWrap) {
+    volBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Toggle mute on long-ish tap / right-click, toggle slider on click
+      if (volWrap.classList.contains('vol-open')) {
+        volWrap.classList.remove('vol-open');
+      } else {
+        volWrap.classList.add('vol-open');
+      }
+    });
+  }
+
+  if (volInput) {
+    volInput.addEventListener('input', (e) => {
+      e.stopPropagation();
+      setVolume(parseInt(e.target.value, 10));
+    });
+    // Prevent collapse when interacting with slider
+    volInput.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
+    volInput.addEventListener('mousedown', (e) => e.stopPropagation());
+  }
+
+  // Initialize volume UI with saved value
+  updateVolumeUI(ytVolume);
 
   // ---- Collapse / expand logic ----
   const playerEl  = document.getElementById('music-player');

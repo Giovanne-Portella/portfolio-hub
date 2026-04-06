@@ -13,6 +13,27 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-height: calc(4 * 90px + 3 * 8px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.cert-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.cert-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cert-sidebar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.cert-sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
 }
 
 .cert-sidebar-item {
