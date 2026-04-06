@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="css/style.css?v=39">
+  <link rel="stylesheet" href="css/style.css?v=40">
 </head>
 <body class="site-loading">
 
@@ -333,19 +333,24 @@
         <i class="fas fa-music music-icon"></i>
       </div>
       <div class="music-expand-content">
-        <span class="music-track-name" id="music-track-name">Carregando...</span>
-        <button class="music-vol-btn" id="music-vol-btn" title="Volume">
-          <i class="fas fa-volume-up" id="music-vol-icon"></i>
-        </button>
-        <button class="music-ctrl-btn music-shuffle-btn active" id="music-shuffle" title="Aleatório">
-          <i class="fas fa-random"></i>
-        </button>
-        <button class="music-ctrl-btn" id="music-skip" title="Próxima">
-          <i class="fas fa-forward"></i>
-        </button>
-        <button class="music-btn" id="music-toggle" title="Pausar/Tocar">
-          <i class="fas fa-pause" id="music-toggle-icon"></i>
-        </button>
+        <div class="music-row-name">
+          <i class="fas fa-music music-row-icon"></i>
+          <span class="music-track-name" id="music-track-name">Carregando...</span>
+        </div>
+        <div class="music-row-controls">
+          <button class="music-vol-btn" id="music-vol-btn" title="Volume">
+            <i class="fas fa-volume-up" id="music-vol-icon"></i>
+          </button>
+          <button class="music-ctrl-btn music-shuffle-btn active" id="music-shuffle" title="Aleatório">
+            <i class="fas fa-random"></i>
+          </button>
+          <button class="music-ctrl-btn" id="music-skip" title="Próxima">
+            <i class="fas fa-forward"></i>
+          </button>
+          <button class="music-btn" id="music-toggle" title="Pausar/Tocar">
+            <i class="fas fa-pause" id="music-toggle-icon"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
