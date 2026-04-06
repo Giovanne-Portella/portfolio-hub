@@ -28,7 +28,7 @@
   border-radius: 50px;
   padding: 7px 16px 7px 7px;
   box-shadow: var(--shadow-lg);
-  overflow: hidden;
+  overflow: visible;
   cursor: pointer;
   transition:
     padding 0.45s cubic-bezier(0.4, 0, 0.2, 1),
@@ -228,12 +228,12 @@
   left: 50%;
   top: -6px;
   transform: translateX(-50%);
-  width: 100px;
-  height: 36px;
+  width: 36px;
+  height: calc(100% + 12px);
   margin: 0;
   padding: 0;
-  -webkit-appearance: slider-vertical;
-  appearance: auto;
+  -webkit-appearance: none;
+  appearance: none;
   background: transparent;
   cursor: pointer;
   opacity: 0;
