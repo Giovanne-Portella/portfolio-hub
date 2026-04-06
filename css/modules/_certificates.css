@@ -13,7 +13,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: calc(4 * 90px + 3 * 8px);
+  max-height: calc(4 * 120px + 3 * 8px);
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
