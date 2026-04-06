@@ -17,24 +17,30 @@ function setupTypeInAnimation() {
 }
 
 function typeElement(el) {
+  // Generation counter — if target changes mid-type, old loop dies
+  el._typeGen = (el._typeGen || 0) + 1;
+  const gen = el._typeGen;
+
   el.dataset.typeTarget = el.textContent;
   el.textContent = '';
   el.classList.add('visible', 'typing', 'typed');
 
   let i = 0;
-  const initialLen = el.dataset.typeTarget.length || 1;
-  // Cap total typing time at ~1.2s; short texts get a slight pause per char
-  const speed = Math.min(35, Math.max(3, 1200 / initialLen));
 
   function typeChar() {
+    // Abort if a newer typeElement call started or target was swapped
+    if (el._typeGen !== gen) return;
+
     const target = el.dataset.typeTarget;
+    const len = target.length || 1;
+    // Recalculate speed each tick so async text swaps get the right pace
+    const speed = Math.min(35, Math.max(3, 1200 / len));
+
     if (i < target.length) {
-      // Set full prefix each tick so async title updates are picked up correctly
       el.textContent = target.substring(0, i + 1);
       i++;
       setTimeout(typeChar, speed);
     } else {
-      // Remove cursor after typing is done
       setTimeout(() => el.classList.remove('typing'), 400);
     }
   }
