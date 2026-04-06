@@ -116,14 +116,7 @@
 .music-row-name {
   display: flex;
   align-items: center;
-  gap: 6px;
   min-width: 0;
-}
-
-.music-row-icon {
-  font-size: 0.65rem;
-  color: #ff6b6b;
-  flex-shrink: 0;
 }
 
 .music-track-name {
