@@ -87,24 +87,11 @@
   .projects-grid {
     grid-template-columns: 1fr;
     gap: 16px;
+  }
+
+  .projects-scroll-box {
     max-height: 420px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-    padding-right: 4px;
-  }
-
-  .projects-grid::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  .projects-grid::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .projects-grid::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 2px;
+    padding: 12px;
   }
 
   .footer-content {
