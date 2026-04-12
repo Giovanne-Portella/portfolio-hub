@@ -145,6 +145,7 @@ window.onYouTubeIframeAPIReady = () => {
     events: {
       onReady: onYTPlayerReady,
       onStateChange: onYTStateChange,
+      onError: onYTError,
     },
   });
 };
@@ -177,7 +178,11 @@ function _tryStartMusic() {
 function onYTStateChange(event) {
   const playing = event.data === YT.PlayerState.PLAYING;
   const ended = event.data === YT.PlayerState.ENDED;
+  const buffering = event.data === YT.PlayerState.BUFFERING;
   const playerEl = document.getElementById('music-player');
+
+  // Clear any pending buffering watchdog
+  clearTimeout(window._ytBufferWatchdog);
 
   if (playing && !ytIsPlaying) {
     ytIsPlaying = true;
@@ -196,6 +201,22 @@ function onYTStateChange(event) {
   if (ended) {
     skipTrack();
   }
+
+  // If stuck buffering for more than 8 s, auto-skip (restricted/geo-blocked video)
+  if (buffering) {
+    window._ytBufferWatchdog = setTimeout(() => {
+      const state = ytPlayer && typeof ytPlayer.getPlayerState === 'function'
+        ? ytPlayer.getPlayerState()
+        : -1;
+      if (state === YT.PlayerState.BUFFERING) skipTrack();
+    }, 8000);
+  }
+}
+
+// Video unavailable / embedding disabled → skip immediately
+function onYTError() {
+  clearTimeout(window._ytBufferWatchdog);
+  skipTrack();
 }
 
 function updateMusicIcon() {

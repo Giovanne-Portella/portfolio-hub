@@ -39,6 +39,9 @@
       <a href="#" class="nav-item" data-section="radio">
         <i class="fas fa-music"></i> Rádio
       </a>
+      <a href="#" class="nav-item" data-section="avatar">
+        <i class="fas fa-user-astronaut"></i> Avatar
+      </a>
     </nav>
     <div class="sidebar-footer">
       <a href="../index.html" class="nav-item" target="_blank">
@@ -585,6 +588,209 @@
       </div>
     </section>
 
+    <!-- ==================== AVATAR SECTION ==================== -->
+    <section class="admin-section" id="section-avatar">
+      <div class="section-top">
+        <h2><i class="fas fa-user-astronaut"></i> Avatar</h2>
+        <p>Personalize seu mascote pixel art que aparece no portfólio</p>
+      </div>
+
+      <div class="avatar-editor-layout">
+
+        <!-- LEFT: Preview -->
+        <div class="avatar-editor-preview-col">
+          <div class="avatar-editor-preview-box">
+            <div class="avatar-editor-canvas" id="admin-avatar-canvas">
+              <!-- SVG injected by JS -->
+            </div>
+            <span class="avatar-editor-preview-label">Preview ao vivo</span>
+          </div>
+          <div class="avatar-editor-state-preview">
+            <span class="avatar-state-chip" data-state="idle">Idle</span>
+            <span class="avatar-state-chip" data-state="walk">Caminhar</span>
+            <span class="avatar-state-chip" data-state="dance">Dança</span>
+            <span class="avatar-state-chip" data-state="code">Codar</span>
+            <span class="avatar-state-chip" data-state="phone">Celular</span>
+            <span class="avatar-state-chip" data-state="bored">Entediado</span>
+            <span class="avatar-state-chip" data-state="wave">Acenar</span>
+            <span class="avatar-state-chip" data-state="look">Olhar</span>
+            <span class="avatar-state-chip" data-state="study">Estudar</span>
+            <span class="avatar-state-chip" data-state="stretch">Esticar</span>
+          </div>
+          <button class="btn btn-primary" id="btn-save-avatar" style="width:100%; margin-top:16px;">
+            <i class="fas fa-save"></i> Salvar Avatar
+          </button>
+        </div>
+
+        <!-- RIGHT: Controls -->
+        <div class="avatar-editor-controls-col">
+
+          <!-- Skin -->
+          <div class="avatar-editor-group">
+            <label class="avatar-editor-label"><i class="fas fa-palette"></i> Tom de Pele</label>
+            <div class="avatar-color-row" id="skin-swatches">
+              <div class="avatar-swatch" data-key="skinTone" data-value="#fddbb4" style="background:#fddbb4" title="Claro"></div>
+              <div class="avatar-swatch" data-key="skinTone" data-value="#f5c5a3" style="background:#f5c5a3" title="Médio Claro"></div>
+              <div class="avatar-swatch" data-key="skinTone" data-value="#d4956a" style="background:#d4956a" title="Médio"></div>
+              <div class="avatar-swatch" data-key="skinTone" data-value="#a0674a" style="background:#a0674a" title="Médio Escuro"></div>
+              <div class="avatar-swatch" data-key="skinTone" data-value="#7b4a2d" style="background:#7b4a2d" title="Escuro"></div>
+              <div class="avatar-swatch" data-key="skinTone" data-value="#4a2511" style="background:#4a2511" title="Muito Escuro"></div>
+            </div>
+          </div>
+
+          <!-- Hair style -->
+          <div class="avatar-editor-group">
+            <label class="avatar-editor-label"><i class="fas fa-cut"></i> Cabelo</label>
+            <div class="avatar-option-row" id="hair-style-opts">
+              <div class="avatar-opt-chip" data-key="hairStyle" data-value="short">Curto</div>
+              <div class="avatar-opt-chip" data-key="hairStyle" data-value="medium">Médio</div>
+              <div class="avatar-opt-chip" data-key="hairStyle" data-value="long">Longo</div>
+              <div class="avatar-opt-chip" data-key="hairStyle" data-value="curly">Cacheado</div>
+              <div class="avatar-opt-chip" data-key="hairStyle" data-value="fade">Degradê</div>
+              <div class="avatar-opt-chip" data-key="hairStyle" data-value="mohawk">Moicano</div>
+              <div class="avatar-opt-chip" data-key="hairStyle" data-value="bald">Careca</div>
+            </div>
+            <div class="avatar-color-row" id="hair-color-swatches">
+              <div class="avatar-swatch" data-key="hairColor" data-value="#1a0a00" style="background:#1a0a00" title="Preto"></div>
+              <div class="avatar-swatch" data-key="hairColor" data-value="#3a2010" style="background:#3a2010" title="Castanho Escuro"></div>
+              <div class="avatar-swatch" data-key="hairColor" data-value="#7a4a20" style="background:#7a4a20" title="Castanho"></div>
+              <div class="avatar-swatch" data-key="hairColor" data-value="#c8922a" style="background:#c8922a" title="Loiro"></div>
+              <div class="avatar-swatch" data-key="hairColor" data-value="#d44000" style="background:#d44000" title="Ruivo"></div>
+              <div class="avatar-swatch" data-key="hairColor" data-value="#aaaaaa" style="background:#aaaaaa" title="Grisalho"></div>
+              <div class="avatar-swatch" data-key="hairColor" data-value="#e0e0e0" style="background:#e0e0e0" title="Branco"></div>
+              <div class="avatar-swatch avatar-swatch-custom" data-key="hairColor" title="Cor personalizada">
+                <input type="color" class="swatch-color-input" value="#3a2010">
+              </div>
+            </div>
+          </div>
+
+          <!-- Beard -->
+          <div class="avatar-editor-group">
+            <label class="avatar-editor-label"><i class="fas fa-male"></i> Barba</label>
+            <div class="avatar-option-row" id="beard-style-opts">
+              <div class="avatar-opt-chip" data-key="beardStyle" data-value="none">Sem Barba</div>
+              <div class="avatar-opt-chip" data-key="beardStyle" data-value="stubble">Stubble</div>
+              <div class="avatar-opt-chip" data-key="beardStyle" data-value="mustache">Bigode</div>
+              <div class="avatar-opt-chip" data-key="beardStyle" data-value="goatee">Cavanhaque</div>
+              <div class="avatar-opt-chip" data-key="beardStyle" data-value="full">Barba Cheia</div>
+            </div>
+            <div class="avatar-color-row" id="beard-color-swatches">
+              <div class="avatar-swatch" data-key="beardColor" data-value="#1a0a00" style="background:#1a0a00" title="Preto"></div>
+              <div class="avatar-swatch" data-key="beardColor" data-value="#3a2010" style="background:#3a2010" title="Castanho"></div>
+              <div class="avatar-swatch" data-key="beardColor" data-value="#7a4a20" style="background:#7a4a20" title="Médio"></div>
+              <div class="avatar-swatch" data-key="beardColor" data-value="#aaaaaa" style="background:#aaaaaa" title="Grisalho"></div>
+              <div class="avatar-swatch avatar-swatch-custom" data-key="beardColor" title="Cor personalizada">
+                <input type="color" class="swatch-color-input" value="#3a2010">
+              </div>
+            </div>
+          </div>
+
+          <!-- Eyes -->
+          <div class="avatar-editor-group">
+            <label class="avatar-editor-label"><i class="fas fa-eye"></i> Cor dos Olhos</label>
+            <div class="avatar-color-row">
+              <div class="avatar-swatch" data-key="eyeColor" data-value="#3a6ea8" style="background:#3a6ea8" title="Azul"></div>
+              <div class="avatar-swatch" data-key="eyeColor" data-value="#4a8a4a" style="background:#4a8a4a" title="Verde"></div>
+              <div class="avatar-swatch" data-key="eyeColor" data-value="#6a4a2a" style="background:#6a4a2a" title="Castanho"></div>
+              <div class="avatar-swatch" data-key="eyeColor" data-value="#1a1a2e" style="background:#1a1a2e" title="Preto"></div>
+              <div class="avatar-swatch" data-key="eyeColor" data-value="#8888cc" style="background:#8888cc" title="Violeta"></div>
+              <div class="avatar-swatch avatar-swatch-custom" data-key="eyeColor" title="Cor personalizada">
+                <input type="color" class="swatch-color-input" value="#3a6ea8">
+              </div>
+            </div>
+          </div>
+
+          <!-- Shirt -->
+          <div class="avatar-editor-group">
+            <label class="avatar-editor-label"><i class="fas fa-tshirt"></i> Roupa</label>
+            <div class="avatar-option-row" id="shirt-style-opts">
+              <div class="avatar-opt-chip" data-key="shirtStyle" data-value="tshirt">Camiseta</div>
+              <div class="avatar-opt-chip" data-key="shirtStyle" data-value="polo">Polo</div>
+              <div class="avatar-opt-chip" data-key="shirtStyle" data-value="hoodie">Moletom</div>
+              <div class="avatar-opt-chip" data-key="shirtStyle" data-value="suit">Terno</div>
+              <div class="avatar-opt-chip" data-key="shirtStyle" data-value="tank">Regata</div>
+            </div>
+            <div class="avatar-color-row">
+              <div class="avatar-swatch" data-key="shirtColor" data-value="#2a4a7f" style="background:#2a4a7f" title="Azul"></div>
+              <div class="avatar-swatch" data-key="shirtColor" data-value="#2a5a2a" style="background:#2a5a2a" title="Verde"></div>
+              <div class="avatar-swatch" data-key="shirtColor" data-value="#7a2a2a" style="background:#7a2a2a" title="Vermelho"></div>
+              <div class="avatar-swatch" data-key="shirtColor" data-value="#333344" style="background:#333344" title="Chumbo"></div>
+              <div class="avatar-swatch" data-key="shirtColor" data-value="#1a1a1a" style="background:#1a1a1a" title="Preto"></div>
+              <div class="avatar-swatch" data-key="shirtColor" data-value="#eeeeee" style="background:#eeeeee; border:1px solid #555" title="Branco"></div>
+              <div class="avatar-swatch avatar-swatch-custom" data-key="shirtColor" title="Cor personalizada">
+                <input type="color" class="swatch-color-input" value="#2a4a7f">
+              </div>
+            </div>
+          </div>
+
+          <!-- Pants -->
+          <div class="avatar-editor-group">
+            <label class="avatar-editor-label"><i class="fas fa-stream"></i> Calça</label>
+            <div class="avatar-color-row">
+              <div class="avatar-swatch" data-key="pantsColor" data-value="#2c2c3a" style="background:#2c2c3a" title="Jeans"></div>
+              <div class="avatar-swatch" data-key="pantsColor" data-value="#1a1a1a" style="background:#1a1a1a" title="Preto"></div>
+              <div class="avatar-swatch" data-key="pantsColor" data-value="#4a3a28" style="background:#4a3a28" title="Bege/Khaki"></div>
+              <div class="avatar-swatch" data-key="pantsColor" data-value="#2a4a7f" style="background:#2a4a7f" title="Azul"></div>
+              <div class="avatar-swatch" data-key="pantsColor" data-value="#3a5a3a" style="background:#3a5a3a" title="Verde"></div>
+              <div class="avatar-swatch avatar-swatch-custom" data-key="pantsColor" title="Cor personalizada">
+                <input type="color" class="swatch-color-input" value="#2c2c3a">
+              </div>
+            </div>
+          </div>
+
+          <!-- Glasses -->
+          <div class="avatar-editor-group">
+            <label class="avatar-editor-label"><i class="fas fa-glasses"></i> Óculos</label>
+            <div class="avatar-option-row">
+              <div class="avatar-opt-chip" data-key="glassesStyle" data-value="none">Sem Óculos</div>
+              <div class="avatar-opt-chip" data-key="glassesStyle" data-value="round">Redondo</div>
+              <div class="avatar-opt-chip" data-key="glassesStyle" data-value="square">Quadrado</div>
+              <div class="avatar-opt-chip" data-key="glassesStyle" data-value="pixel">Pixel</div>
+              <div class="avatar-opt-chip" data-key="glassesStyle" data-value="sunglasses">Escuro</div>
+            </div>
+            <div class="avatar-option-row" style="margin-top:8px;">
+              <div class="avatar-swatch" data-key="glassesColor" data-value="#58a6ff" style="background:#58a6ff" title="Azul"><input type="color" class="swatch-color-input" value="#58a6ff" style="opacity:0;position:absolute;width:100%;height:100%;cursor:pointer;border:none;"></div>
+              <div class="avatar-swatch" data-key="glassesColor" data-value="#ff6b6b" style="background:#ff6b6b" title="Vermelho"></div>
+              <div class="avatar-swatch" data-key="glassesColor" data-value="#40c880" style="background:#40c880" title="Verde"></div>
+              <div class="avatar-swatch" data-key="glassesColor" data-value="#f0b800" style="background:#f0b800" title="Dourado"></div>
+              <div class="avatar-swatch" data-key="glassesColor" data-value="#888888" style="background:#888888" title="Prata"></div>
+              <div class="avatar-swatch" data-key="glassesColor" data-value="#1a1a1a" style="background:#1a1a1a" title="Preto"></div>
+            </div>
+          </div>
+
+          <!-- Accessory -->
+          <div class="avatar-editor-group">
+            <label class="avatar-editor-label"><i class="fas fa-hat-cowboy"></i> Acessório</label>
+            <div class="avatar-option-row">
+              <div class="avatar-opt-chip" data-key="accessory" data-value="none">Nenhum</div>
+              <div class="avatar-opt-chip" data-key="accessory" data-value="headphones">Fone</div>
+              <div class="avatar-opt-chip" data-key="accessory" data-value="cap">Boné</div>
+              <div class="avatar-opt-chip" data-key="accessory" data-value="beanie">Gorro</div>
+              <div class="avatar-opt-chip" data-key="accessory" data-value="crown">Coroa</div>
+            </div>
+          </div>
+
+          <!-- Gestures (allowed autonomous states) -->
+          <div class="avatar-editor-group">
+            <label class="avatar-editor-label"><i class="fas fa-gamepad"></i> Gestos Autônomos</label>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin:0 0 8px;">Escolha quais animações ele pode fazer sozinho.</p>
+            <div class="avatar-option-row" id="allowed-states-row">
+              <div class="avatar-opt-chip state-toggle selected" data-state="walk">Caminhar</div>
+              <div class="avatar-opt-chip state-toggle selected" data-state="dance">Dança</div>
+              <div class="avatar-opt-chip state-toggle selected" data-state="bored">Entediado</div>
+              <div class="avatar-opt-chip state-toggle selected" data-state="phone">Celular</div>
+              <div class="avatar-opt-chip state-toggle selected" data-state="stretch">Esticar</div>
+              <div class="avatar-opt-chip state-toggle selected" data-state="look">Olhar</div>
+              <div class="avatar-opt-chip state-toggle selected" data-state="code">Codar</div>
+              <div class="avatar-opt-chip state-toggle selected" data-state="wave">Acenar</div>
+              <div class="avatar-opt-chip state-toggle selected" data-state="study">Estudar</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- TOAST NOTIFICATION -->
@@ -611,6 +817,8 @@
   <script src="../js/admin/projects.js"></script>
   <script src="../js/admin/companies.js"></script>
   <script src="../js/admin/radio.js"></script>
+  <script src="../js/modules/avatar.js?v=7"></script>
+  <script src="../js/admin/avatar.js"></script>
   <script src="../js/admin.js"></script>
 </body>
 </html>

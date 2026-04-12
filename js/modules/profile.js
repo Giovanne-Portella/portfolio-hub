@@ -109,5 +109,15 @@ async function loadProfile() {
   if (typeof setResumeUrl === 'function') {
     setResumeUrl(data.resume_url || null);
   }
+
+  // Avatar config
+  if (typeof updateAvatarConfig === 'function' && data.avatar_config) {
+    try {
+      const cfg = typeof data.avatar_config === 'string'
+        ? JSON.parse(data.avatar_config)
+        : data.avatar_config;
+      updateAvatarConfig(cfg);
+    } catch (_) {}
+  }
 }
 

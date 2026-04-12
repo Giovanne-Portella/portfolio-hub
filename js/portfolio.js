@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupCollapsible();
   setupTypeInAnimation();
   setupSplashScreen();
+  setupAvatar(); // Avatar starts with defaults; config applied after profile loads
 
   document.getElementById('footer-year').textContent = new Date().getFullYear();
 });

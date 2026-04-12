@@ -101,3 +101,12 @@ create policy "Public read resumes" on storage.objects for select using (bucket_
 create policy "Auth upload resumes" on storage.objects for insert with check (bucket_id = 'resumes' and auth.role() = 'authenticated');
 create policy "Auth update resumes" on storage.objects for update using (bucket_id = 'resumes' and auth.role() = 'authenticated');
 create policy "Auth delete resumes" on storage.objects for delete using (bucket_id = 'resumes' and auth.role() = 'authenticated');
+
+-- ============================================
+-- 8. Coluna avatar_config na tabela profiles
+--    Armazena o JSON de customização do avatar pixel art
+-- ============================================
+alter table profiles add column if not exists avatar_config jsonb;
+
+-- Coluna extra para URL da empresa (caso não exista ainda)
+alter table profiles add column if not exists company_url text;

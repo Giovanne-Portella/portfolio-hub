@@ -18,3 +18,6 @@
 
 /* Responsividade */
 @import url('./admin/_responsive.css');
+
+/* Avatar editor animations (shared with portfolio) */
+@import url('./modules/_avatar.css');

@@ -1,0 +1,509 @@
+/* ============================================
+   PIXEL ART AVATAR — Scroll companion
+   SVG size: 100×160 (20×32 grid at 5px each)
+
+   Limbs inside the SVG are wrapped in <g> groups
+   (.avatar-left-leg, .avatar-right-leg,
+    .avatar-left-arm, .avatar-right-arm, .avatar-head)
+   and animated independently via CSS descendant selectors.
+   transform-box: fill-box makes each element pivot
+   relative to its own bounding box (not the SVG origin).
+   ============================================ */
+
+/* ── Wrapper ── */
+.avatar-companion {
+  position: fixed;
+  right: 36px;
+  bottom: 90px;
+  z-index: 1200;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.55s ease,
+              transform 0.55s cubic-bezier(0.34, 1.4, 0.64, 1),
+              right 0.6s cubic-bezier(0.4,0,0.2,1);
+  user-select: none;
+  /* Provides the perspective depth for child 3D transforms */
+  perspective: 320px;
+  perspective-origin: 50% 40%;
+}
+
+.avatar-companion.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.avatar-companion.hidden {
+  opacity: 0;
+  transform: translateY(24px);
+  pointer-events: none;
+}
+
+/* ── SVG sprite wrapper ── */
+.avatar-sprite-wrap {
+  display: block;
+  width: 100px;
+  height: 160px;
+  overflow: visible;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  cursor: pointer;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.50));
+  transition: filter 0.35s ease;
+}
+
+.avatar-sprite-wrap:hover {
+  filter: drop-shadow(0 8px 24px rgba(88,166,255,0.60));
+}
+
+.avatar-sprite-wrap svg {
+  width: 100px;
+  height: 160px;
+  display: block;
+  overflow: visible;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* ── Music glow ── */
+.avatar-companion.music-on .avatar-sprite-wrap {
+  filter: drop-shadow(0 6px 14px rgba(255,107,107,0.55))
+          drop-shadow(0 0 10px rgba(255,107,107,0.22));
+}
+
+/* ── Speech bubble ── */
+.avatar-bubble {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  background: rgba(22,27,34,0.97);
+  border: 1px solid var(--border);
+  border-radius: 10px 10px 2px 10px;
+  padding: 8px 12px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text);
+  max-width: 200px;
+  line-height: 1.4;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transform: scale(0.82) translateY(6px);
+  transform-origin: bottom right;
+  transition: opacity 0.22s ease,
+              transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  white-space: normal;
+}
+
+.avatar-bubble.show {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.avatar-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  right: 14px;
+  width: 10px;
+  height: 10px;
+  background: rgba(22,27,34,0.97);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transform: rotate(45deg);
+}
+
+/* ── Section label ── */
+.avatar-section-label {
+  position: absolute;
+  bottom: calc(100% + 52px);
+  right: 0;
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.avatar-companion.visible .avatar-section-label { opacity: 0.7; }
+
+/* ============================================
+   SUB-GROUP PIVOT RULES
+   Each limb animates around its own bounding box.
+   ============================================ */
+.avatar-left-leg,
+.avatar-right-leg,
+.avatar-left-arm,
+.avatar-right-arm,
+.avatar-head,
+.avatar-blink-layer {
+  transform-box: fill-box;
+}
+
+.avatar-left-leg,
+.avatar-right-leg  { transform-origin: top center; }
+
+.avatar-left-arm,
+.avatar-right-arm  { transform-origin: top center; }
+
+.avatar-head       { transform-origin: bottom center; }
+
+/* ============================================
+   KEYFRAMES
+   ============================================ */
+
+/* ── Idle: organic breathing ── */
+@keyframes avatarBreathe {
+  0%, 100% { transform: translateY(0)    scaleX(1)    scaleY(1); }
+  35%       { transform: translateY(-2px) scaleX(0.994) scaleY(1.012); }
+  65%       { transform: translateY(-1px) scaleX(0.997) scaleY(1.006); }
+}
+
+/* ── Walk: body bob + limb swing (Minecraft) ── */
+@keyframes avatarWalkBody {
+  0%, 100% { transform: translateY(0); }
+  25%, 75% { transform: translateY(-3px); }
+}
+
+@keyframes avatarWalkLegL {
+  0%   { transform: rotate(-11deg); }
+  50%  { transform: rotate( 11deg); }
+  100% { transform: rotate(-11deg); }
+}
+
+@keyframes avatarWalkLegR {
+  0%   { transform: rotate( 11deg); }
+  50%  { transform: rotate(-11deg); }
+  100% { transform: rotate( 11deg); }
+}
+
+@keyframes avatarWalkArmL {
+  0%   { transform: rotate( 9deg); }
+  50%  { transform: rotate(-9deg); }
+  100% { transform: rotate( 9deg); }
+}
+
+@keyframes avatarWalkArmR {
+  0%   { transform: rotate(-9deg); }
+  50%  { transform: rotate( 9deg); }
+  100% { transform: rotate(-9deg); }
+}
+
+/* ── Dance: groovy full-body sway ── */
+@keyframes avatarDanceBody {
+  0%, 100% { transform: rotate(-4deg)   translateY(0); }
+  25%       { transform: rotate(-1.5deg) translateY(-3.5px); }
+  50%       { transform: rotate( 4deg)   translateY(0); }
+  75%       { transform: rotate( 1.5deg) translateY(-3.5px); }
+}
+
+@keyframes avatarDanceLegL {
+  0%, 100% { transform: rotate(-10deg); }
+  50%       { transform: rotate(  6deg); }
+}
+
+@keyframes avatarDanceLegR {
+  0%, 100% { transform: rotate( 10deg); }
+  50%       { transform: rotate( -6deg); }
+}
+
+@keyframes avatarDanceArmL {
+  0%, 100% { transform: rotate(-22deg); }
+  50%       { transform: rotate( 12deg); }
+}
+
+@keyframes avatarDanceArmR {
+  0%, 100% { transform: rotate( 22deg); }
+  50%       { transform: rotate(-12deg); }
+}
+
+/* ── Sit: removed (use code instead) ── */
+
+/* ── Bored: lazy lean with head loll ── */
+@keyframes avatarBored {
+  0%, 18%, 78%, 100% { transform: rotate(0deg)    translateY(0); }
+  8%                  { transform: rotate(-7deg)   translateY(1px); }
+  62%                 { transform: rotate( 4.5deg) translateY(0.5px); }
+}
+
+@keyframes avatarBoredHead {
+  0%, 25%, 80%, 100% { transform: rotate(  0deg); }
+  10%                 { transform: rotate( -9deg); }
+  60%                 { transform: rotate(  4deg); }
+}
+
+/* ── Excited: removed ── */
+
+/* ── Wave: body lifts + right arm fans ── */
+@keyframes avatarWaveBody {
+  0%, 100% { transform: translateY(0)   rotate(0deg); }
+  28%       { transform: translateY(-4px) rotate(-1.5deg); }
+  55%       { transform: translateY(-6px) rotate(1deg); }
+  80%       { transform: translateY(-2px) rotate(-0.5deg); }
+}
+
+@keyframes avatarWaveArmR {
+  0%   { transform: rotate(  -5deg); }
+  12%  { transform: rotate( -65deg); }
+  26%  { transform: rotate( -32deg); }
+  40%  { transform: rotate( -70deg); }
+  55%  { transform: rotate( -38deg); }
+  70%  { transform: rotate( -64deg); }
+  85%  { transform: rotate( -28deg); }
+  100% { transform: rotate(  -5deg); }
+}
+
+@keyframes avatarWaveArmL {
+  0%, 100% { transform: rotate(  5deg); }
+  50%       { transform: rotate(  9deg); }
+}
+
+/* ── Phone: lean forward + head tilts down ── */
+@keyframes avatarPhone {
+  0%, 100% { transform: rotate(-4deg)   translateY(2px); }
+  50%       { transform: rotate(-5.5deg) translateY(3px); }
+}
+
+/* Head bows to read the phone screen */
+@keyframes avatarPhoneHead {
+  0%, 100% { transform: rotate( 16deg) translateY(3px); }
+  40%       { transform: rotate( 19deg) translateY(4px); }
+  70%       { transform: rotate( 14deg) translateY(3px); }
+}
+
+@keyframes avatarPhoneArmR {
+  0%, 100% { transform: rotate(28deg); }
+  50%       { transform: rotate(31deg); }
+}
+
+/* ── Stretch: arms raise, body elongates ── */
+@keyframes avatarStretch {
+  0%, 100% { transform: translateY(0)   scaleY(1); }
+  40%       { transform: translateY(-5px) scaleY(1.04); }
+  70%       { transform: translateY(-3px) scaleY(1.02); }
+}
+
+@keyframes avatarStretchArmL {
+  0%, 100% { transform: rotate(   0deg); }
+  35%       { transform: rotate(-148deg); }
+  65%       { transform: rotate(-130deg); }
+}
+
+@keyframes avatarStretchArmR {
+  0%, 100% { transform: rotate(   0deg); }
+  35%       { transform: rotate( 148deg); }
+  65%       { transform: rotate( 130deg); }
+}
+
+/* ── Look around: full-body 3D via HTML wrapper (see .looking below) ── */
+
+
+/* ── Blink (all states) ── */
+@keyframes avatarBlink {
+  0%, 87%, 100% { transform: scaleY(0); }   /* eyes open */
+  92%            { transform: scaleY(1); }   /* eyes closed */
+}
+
+/* ============================================
+   STATE → ANIMATION BINDINGS
+   ============================================ */
+
+/* IDLE */
+.avatar-sprite.state-idle {
+  animation: avatarBreathe 4.5s cubic-bezier(0.4,0,0.6,1) infinite;
+}
+
+/* WALK — whole body + all four limbs */
+.avatar-sprite.state-walk {
+  animation: avatarWalkBody 0.58s cubic-bezier(0.4,0,0.6,1) infinite;
+}
+.avatar-sprite.state-walk .avatar-left-leg  { animation: avatarWalkLegL 0.58s cubic-bezier(0.4,0,0.6,1) infinite; }
+.avatar-sprite.state-walk .avatar-right-leg { animation: avatarWalkLegR 0.58s cubic-bezier(0.4,0,0.6,1) infinite; }
+.avatar-sprite.state-walk .avatar-left-arm  { animation: avatarWalkArmL 0.58s cubic-bezier(0.4,0,0.6,1) infinite; }
+.avatar-sprite.state-walk .avatar-right-arm { animation: avatarWalkArmR 0.58s cubic-bezier(0.4,0,0.6,1) infinite; }
+
+/* DANCE */
+.avatar-sprite.state-dance {
+  animation: avatarDanceBody 0.72s cubic-bezier(0.4,0,0.6,1) infinite;
+}
+.avatar-sprite.state-dance .avatar-left-leg  { animation: avatarDanceLegL 0.72s cubic-bezier(0.4,0,0.6,1) infinite; }
+.avatar-sprite.state-dance .avatar-right-leg { animation: avatarDanceLegR 0.72s cubic-bezier(0.4,0,0.6,1) infinite; }
+.avatar-sprite.state-dance .avatar-left-arm  { animation: avatarDanceArmL 0.72s cubic-bezier(0.4,0,0.6,1) infinite; }
+.avatar-sprite.state-dance .avatar-right-arm { animation: avatarDanceArmR 0.72s cubic-bezier(0.4,0,0.6,1) infinite; }
+
+/* SIT — removed */
+
+/* BORED */
+.avatar-sprite.state-bored {
+  animation: avatarBored 9s cubic-bezier(0.4,0,0.6,1) infinite;
+}
+.avatar-sprite.state-bored .avatar-head { animation: avatarBoredHead 9s cubic-bezier(0.4,0,0.6,1) infinite; }
+
+/* EXCITED — removed */
+
+/* WAVE */
+.avatar-sprite.state-wave {
+  animation: avatarWaveBody 1.65s cubic-bezier(0.4,0,0.6,1) infinite;
+}
+.avatar-sprite.state-wave .avatar-right-arm { animation: avatarWaveArmR 1.65s cubic-bezier(0.35,0,0.65,1) infinite; }
+.avatar-sprite.state-wave .avatar-left-arm  { animation: avatarWaveArmL 1.65s cubic-bezier(0.4,0,0.6,1) infinite; }
+
+/* PHONE */
+.avatar-sprite.state-phone {
+  animation: avatarPhone 3s cubic-bezier(0.4,0,0.6,1) infinite;
+}
+.avatar-sprite.state-phone .avatar-head      { animation: avatarPhoneHead  3s cubic-bezier(0.4,0,0.6,1) infinite; }
+.avatar-sprite.state-phone .avatar-right-arm { animation: avatarPhoneArmR  3s cubic-bezier(0.4,0,0.6,1) infinite; }
+
+/* STUDY — reading a book, both arms forward, head bowed */
+@keyframes avatarStudyBody {
+  0%, 100% { transform: rotate(-3deg) translateY(1px); }
+  50%       { transform: rotate(-4deg) translateY(2px); }
+}
+@keyframes avatarStudyHead {
+  0%, 100% { transform: rotate(26deg) translateY(4px); }
+  35%       { transform: rotate(28deg) translateY(5px); }
+  70%       { transform: rotate(24deg) translateY(4px); }
+}
+@keyframes avatarStudyArmL {
+  0%, 100% { transform: rotate(14deg) translateY(4px); }
+  50%       { transform: rotate(13deg) translateY(4px); }
+}
+@keyframes avatarStudyArmR {
+  0%, 100% { transform: rotate(-14deg) translateY(4px); }
+  50%       { transform: rotate(-13deg) translateY(4px); }
+}
+
+.avatar-sprite.state-study {
+  animation: avatarStudyBody 3.5s cubic-bezier(0.4,0,0.6,1) infinite;
+}
+.avatar-sprite.state-study .avatar-head      { animation: avatarStudyHead  3.5s cubic-bezier(0.4,0,0.6,1) infinite; }
+.avatar-sprite.state-study .avatar-left-arm  { animation: avatarStudyArmL  3.5s cubic-bezier(0.4,0,0.6,1) infinite; }
+.avatar-sprite.state-study .avatar-right-arm { animation: avatarStudyArmR  3.5s cubic-bezier(0.4,0,0.6,1) infinite; }
+
+/* STRETCH */
+.avatar-sprite.state-stretch {
+  animation: avatarStretch 2.8s cubic-bezier(0.4,0,0.6,1) infinite;
+}
+.avatar-sprite.state-stretch .avatar-left-arm  { animation: avatarStretchArmL 2.8s cubic-bezier(0.3,0,0.7,1) infinite; }
+.avatar-sprite.state-stretch .avatar-right-arm { animation: avatarStretchArmR 2.8s cubic-bezier(0.3,0,0.7,1) infinite; }
+
+/* LOOK — rotate the HTML div (real 3D foreshortening, not flat SVG) */
+/* JS adds .looking to .avatar-companion when state=look             */
+@keyframes avatarLookTurn {
+  0%, 8%    { transform: rotateY(  0deg); }
+  22%        { transform: rotateY(-42deg); }
+  42%, 52%  { transform: rotateY(  0deg); }
+  68%        { transform: rotateY( 38deg); }
+  88%, 100% { transform: rotateY(  0deg); }
+}
+.avatar-companion.looking .avatar-sprite-wrap {
+  animation: avatarLookTurn 4.5s cubic-bezier(0.4,0,0.6,1) infinite;
+}
+
+/* CODE — character from behind, large monitor visible to the left (diagonal view) */
+/* companion shifts right so the leftward-extending monitor SVG overflow is visible  */
+.avatar-companion.coding {
+  right: 0px;
+}
+
+.avatar-companion.coding .avatar-sprite-wrap {
+  transform: translateY(35px);
+}
+
+@keyframes avatarCodeBody {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-1px); }
+}
+@keyframes avatarCodeHead {
+  0%, 100% { transform: rotate( 0deg); }
+  30%       { transform: rotate(-2deg); }
+  70%       { transform: rotate( 2deg); }
+}
+@keyframes avatarCodeArmL {
+  /* Stay mostly covered by back-of-sleeve overlay; tiny up/down typing tap */
+  0%, 100% { transform: translateY(0)   rotate(-3deg); }
+  25%       { transform: translateY(3px) rotate(-3deg); }
+  75%       { transform: translateY(2px) rotate(-3deg); }
+}
+@keyframes avatarCodeArmR {
+  0%, 100% { transform: translateY(3px) rotate( 3deg); }
+  35%       { transform: translateY(0)   rotate( 3deg); }
+  65%       { transform: translateY(2px) rotate( 3deg); }
+}
+@keyframes avatarCodeCursor {
+  0%, 49% { opacity: 1; }
+  50%, 99% { opacity: 0; }
+}
+
+.avatar-sprite.state-code {
+  animation: avatarCodeBody 2s cubic-bezier(0.4,0,0.6,1) infinite;
+}
+.avatar-sprite.state-code .avatar-head      { animation: avatarCodeHead  3s cubic-bezier(0.4,0,0.6,1) infinite; }
+.avatar-sprite.state-code .avatar-left-arm  { animation: avatarCodeArmL  0.9s cubic-bezier(0.3,0,0.7,1) infinite; }
+.avatar-sprite.state-code .avatar-right-arm { animation: avatarCodeArmR  1.1s cubic-bezier(0.3,0,0.7,1) infinite; }
+
+#avatar-laptop-cursor { animation: avatarCodeCursor 1s steps(1) infinite; }
+
+/* ── Blink layer (universal, all states) ── */
+.avatar-blink-layer {
+  animation: avatarBlink 4.5s ease-in-out infinite;
+  transform-origin: 50% 50%;
+}
+
+/* ============================================
+   WALK — SIDE-TO-SIDE PACING
+   .walking toggled on .avatar-companion by JS
+   ============================================ */
+
+/* Walk bounded left/right — avatar paces within the right panel,
+   flipping direction as it reverses                                */
+@keyframes avatarPace {
+  0%,  5%   { transform: translateX(   0px); }
+  42%, 58%  { transform: translateX(-180px); }
+  95%, 100% { transform: translateX(   0px); }
+}
+
+@keyframes avatarFlipDir {
+  0%,  4.9% { transform: scaleX( 1); }   /* at right, facing left to start walk */
+  5%        { transform: scaleX(-1); }   /* flips left, walks toward limit       */
+  57.9%     { transform: scaleX(-1); }
+  58%       { transform: scaleX( 1); }   /* flips right, walks back              */
+  100%      { transform: scaleX( 1); }
+}
+
+.avatar-companion.walking {
+  animation: avatarPace 8s cubic-bezier(0.45,0,0.55,1) infinite;
+}
+
+.avatar-companion.walking .avatar-sprite-wrap {
+  animation: avatarFlipDir 8s linear infinite;
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .avatar-companion {
+    right: 10px;
+    bottom: 76px;
+  }
+
+  .avatar-sprite-wrap,
+  .avatar-sprite-wrap svg {
+    width: 72px;
+    height: 115px;
+  }
+
+  .avatar-bubble {
+    font-size: 0.65rem;
+    max-width: 160px;
+  }
+}
+
+@media (max-width: 360px) {
+  .avatar-companion { display: none; }
+}

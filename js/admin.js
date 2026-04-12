@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupProjectForm();
   setupCompanyForm();
   setupRadioForm();
+  setupAvatarEditor();
 
   // Initial data load
   loadProfile();
@@ -22,5 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
   loadProjects();
   loadCompaniesAdmin();
   loadRadioTracksAdmin();
+  loadAvatarConfig();
 });
 
