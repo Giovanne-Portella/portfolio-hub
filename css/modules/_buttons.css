@@ -1,4 +1,4 @@
-﻿/* ============================================
+/* ============================================
    BUTTONS
    ============================================ */
 .btn {
@@ -13,6 +13,8 @@
   transition: var(--transition);
   border: 2px solid transparent;
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .btn-primary {
@@ -28,10 +30,16 @@
   box-shadow: 0 4px 20px rgba(88, 166, 255, 0.3);
 }
 
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: none;
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+}
+
 .btn-outline {
   background: transparent;
   color: var(--primary-light);
-  border-color: rgba(88, 166, 255, 0.5);
+  border: 2px solid rgba(88, 166, 255, 0.5);
 }
 
 .btn-outline:hover {
@@ -41,8 +49,13 @@
   transform: translateY(-2px);
 }
 
+.btn-outline:active {
+  transform: translateY(0);
+  background: rgba(88, 166, 255, 0.18);
+  border-color: var(--primary);
+}
+
 .btn-sm {
   padding: 8px 16px;
   font-size: 0.85rem;
 }
-
