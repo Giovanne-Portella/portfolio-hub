@@ -210,20 +210,6 @@
   font-size: 0.95rem;
 }
 
-/* === Hero button === */
-.btn-resume {
-  background: transparent;
-  border: 1px solid rgba(88, 166, 255, 0.6);
-  color: var(--primary-light);
-  font-weight: 600;
-}
-
-.btn-resume:hover {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: #fff;
-}
-
 /* === Responsive === */
 @media (max-width: 768px) {
   .resume-modal {

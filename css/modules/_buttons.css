@@ -30,13 +30,14 @@
 
 .btn-outline {
   background: transparent;
-  color: white;
-  border-color: rgba(255,255,255,0.4);
+  color: var(--primary-light);
+  border-color: rgba(88, 166, 255, 0.5);
 }
 
 .btn-outline:hover {
-  background: rgba(255,255,255,0.1);
-  border-color: white;
+  background: rgba(88, 166, 255, 0.1);
+  border-color: var(--primary);
+  color: white;
   transform: translateY(-2px);
 }
 
