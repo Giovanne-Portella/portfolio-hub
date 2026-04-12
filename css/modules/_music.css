@@ -70,24 +70,24 @@
   position: absolute;
   inset: -6px;
   border-radius: 50%;
-  border: 1.5px solid #ff6b6b;
+  border: 2px solid #ff6b6b;
   opacity: 0;
   pointer-events: none;
   transform: scale(1);
 }
 
 .music-player.collapsed.playing .music-pulse-ring {
-  animation: musicPulse 2s ease-out infinite;
+  animation: musicPulse 1.6s ease-out infinite;
 }
 
 .music-player.collapsed.playing .music-pulse-ring-2 {
-  animation: musicPulse 2s ease-out 1s infinite;
+  animation: musicPulse 1.6s ease-out 0.8s infinite;
 }
 
 @keyframes musicPulse {
-  0%   { transform: scale(0.95); opacity: 0.75; }
-  75%  { transform: scale(2.0);  opacity: 0;    }
-  100% { transform: scale(2.0);  opacity: 0;    }
+  0%   { transform: scale(0.9);  opacity: 1;   box-shadow: 0 0 8px rgba(255, 107, 107, 0.6); }
+  60%  { transform: scale(2.2);  opacity: 0.2; }
+  100% { transform: scale(2.4);  opacity: 0;   }
 }
 
 /* -- Expandable content (2-line layout) -- */
@@ -373,7 +373,7 @@
   z-index: 9998;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 1.5s ease;
+  transition: opacity 1.2s ease;
 }
 
 .music-reactor.active {
@@ -384,23 +384,32 @@
 .reactor-glow {
   position: absolute;
   inset: 0;
-  transition: opacity 0.08s linear;
+  transition: opacity 0.06s linear;
 }
 
+/* Bass — pulso quente vindo de baixo, mais largo e intenso */
 .reactor-glow-bass {
-  background: radial-gradient(ellipse 140% 50% at 50% 110%, rgba(255, 120, 50, 0.4) 0%, transparent 60%);
+  background: radial-gradient(ellipse 160% 60% at 50% 115%,
+    rgba(255, 100, 40, 0.75) 0%,
+    rgba(255, 60, 60, 0.35) 35%,
+    transparent 65%);
   opacity: 0;
 }
 
+/* Mid — laterais roxas/rosa mais intensas */
 .reactor-glow-mid {
   background:
-    radial-gradient(ellipse 40% 80% at -5% 50%, rgba(160, 80, 255, 0.35) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 80% at 105% 50%, rgba(160, 80, 255, 0.35) 0%, transparent 60%);
+    radial-gradient(ellipse 55% 90% at -8% 50%, rgba(180, 60, 255, 0.60) 0%, transparent 65%),
+    radial-gradient(ellipse 55% 90% at 108% 50%, rgba(180, 60, 255, 0.60) 0%, transparent 65%);
   opacity: 0;
 }
 
+/* Treble — topo azul-ciano mais presente */
 .reactor-glow-treble {
-  background: radial-gradient(ellipse 100% 40% at 50% -5%, rgba(80, 200, 255, 0.3) 0%, transparent 50%);
+  background: radial-gradient(ellipse 120% 50% at 50% -8%,
+    rgba(60, 210, 255, 0.65) 0%,
+    rgba(88, 166, 255, 0.30) 40%,
+    transparent 65%);
   opacity: 0;
 }
 

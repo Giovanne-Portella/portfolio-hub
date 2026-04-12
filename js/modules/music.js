@@ -64,15 +64,15 @@ const musicReactor = {
       0.1
     );
 
-    // Smooth
-    this.bassSmooth += (bass - this.bassSmooth) * 0.08;
-    this.midSmooth += (mid - this.midSmooth) * 0.12;
-    this.trebleSmooth += (treble - this.trebleSmooth) * 0.18;
+    // Smooth — attack rápido, decay suave para parecer reativo
+    this.bassSmooth   += (bass   - this.bassSmooth)   * (bass   > this.bassSmooth   ? 0.25 : 0.07);
+    this.midSmooth    += (mid    - this.midSmooth)    * (mid    > this.midSmooth    ? 0.30 : 0.10);
+    this.trebleSmooth += (treble - this.trebleSmooth) * (treble > this.trebleSmooth ? 0.35 : 0.13);
 
-    // Glow — more visible intensities
-    this.glowBass.style.opacity = Math.min(this.bassSmooth * 0.9, 0.65);
-    this.glowMid.style.opacity = Math.min(this.midSmooth * 0.7, 0.5);
-    this.glowTreble.style.opacity = Math.min(this.trebleSmooth * 0.55, 0.4);
+    // Glow — intensidades bem mais visíveis
+    this.glowBass.style.opacity   = Math.min(this.bassSmooth   * 1.6, 0.90);
+    this.glowMid.style.opacity    = Math.min(this.midSmooth    * 1.4, 0.80);
+    this.glowTreble.style.opacity = Math.min(this.trebleSmooth * 1.2, 0.70);
 
     this.rafId = requestAnimationFrame(() => this.loop());
   }
