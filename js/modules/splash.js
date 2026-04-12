@@ -99,6 +99,7 @@ function runReturnSplash(overlay) {
 
   const msg = 'Seja bem vindo novamente!';
   let i = 0;
+  let typingDone = false;
 
   function typeChar() {
     if (i < msg.length) {
@@ -107,10 +108,16 @@ function runReturnSplash(overlay) {
       setTimeout(typeChar, 35 + Math.random() * 25);
     } else {
       welcomeEl.textContent = msg;
-      // Auto-dismiss after a short pause
+      typingDone = true;
+      // Auto-dismiss after short pause — but overlay itself becomes clickable too
       setTimeout(() => dismissSplash(), 1800);
     }
   }
+
+  // Allow user to click/tap to dismiss early (guarantees user gesture for autoplay)
+  overlay.addEventListener('click', () => {
+    if (typingDone || i > 0) dismissSplash();
+  }, { once: true });
 
   // Small delay then start typing
   setTimeout(typeChar, 500);
@@ -206,11 +213,10 @@ function dismissSplash() {
     splashAudioCtx = null;
   }
 
-  // Start music — "Prosseguir" click is a valid user gesture for YouTube autoplay
-  if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
-    ytPlayer.playVideo();
-  }
-  document.getElementById('music-player').classList.add('visible');
+  // Signal that the user has interacted and dismissed the splash.
+  // _tryStartMusic() will play as soon as the YT player is also ready.
+  window._splashDismissed = true;
+  if (typeof _tryStartMusic === 'function') _tryStartMusic();
 
   // Remove overlay from DOM after transition
   setTimeout(() => overlay.remove(), 1000);

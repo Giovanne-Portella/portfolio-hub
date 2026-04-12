@@ -170,21 +170,21 @@ function onYTPlayerReady() {
   }
   updateVolumeUI(ytVolume);
 
-  // Music will start when splash screen is dismissed (dismissSplash calls playVideo)
-  // If splash is already gone (e.g. returning visit), show player and let user control
-  if (!document.getElementById('splash-overlay')) {
-    document.getElementById('music-player').classList.add('visible');
-    const tryAutoplay = () => {
-      if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
-        ytPlayer.playVideo();
-      }
-      document.removeEventListener('click', tryAutoplay);
-      document.removeEventListener('scroll', tryAutoplay);
-      document.removeEventListener('keydown', tryAutoplay);
-    };
-    document.addEventListener('click', tryAutoplay, { once: false });
-    document.addEventListener('scroll', tryAutoplay, { once: false });
-    document.addEventListener('keydown', tryAutoplay, { once: false });
+  // Signal that the player is ready, then attempt to play
+  window._ytPlayerReady = true;
+  _tryStartMusic();
+}
+
+// Called both from onYTPlayerReady and from dismissSplash.
+// Only actually plays when BOTH the player is ready AND the splash was dismissed.
+function _tryStartMusic() {
+  if (!window._ytPlayerReady) return;         // player not loaded yet
+  if (!window._splashDismissed) return;       // user hasn't cleared the splash yet
+
+  document.getElementById('music-player')?.classList.add('visible');
+
+  if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+    ytPlayer.playVideo();
   }
 }
 
