@@ -384,7 +384,7 @@
 .reactor-glow {
   position: absolute;
   inset: 0;
-  transition: opacity 0.06s linear;
+  transition: opacity 0.8s ease;
 }
 
 /* Bass — pulso quente vindo de baixo, mais largo e intenso */

@@ -1,27 +1,13 @@
 ﻿// ============================================
-// MUSIC REACTOR — BPM-driven ambient glow
+// MUSIC REACTOR — Smooth ambient glow
 // ============================================
-
-// BPM pode ser alterado aqui (padrão: 120)
-const REACTOR_BPM = 120;
-
 const musicReactor = {
-  active:       false,
-  rafId:        null,
-  el:           null,
-  glowBass:     null,
-  glowMid:      null,
-  glowTreble:   null,
-
-  // Envelopes independentes para cada camada (0–1, decaem por frame)
-  bassEnv:      0,
-  midEnv:       0,
-  trebleEnv:    0,
-
-  // Rastreia qual "beat" já foi disparado para evitar re-trigger
-  lastBeat:    -1,
-  lastHalf:    -1,
-  lastEighth:  -1,
+  active:   false,
+  rafId:    null,
+  el:       null,
+  glowBass: null,
+  glowMid:  null,
+  glowTreble: null,
 
   init() {
     this.el = document.getElementById('music-reactor');
@@ -51,50 +37,28 @@ const musicReactor = {
   loop() {
     if (!this.active) return;
 
-    const now       = performance.now() / 1000;
-    const bps       = REACTOR_BPM / 60;          // beats por segundo
-    const beatPos   = now * bps;                  // posição contínua em beats
-    const beatIndex = Math.floor(beatPos);        // índice inteiro do beat atual
-    const beatPhase = beatPos - beatIndex;        // 0..1 dentro do beat atual
+    // Cada camada oscila em períodos longos e primos entre si
+    // para nunca se sincronizarem completamente — fluxo orgânico e contínuo
+    const t = performance.now() / 1000;
 
-    // ── Posição dentro do compasso de 4/4 ──
-    const barBeat   = beatIndex % 4;              // 0,1,2,3 dentro do compasso
+    // Bass: ciclo lento de ~8s, nunca some completamente (mín 0.18)
+    const bass = 0.18 +
+      0.38 * (0.5 + 0.5 * Math.sin(t * 0.78)) *
+      (0.85 + 0.15 * Math.sin(t * 0.31 + 1.2));
 
-    // -- KICK: beats 0 e 2 de cada compasso (down-beat)
-    if (beatIndex !== this.lastBeat && (barBeat === 0 || barBeat === 2)) {
-      this.bassEnv  = 1.0;
-      this.midEnv   = Math.max(this.midEnv, 0.45);
-      this.lastBeat = beatIndex;
-    }
+    // Mid: ciclo ~11s, levemente defasado
+    const mid = 0.12 +
+      0.32 * (0.5 + 0.5 * Math.sin(t * 0.57 + 2.1)) *
+      (0.80 + 0.20 * Math.sin(t * 0.23 + 0.7));
 
-    // -- SNARE: beats 1 e 3 (off-beat) — dispara mid + leve treble
-    const halfIndex = Math.floor(beatPos);
-    if (beatIndex !== this.lastHalf && (barBeat === 1 || barBeat === 3)) {
-      this.midEnv    = 1.0;
-      this.trebleEnv = Math.max(this.trebleEnv, 0.55);
-      this.lastHalf  = beatIndex;
-    }
+    // Treble: ciclo ~6s, mais rápido que os outros mas ainda suave
+    const treble = 0.08 +
+      0.28 * (0.5 + 0.5 * Math.sin(t * 1.05 + 4.3)) *
+      (0.75 + 0.25 * Math.sin(t * 0.41 + 2.9));
 
-    // -- HI-HAT: a cada 1/2 beat (colcheias) — treble rápido
-    const eighthIndex = Math.floor(beatPos * 2);
-    if (eighthIndex !== this.lastEighth) {
-      this.trebleEnv = Math.max(this.trebleEnv, 0.70);
-      this.lastEighth = eighthIndex;
-    }
-
-    // ── Decaimento exponencial por frame (~60fps) ──
-    // Kick decai lento (boom prolongado), treble decai rápido (click seco)
-    this.bassEnv   *= 0.955;   // ~1.2s para zerar
-    this.midEnv    *= 0.930;   // ~0.7s
-    this.trebleEnv *= 0.880;   // ~0.35s — seco como hi-hat
-
-    // ── Breath: oscilação suave entre os beats para não ficar "morto" ──
-    const breath = 0.10 + 0.06 * Math.sin(now * bps * Math.PI);
-
-    // ── Opacidades finais ──
-    this.glowBass.style.opacity   = Math.min(this.bassEnv   * 0.92 + breath, 0.92);
-    this.glowMid.style.opacity    = Math.min(this.midEnv    * 0.82 + breath * 0.6, 0.85);
-    this.glowTreble.style.opacity = Math.min(this.trebleEnv * 0.75,           0.78);
+    this.glowBass.style.opacity   = bass.toFixed(3);
+    this.glowMid.style.opacity    = mid.toFixed(3);
+    this.glowTreble.style.opacity = treble.toFixed(3);
 
     this.rafId = requestAnimationFrame(() => this.loop());
   }
