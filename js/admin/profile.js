@@ -29,8 +29,11 @@ async function loadProfile() {
 }
 
 function setupProfileForm() {
-  const form = document.getElementById('profile-form');
+  const form        = document.getElementById('profile-form');
   const avatarInput = document.getElementById('avatar-input');
+  const resumeInput = document.getElementById('resume-file-input');
+  const resumeUrlEl = document.getElementById('p-resume');
+  const resumeStatus = document.getElementById('resume-file-status');
 
   avatarInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -40,6 +43,25 @@ function setupProfileForm() {
         document.getElementById('profile-avatar').src = ev.target.result;
       };
       reader.readAsDataURL(file);
+    }
+  });
+
+  // Upload do PDF de currículo imediatamente ao selecionar
+  resumeInput?.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    resumeStatus.textContent = 'Fazendo upload...';
+    resumeStatus.style.color = 'var(--text-secondary)';
+
+    try {
+      const url = await uploadFile('resumes', file);
+      resumeUrlEl.value = url;
+      resumeStatus.textContent = 'Upload concluído! Salve o perfil para confirmar.';
+      resumeStatus.style.color = 'var(--accent)';
+    } catch (err) {
+      resumeStatus.textContent = 'Erro ao fazer upload: ' + err.message;
+      resumeStatus.style.color = '#f85149';
     }
   });
 
@@ -68,7 +90,7 @@ function setupProfileForm() {
       phone: document.getElementById('p-phone').value.trim(),
       location: document.getElementById('p-location').value.trim(),
       bio: document.getElementById('p-bio').value.trim(),
-      resume_url: document.getElementById('p-resume').value.trim() || null,
+      resume_url: resumeUrlEl.value.trim() || null,
       github_username: document.getElementById('p-github').value.trim() || null,
       whatsapp_number: document.getElementById('p-whatsapp').value.trim() || null,
       company_name: document.getElementById('p-company').value.trim() || null,

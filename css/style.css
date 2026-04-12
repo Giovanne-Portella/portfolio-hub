@@ -21,6 +21,7 @@
 @import url('./modules/_readme-modal.css');
 @import url('./modules/_footer.css');
 @import url('./modules/_cert-modal.css');
+@import url('./modules/_resume-modal.css');
 
 /* Componentes UI */
 @import url('./modules/_ui.css');

@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="css/style.css?v=44">
+  <link rel="stylesheet" href="css/style.css?v=45">
 </head>
 <body class="site-loading">
 
@@ -61,6 +61,11 @@
         <li><a href="#github-contributions">Tecnologias</a></li>
         <li><a href="#companies">Empresas</a></li>
         <li><a href="#contact">Contato</a></li>
+        <li>
+          <button class="navbar-resume-btn" id="navbar-resume-btn" title="Ver Currículo">
+            <i class="fas fa-file-alt"></i> Currículo
+          </button>
+        </li>
       </ul>
       <button class="mobile-toggle" id="mobile-toggle">
         <i class="fas fa-bars"></i>
@@ -76,6 +81,9 @@
     <a href="#github-contributions" class="mobile-link">Tecnologias</a>
     <a href="#companies" class="mobile-link">Empresas</a>
     <a href="#contact" class="mobile-link">Contato</a>
+    <button class="mobile-resume-btn" id="mobile-resume-btn">
+      <i class="fas fa-file-alt"></i> Ver Currículo
+    </button>
   </div>
 
   <!-- HERO SECTION -->
@@ -324,6 +332,32 @@
     </div>
   </div>
 
+  <!-- RESUME MODAL -->
+  <div class="resume-modal-overlay" id="resume-modal-overlay">
+    <div class="resume-modal">
+      <div class="resume-modal-header">
+        <div class="resume-modal-title">
+          <i class="fas fa-file-alt"></i>
+          <span>Currículo</span>
+        </div>
+        <div class="resume-modal-actions">
+          <a href="#" id="resume-download-btn" class="resume-download-btn" download="curriculo.pdf" target="_blank" rel="noopener noreferrer">
+            <i class="fas fa-download"></i> Baixar PDF
+          </a>
+          <button class="resume-close-btn" id="resume-close-btn" title="Fechar">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="resume-modal-body" id="resume-modal-body">
+        <div class="resume-modal-empty">
+          <i class="fas fa-file-alt"></i>
+          <p>Nenhum currículo cadastrado.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- MUSIC REACTOR OVERLAY -->
   <div class="music-reactor" id="music-reactor">
     <div class="reactor-glow reactor-glow-bass"></div>
@@ -408,6 +442,7 @@
   <script src="js/modules/collapsible.js"></script>
   <script src="js/modules/cert-modal.js"></script>
   <script src="js/modules/projects.js"></script>
+  <script src="js/modules/resume-modal.js"></script>
   <script src="js/modules/readme-modal.js"></script>
   <script src="js/modules/animations.js?v=2"></script>
   <script src="js/modules/github.js"></script>

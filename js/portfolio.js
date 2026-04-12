@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadCompanies();
   setupNavbar();
   setupModal();
+  setupResumeModal();
   setupCollapsible();
   setupTypeInAnimation();
   setupSplashScreen();

@@ -150,9 +150,20 @@
             <textarea id="p-bio" rows="5" placeholder="Conte um pouco sobre você, sua experiência e suas habilidades..."></textarea>
           </div>
         </div>
+        <div class="form-section-divider">
+          <h4><i class="fas fa-file-alt"></i> Currículo</h4>
+          <small>Faça upload de um PDF ou informe a URL diretamente</small>
+        </div>
         <div class="form-row">
           <div class="form-group">
-            <label for="p-resume">URL do Currículo (opcional)</label>
+            <label>Upload do Currículo (PDF)</label>
+            <input type="file" id="resume-file-input" accept=".pdf,application/pdf">
+            <small id="resume-file-status"></small>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-resume">URL do Currículo (preenchida automaticamente após upload)</label>
             <input type="url" id="p-resume" placeholder="https://...">
           </div>
         </div>

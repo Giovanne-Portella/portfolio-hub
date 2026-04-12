@@ -91,3 +91,13 @@ create policy "Public read companies bucket" on storage.objects for select using
 create policy "Auth upload companies bucket" on storage.objects for insert with check (bucket_id = 'companies' and auth.role() = 'authenticated');
 create policy "Auth update companies bucket" on storage.objects for update using (bucket_id = 'companies' and auth.role() = 'authenticated');
 create policy "Auth delete companies bucket" on storage.objects for delete using (bucket_id = 'companies' and auth.role() = 'authenticated');
+
+-- ============================================
+-- 7. Bucket para currículo (PDFs)
+-- ============================================
+insert into storage.buckets (id, name, public) values ('resumes', 'resumes', true);
+
+create policy "Public read resumes" on storage.objects for select using (bucket_id = 'resumes');
+create policy "Auth upload resumes" on storage.objects for insert with check (bucket_id = 'resumes' and auth.role() = 'authenticated');
+create policy "Auth update resumes" on storage.objects for update using (bucket_id = 'resumes' and auth.role() = 'authenticated');
+create policy "Auth delete resumes" on storage.objects for delete using (bucket_id = 'resumes' and auth.role() = 'authenticated');

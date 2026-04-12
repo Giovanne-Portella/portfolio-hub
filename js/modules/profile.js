@@ -104,5 +104,10 @@ async function loadProfile() {
   if (data.github_username) {
     loadGitHubData(data.github_username);
   }
+
+  // Resume modal
+  if (typeof setResumeUrl === 'function') {
+    setResumeUrl(data.resume_url || null);
+  }
 }
 
