@@ -53,11 +53,6 @@
   color: var(--text-secondary);
   line-height: 1.7;
   flex: 1;
-  /* clamp de 6 linhas para evitar cards com alturas muito discrepantes */
-  display: -webkit-box;
-  -webkit-line-clamp: 7;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 /* separador */

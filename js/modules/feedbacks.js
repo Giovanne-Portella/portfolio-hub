@@ -140,7 +140,7 @@ function buildSlide(f) {
     : '';
 
   return `
-    <div class="swiper-slide" style="height:auto">
+    <div class="swiper-slide">
       <div class="feedback-card">
         <div class="feedback-quote"><i class="fas fa-quote-left"></i></div>
         <p class="feedback-text">${escapeHtml(f.feedback)}</p>
