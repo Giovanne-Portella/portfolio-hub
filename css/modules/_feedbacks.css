@@ -18,6 +18,15 @@
   overflow: hidden;
 }
 
+/* Força todos os slides da mesma linha a terem altura igual */
+.feedbacks-swiper .swiper-wrapper {
+  align-items: stretch;
+}
+
+.feedbacks-swiper .swiper-slide {
+  height: auto;
+}
+
 /* ---------- Card de feedback ---------- */
 .feedback-card {
   background: var(--card-bg);
