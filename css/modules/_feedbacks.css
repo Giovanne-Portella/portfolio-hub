@@ -151,9 +151,7 @@
 .feedback-profession {
   font-size: .8rem;
   color: var(--text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.4;
 }
 
 /* badge LinkedIn */
