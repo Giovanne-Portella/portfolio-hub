@@ -8,7 +8,7 @@
 //    substitua FEEDBACK_FORM_URL pela URL real.
 // ============================================
 
-const FEEDBACK_FORM_URL = '#';   // 🔧 Substitua pela URL do formulário no Netlify
+const FEEDBACK_FORM_URL = 'https://feedbacks-forms-gm.netlify.app/';
 
 async function loadFeedbacks() {
   try {
