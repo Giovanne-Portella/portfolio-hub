@@ -56,11 +56,13 @@
   margin-bottom: -4px;
 }
 
-/* wrapper do texto (posição relativa para o fade) */
+/* wrapper do texto — flex:1 preenche o espaço, empurra o autor pro fundo */
 .feedback-text-wrapper {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  justify-content: flex-start;
 }
 
 /* texto do feedback — colapsado por padrão */
@@ -99,9 +101,8 @@
   color: var(--primary-light);
 }
 
-/* separador — margin-top: auto empurra o autor sempre pro fundo */
+/* separador */
 .feedback-divider {
-  margin-top: auto;
   height: 1px;
   background: var(--border);
   border: none;
