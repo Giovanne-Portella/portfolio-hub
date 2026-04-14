@@ -78,6 +78,22 @@ function renderFeedbacks(feedbacks) {
         },
       },
     });
+
+    // Botões "Ver mais / Ver menos" — só aparece se o texto estiver de facto cortado
+    document.querySelectorAll('.feedback-text').forEach(textEl => {
+      const btn = textEl.nextElementSibling;
+      if (!btn || !btn.classList.contains('feedback-read-more')) return;
+
+      if (textEl.scrollHeight <= textEl.clientHeight + 2) {
+        btn.style.display = 'none';
+        return;
+      }
+
+      btn.addEventListener('click', () => {
+        const expanded = textEl.classList.toggle('expanded');
+        btn.textContent = expanded ? '▲ Ver menos' : '▼ Ver mais';
+      });
+    });
   });
 
   // Adiciona link de Feedbacks ao navbar dinâmicamente
@@ -143,7 +159,10 @@ function buildSlide(f) {
     <div class="swiper-slide">
       <div class="feedback-card">
         <div class="feedback-quote"><i class="fas fa-quote-left"></i></div>
-        <p class="feedback-text">${escapeHtml(f.feedback)}</p>
+        <div class="feedback-text-wrapper">
+          <p class="feedback-text">${escapeHtml(f.feedback)}</p>
+          <button type="button" class="feedback-read-more">▼ Ver mais</button>
+        </div>
         <hr class="feedback-divider">
         <div class="feedback-author">
           <div class="feedback-avatar">${escapeHtml(initials)}</div>

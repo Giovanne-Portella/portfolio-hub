@@ -47,12 +47,48 @@
   margin-bottom: -4px;
 }
 
-/* texto do feedback */
+/* wrapper do texto (posição relativa para o fade) */
+.feedback-text-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* texto do feedback — colapsado por padrão */
 .feedback-text {
   font-size: .92rem;
   color: var(--text-secondary);
   line-height: 1.7;
-  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* texto expandido */
+.feedback-text.expanded {
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+}
+
+/* botão ver mais / ver menos */
+.feedback-read-more {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: .78rem;
+  font-family: 'Courier New', monospace;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  transition: var(--transition);
+  align-self: flex-start;
+}
+
+.feedback-read-more:hover {
+  color: var(--primary-light);
 }
 
 /* separador */
