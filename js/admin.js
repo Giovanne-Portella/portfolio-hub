@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupCompanyForm();
   setupRadioForm();
   setupAvatarEditor();
+  setupFeedbacksAdmin();
 
   // Initial data load
   loadProfile();
@@ -24,5 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
   loadCompaniesAdmin();
   loadRadioTracksAdmin();
   loadAvatarConfig();
+  loadFeedbacksAdmin();
 });
 

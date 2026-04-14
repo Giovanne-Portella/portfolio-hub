@@ -42,6 +42,10 @@
       <a href="#" class="nav-item" data-section="avatar">
         <i class="fas fa-user-astronaut"></i> Avatar
       </a>
+      <a href="#" class="nav-item" data-section="feedbacks">
+        <i class="fas fa-inbox"></i> Solicitações
+        <span class="nav-badge" id="feedbacks-pending-badge" style="display:none"></span>
+      </a>
     </nav>
     <div class="sidebar-footer">
       <a href="../index.html" class="nav-item" target="_blank">
@@ -791,6 +795,26 @@
       </div>
     </section>
 
+    <!-- ==================== FEEDBACKS SECTION ==================== -->
+    <section class="admin-section" id="section-feedbacks">
+      <div class="section-top">
+        <h2><i class="fas fa-inbox"></i> Solicitações de Feedback</h2>
+        <p>Aprove ou rejeite os feedbacks enviados pelo formulário público</p>
+      </div>
+      <div class="toolbar">
+        <div class="feedback-filter-tabs">
+          <button class="btn btn-sm feedback-filter-btn active" data-filter="all">Todos</button>
+          <button class="btn btn-sm feedback-filter-btn" data-filter="pending">
+            Pendentes <span class="feedback-tab-count" id="pending-count-badge"></span>
+          </button>
+          <button class="btn btn-sm feedback-filter-btn" data-filter="approved">Aprovados</button>
+        </div>
+      </div>
+      <div class="items-list" id="feedbacks-list">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
   </main>
 
   <!-- TOAST NOTIFICATION -->
@@ -819,6 +843,7 @@
   <script src="../js/admin/radio.js"></script>
   <script src="../js/modules/avatar.js?v=7"></script>
   <script src="../js/admin/avatar.js"></script>
+  <script src="../js/admin/feedbacks.js"></script>
   <script src="../js/admin.js"></script>
 </body>
 </html>

@@ -454,3 +454,108 @@
   }
 }
 
+/* ============================================
+   FEEDBACKS / SOLICITAÇÕES
+   ============================================ */
+
+/* Filter tab row */
+.feedback-filter-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.feedback-filter-btn {
+  border-color: var(--border);
+  color: var(--text-secondary);
+  background: var(--card-bg);
+}
+
+.feedback-filter-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+/* In-tab count badge */
+.feedback-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.25);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+/* Pending status badge */
+.badge-pending {
+  background: rgba(210, 153, 34, 0.15);
+  color: #d29922;
+}
+
+/* Card layout */
+.feedback-card {
+  align-items: flex-start;
+}
+
+.feedback-card .item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.feedback-profession {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.feedback-excerpt {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.feedback-actions {
+  flex-direction: column;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+.feedback-card .item-meta a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.feedback-card .item-meta a:hover {
+  text-decoration: underline;
+}
+
+/* Approve / revoke buttons */
+.btn-approve {
+  background: rgba(63, 185, 80, 0.12);
+  border-color: #3fb950;
+  color: #3fb950;
+}
+
+.btn-approve:hover {
+  background: #3fb950;
+  color: white;
+}
+
+.btn-revoke {
+  background: rgba(139, 148, 158, 0.12);
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+.btn-revoke:hover {
+  background: var(--bg);
+  color: var(--text);
+}

@@ -67,6 +67,23 @@
   text-align: center;
 }
 
+/* Pending badge on nav item */
+.nav-badge {
+  margin-left: auto;
+  background: #f85149;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 20px;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
 .sidebar-footer {
   padding: 12px;
   border-top: 1px solid rgba(255,255,255,0.08);
