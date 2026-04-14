@@ -106,6 +106,24 @@ function renderFeedbacksEmpty() {
   addFeedbackNavLink();
 }
 
+function detectSocial(url) {
+  try {
+    const host = new URL(url.startsWith('http') ? url : 'https://' + url).hostname.replace('www.', '');
+    if (host.includes('linkedin.com'))  return { icon: 'fab fa-linkedin',   label: 'LinkedIn'   };
+    if (host.includes('instagram.com')) return { icon: 'fab fa-instagram',  label: 'Instagram'  };
+    if (host.includes('github.com'))    return { icon: 'fab fa-github',     label: 'GitHub'     };
+    if (host.includes('x.com') || host.includes('twitter.com')) return { icon: 'fab fa-x-twitter', label: 'X' };
+    if (host.includes('youtube.com'))   return { icon: 'fab fa-youtube',    label: 'YouTube'    };
+    if (host.includes('facebook.com'))  return { icon: 'fab fa-facebook',   label: 'Facebook'   };
+    if (host.includes('tiktok.com'))    return { icon: 'fab fa-tiktok',     label: 'TikTok'     };
+    if (host.includes('discord.com'))   return { icon: 'fab fa-discord',    label: 'Discord'    };
+    if (host.includes('telegram.org') || host.includes('t.me')) return { icon: 'fab fa-telegram', label: 'Telegram' };
+    if (host.includes('behance.net'))   return { icon: 'fab fa-behance',    label: 'Behance'    };
+    if (host.includes('dribbble.com'))  return { icon: 'fab fa-dribbble',   label: 'Dribbble'   };
+  } catch (_) {}
+  return { icon: 'fas fa-link', label: 'Perfil' };
+}
+
 function buildSlide(f) {
   const initials = f.name
     .split(' ')
@@ -114,9 +132,10 @@ function buildSlide(f) {
     .map(w => w[0].toUpperCase())
     .join('');
 
-  const linkedinBadge = (f.show_linkedin && f.linkedin_url)
+  const social = (f.show_linkedin && f.linkedin_url) ? detectSocial(f.linkedin_url) : null;
+  const socialBadge = social
     ? `<a href="${escapeAttr(f.linkedin_url)}" target="_blank" rel="noopener noreferrer" class="feedback-linkedin">
-         <i class="fab fa-linkedin"></i> Ver LinkedIn
+         <i class="${social.icon}"></i> Ver ${social.label}
        </a>`
     : '';
 
@@ -131,7 +150,7 @@ function buildSlide(f) {
           <div class="feedback-info">
             <span class="feedback-name">${escapeHtml(f.name)}</span>
             <span class="feedback-profession">${escapeHtml(f.profession)}</span>
-            ${linkedinBadge}
+            ${socialBadge}
           </div>
         </div>
       </div>
