@@ -11,7 +11,7 @@
 /* ---------- Swiper wrapper ---------- */
 .feedbacks-swiper-wrapper {
   position: relative;
-  padding: 12px 48px 52px;   /* espaço para botões nav e paginação */
+  padding: 12px 48px 0;
 }
 
 .feedbacks-swiper {
@@ -202,7 +202,12 @@
 
 /* ---------- Paginação Swiper ---------- */
 .feedbacks-pagination {
-  bottom: 10px !important;
+  position: relative !important;
+  bottom: auto !important;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
 }
 
 .feedbacks-pagination .swiper-pagination-bullet {
