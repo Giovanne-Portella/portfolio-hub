@@ -28,6 +28,9 @@
 @import url('./modules/_animations.css');
 @import url('./modules/_github.css');
 
+/* Seções */
+@import url('./modules/_feedbacks.css');
+
 /* Responsividade */
 @import url('./modules/_responsive.css');
 

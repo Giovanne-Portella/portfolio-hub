@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadCertificates();
   loadProjects();
   loadCompanies();
+  loadFeedbacks();
   setupNavbar();
   setupModal();
   setupResumeModal();

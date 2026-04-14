@@ -1,0 +1,255 @@
+/* ============================================
+   FEEDBACKS SECTION — Carrossel de depoimentos
+   ============================================ */
+
+/* ---------- Seção ---------- */
+.feedbacks-section {
+  padding: 100px 0;
+  background: var(--bg);
+}
+
+/* ---------- Swiper wrapper ---------- */
+.feedbacks-swiper-wrapper {
+  position: relative;
+  padding: 12px 48px 52px;   /* espaço para botões nav e paginação */
+}
+
+.feedbacks-swiper {
+  overflow: hidden;
+}
+
+/* ---------- Card de feedback ---------- */
+.feedback-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+}
+
+.feedback-card:hover {
+  border-color: var(--primary-dark);
+  box-shadow: var(--shadow-md), var(--glow-primary);
+  transform: translateY(-3px);
+}
+
+/* ícone de aspas */
+.feedback-quote {
+  color: var(--primary);
+  opacity: .35;
+  font-size: 1.6rem;
+  line-height: 1;
+  margin-bottom: -4px;
+}
+
+/* texto do feedback */
+.feedback-text {
+  font-size: .92rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  flex: 1;
+  /* clamp de 6 linhas para evitar cards com alturas muito discrepantes */
+  display: -webkit-box;
+  -webkit-line-clamp: 7;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* separador */
+.feedback-divider {
+  height: 1px;
+  background: var(--border);
+  border: none;
+  margin: 4px 0;
+}
+
+/* autor */
+.feedback-author {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.feedback-avatar {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-dark), var(--accent-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: .9rem;
+  color: #fff;
+  letter-spacing: .03em;
+  box-shadow: 0 0 0 2px var(--border);
+}
+
+.feedback-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.feedback-name {
+  font-size: .92rem;
+  font-weight: 700;
+  color: var(--secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.feedback-profession {
+  font-size: .8rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* badge LinkedIn */
+.feedback-linkedin {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .75rem;
+  color: #58a6ff;
+  margin-top: 3px;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.feedback-linkedin i { color: #0a66c2; font-size: .85rem; }
+
+.feedback-linkedin:hover {
+  color: var(--primary-light);
+  text-decoration: none;
+}
+
+/* ---------- Navegação Swiper ---------- */
+.feedbacks-prev,
+.feedbacks-next {
+  color: var(--text-secondary) !important;
+  width: 36px !important;
+  height: 36px !important;
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 50% !important;
+  transition: var(--transition) !important;
+}
+
+.feedbacks-prev:hover,
+.feedbacks-next:hover {
+  color: var(--primary) !important;
+  border-color: var(--primary-dark) !important;
+  box-shadow: var(--glow-primary) !important;
+}
+
+.feedbacks-prev::after,
+.feedbacks-next::after {
+  font-size: .8rem !important;
+  font-weight: 700 !important;
+}
+
+/* ---------- Paginação Swiper ---------- */
+.feedbacks-pagination {
+  bottom: 10px !important;
+}
+
+.feedbacks-pagination .swiper-pagination-bullet {
+  background: var(--border) !important;
+  opacity: 1 !important;
+}
+
+.feedbacks-pagination .swiper-pagination-bullet-active {
+  background: var(--primary) !important;
+  box-shadow: 0 0 6px rgba(88,166,255,.5) !important;
+}
+
+/* ---------- CTA "Deixe seu feedback" ---------- */
+.feedbacks-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 8px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.feedbacks-cta p {
+  color: var(--text-secondary);
+  font-size: .95rem;
+}
+
+.feedbacks-cta .btn-feedback {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: .88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transition);
+  background: transparent;
+}
+
+.feedbacks-cta .btn-feedback:hover {
+  border-color: var(--primary-dark);
+  color: var(--primary);
+  box-shadow: var(--glow-primary);
+  text-decoration: none;
+}
+
+/* ---------- Empty state (nenhum aprovado ainda) ---------- */
+.feedbacks-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: .9rem;
+}
+
+.feedbacks-empty i {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 12px;
+  opacity: .5;
+}
+
+/* ---------- Responsividade ---------- */
+@media (max-width: 900px) {
+  .feedbacks-swiper-wrapper {
+    padding: 12px 40px 52px;
+  }
+}
+
+@media (max-width: 600px) {
+  .feedbacks-section { padding: 70px 0; }
+
+  .feedbacks-swiper-wrapper {
+    padding: 8px 0 48px;
+  }
+
+  /* Em mobile, esconde os botões laterais e usa só a paginação */
+  .feedbacks-prev,
+  .feedbacks-next {
+    display: none !important;
+  }
+
+  .feedback-card {
+    padding: 22px 18px 18px;
+  }
+}
