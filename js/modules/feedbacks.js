@@ -73,16 +73,8 @@ function renderFeedbacks(feedbacks) {
       },
     });
 
-    // Retoma autoplay ao navegar manualmente
-    swiper.on('slideChange', () => {
-      // Colapsa todos os textos expandidos ao trocar de slide
-      document.querySelectorAll('.feedback-text.expanded').forEach(el => {
-        el.classList.remove('expanded');
-        const btn = el.nextElementSibling;
-        if (btn) btn.textContent = '▼ Ver mais';
-      });
-      swiper.autoplay.start();
-    });
+    // Retoma autoplay ao navegar para outro slide
+    swiper.on('slideChange', () => swiper.autoplay.start());
 
     // Botões "Ver mais / Ver menos"
     document.querySelectorAll('.feedback-text').forEach(textEl => {
@@ -94,11 +86,11 @@ function renderFeedbacks(feedbacks) {
         return;
       }
 
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation(); // não vaza o click para o Swiper
         const expanded = textEl.classList.toggle('expanded');
         btn.textContent = expanded ? '▲ Ver menos' : '▼ Ver mais';
 
-        // Para o autoplay enquanto o texto estiver expandido
         if (expanded) {
           swiper.autoplay.stop();
         } else {

@@ -198,6 +198,7 @@ async function runBootSequence(body) {
 
 function dismissSplash() {
   const overlay = document.getElementById('splash-overlay');
+  if (!overlay) return;  // já removido (chamada dupla: click + timeout)
   overlay.classList.add('dismissed');
 
   // Mark as visited so next load gets the quick splash
