@@ -49,7 +49,7 @@ function renderFeedbacks(feedbacks) {
 
   // Inicializa Swiper (aguarda o DOM estar pronto)
   requestAnimationFrame(() => {
-    new Swiper('.feedbacks-swiper', {
+    const swiper = new Swiper('.feedbacks-swiper', {
       slidesPerView: 1,
       spaceBetween: 20,
       grabCursor: true,
@@ -68,18 +68,23 @@ function renderFeedbacks(feedbacks) {
         nextEl: '.feedbacks-next',
       },
       breakpoints: {
-        640: {
-          slidesPerView: 2,
-          spaceBetween: 20,
-        },
-        1024: {
-          slidesPerView: 3,
-          spaceBetween: 24,
-        },
+        640: { slidesPerView: 2, spaceBetween: 20 },
+        1024: { slidesPerView: 3, spaceBetween: 24 },
       },
     });
 
-    // Botões "Ver mais / Ver menos" — só aparece se o texto estiver de facto cortado
+    // Retoma autoplay ao navegar manualmente
+    swiper.on('slideChange', () => {
+      // Colapsa todos os textos expandidos ao trocar de slide
+      document.querySelectorAll('.feedback-text.expanded').forEach(el => {
+        el.classList.remove('expanded');
+        const btn = el.nextElementSibling;
+        if (btn) btn.textContent = '▼ Ver mais';
+      });
+      swiper.autoplay.start();
+    });
+
+    // Botões "Ver mais / Ver menos"
     document.querySelectorAll('.feedback-text').forEach(textEl => {
       const btn = textEl.nextElementSibling;
       if (!btn || !btn.classList.contains('feedback-read-more')) return;
@@ -92,6 +97,13 @@ function renderFeedbacks(feedbacks) {
       btn.addEventListener('click', () => {
         const expanded = textEl.classList.toggle('expanded');
         btn.textContent = expanded ? '▲ Ver menos' : '▼ Ver mais';
+
+        // Para o autoplay enquanto o texto estiver expandido
+        if (expanded) {
+          swiper.autoplay.stop();
+        } else {
+          swiper.autoplay.start();
+        }
       });
     });
   });
