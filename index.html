@@ -316,17 +316,64 @@
   <!-- CONTACT / FOOTER -->
   <footer class="footer" id="contact">
     <div class="container">
-      <div class="footer-content">
-        <div class="footer-info">
-          <h3 id="footer-name">Portfolio</h3>
-          <p id="footer-title"></p>
+      <div class="footer-grid">
+
+        <!-- Coluna 1 — Marca + social -->
+        <div class="footer-brand">
+          <div class="footer-brand-name">
+            <i class="fas fa-code"></i>
+            <span id="footer-name">Portfolio</span>
+          </div>
+          <p class="footer-tagline" id="footer-title"></p>
+          <div class="footer-social" id="footer-social">
+            <!-- Populated by JS -->
+          </div>
         </div>
-        <div class="footer-social" id="footer-social">
-          <!-- Populated by JS -->
+
+        <!-- Coluna 2 — Navegação rápida -->
+        <div class="footer-nav">
+          <h4 class="footer-col-title">Navegação</h4>
+          <ul class="footer-nav-links">
+            <li><a href="#about">Sobre</a></li>
+            <li><a href="#projects">Projetos</a></li>
+            <li><a href="#certificates">Certificados</a></li>
+            <li><a href="#companies">Empresas</a></li>
+            <li><a href="#feedbacks">Feedbacks</a></li>
+            <li><a href="#contact">Contato</a></li>
+          </ul>
         </div>
+
+        <!-- Coluna 3 — Contato -->
+        <div class="footer-contact">
+          <h4 class="footer-col-title">Contato</h4>
+          <ul class="footer-contact-list">
+            <li id="footer-location" style="display:none">
+              <i class="fas fa-map-marker-alt"></i>
+              <span id="footer-location-value"></span>
+            </li>
+            <li id="footer-email" style="display:none">
+              <i class="fas fa-envelope"></i>
+              <a id="footer-email-link" href="#"></a>
+            </li>
+            <li id="footer-phone" style="display:none">
+              <i class="fas fa-phone"></i>
+              <span id="footer-phone-value"></span>
+            </li>
+            <li id="footer-whatsapp" style="display:none">
+              <i class="fab fa-whatsapp"></i>
+              <a id="footer-whatsapp-link" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+            </li>
+            <li id="footer-company" style="display:none">
+              <i class="fas fa-building"></i>
+              <span id="footer-company-value"></span>
+            </li>
+          </ul>
+        </div>
+
       </div>
+
       <div class="footer-bottom">
-        <p>&copy; <span id="footer-year"></span> Todos os direitos reservados.</p>
+        <p>&copy; <span id="footer-year"></span> <span id="footer-bottom-name"></span>. Todos os direitos reservados.</p>
       </div>
     </div>
   </footer>

@@ -1,4 +1,4 @@
-﻿/* ============================================
+/* ============================================
    FOOTER
    ============================================ */
 .footer {
@@ -8,32 +8,144 @@
   border-top: 1px solid var(--border);
 }
 
-.footer-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* ---------- Grid de 3 colunas ---------- */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 48px;
   padding-bottom: 40px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255,255,255,.08);
   margin-bottom: 24px;
 }
 
-.footer-info h3 {
-  font-size: 1.5rem;
-  margin-bottom: 4px;
+/* ---------- Coluna 1 — Marca ---------- */
+.footer-brand-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
 }
 
-.footer-info p {
-  color: rgba(255,255,255,0.6);
+.footer-brand-name i {
+  color: var(--primary);
+  font-size: 1.1rem;
+}
+
+.footer-tagline {
+  color: var(--text-secondary);
+  font-size: .9rem;
+  margin-bottom: 20px;
+  line-height: 1.5;
 }
 
 .footer-social {
   display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Título de coluna ---------- */
+.footer-col-title {
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+/* ---------- Coluna 2 — Navegação ---------- */
+.footer-nav-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: .875rem;
+  transition: var(--transition);
+}
+
+.footer-nav-links a:hover {
+  color: var(--primary);
+}
+
+/* ---------- Coluna 3 — Contato ---------- */
+.footer-contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
-.footer-bottom {
-  text-align: center;
-  color: rgba(255,255,255,0.4);
-  font-size: 0.85rem;
+.footer-contact-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: .875rem;
+  color: var(--text-secondary);
 }
 
+.footer-contact-list li i {
+  color: var(--primary);
+  font-size: .85rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+  width: 16px;
+  text-align: center;
+}
+
+.footer-contact-list a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: var(--transition);
+  word-break: break-all;
+}
+
+.footer-contact-list a:hover {
+  color: var(--primary);
+}
+
+/* ---------- Bottom bar ---------- */
+.footer-bottom {
+  text-align: center;
+  color: rgba(255,255,255,.35);
+  font-size: .82rem;
+}
+
+/* ---------- Responsividade ---------- */
+@media (max-width: 900px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer {
+    padding: 48px 0 20px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .footer-brand {
+    grid-column: auto;
+  }
+}

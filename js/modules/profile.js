@@ -15,6 +15,7 @@ async function loadProfile() {
     document.getElementById('hero-name').textContent = data.full_name;
     document.getElementById('nav-name').textContent = data.full_name.split(' ')[0];
     document.getElementById('footer-name').textContent = data.full_name;
+    document.getElementById('footer-bottom-name').textContent = data.full_name;
     document.title = `${data.full_name} - Portfolio`;
   }
 
@@ -98,6 +99,47 @@ async function loadProfile() {
       const timeEl = document.getElementById('info-company-time');
       timeEl.textContent = calcTimeSince(data.company_start_date);
     }
+  }
+
+  // Footer — contatos detalhados
+  if (data.location) {
+    const el = document.getElementById('footer-location');
+    document.getElementById('footer-location-value').textContent = data.location;
+    if (el) el.style.display = '';
+  }
+
+  if (data.email) {
+    const el = document.getElementById('footer-email');
+    const link = document.getElementById('footer-email-link');
+    if (link) { link.href = `mailto:${data.email}`; link.textContent = data.email; }
+    if (el) el.style.display = '';
+  }
+
+  if (data.phone) {
+    const el = document.getElementById('footer-phone');
+    document.getElementById('footer-phone-value').textContent = data.phone;
+    if (el) el.style.display = '';
+  }
+
+  if (data.whatsapp_number) {
+    const el = document.getElementById('footer-whatsapp');
+    const link = document.getElementById('footer-whatsapp-link');
+    const cleanNum = data.whatsapp_number.replace(/\D/g, '');
+    if (link) { link.href = `https://wa.me/${cleanNum}`; link.textContent = data.whatsapp_number; }
+    if (el) el.style.display = '';
+  }
+
+  if (data.company_name) {
+    const el = document.getElementById('footer-company');
+    const span = document.getElementById('footer-company-value');
+    if (span) {
+      if (data.company_url) {
+        span.innerHTML = `<a href="${data.company_url}" target="_blank" rel="noopener noreferrer">${data.company_name}</a>`;
+      } else {
+        span.textContent = data.company_name;
+      }
+    }
+    if (el) el.style.display = '';
   }
 
   // GitHub & Tech stats

@@ -236,24 +236,27 @@ function setupFeedbackModal() {
 
 function addFeedbackNavLink() {
   // Injeta link de "Feedbacks" no navbar desktop e no menu mobile,
-  // apenas se ainda não existir.
+  // ANTES do link "Contato", apenas se ainda não existir.
   if (document.getElementById('nav-feedbacks-link')) return;
 
-  // Navbar desktop
+  // Navbar desktop — insere antes do <li> que contém #contact
   const navLinks = document.querySelector('.navbar-links');
   if (navLinks) {
     const li = document.createElement('li');
     li.innerHTML = '<a href="#feedbacks" id="nav-feedbacks-link">Feedbacks</a>';
-    navLinks.appendChild(li);
+    const contatoLi = Array.from(navLinks.querySelectorAll('li'))
+      .find(el => el.querySelector('a[href="#contact"]'));
+    navLinks.insertBefore(li, contatoLi || null);
   }
 
-  // Menu mobile
+  // Menu mobile — insere antes do <a href="#contact">
   const mobileMenu = document.getElementById('mobile-menu');
   if (mobileMenu) {
     const a = document.createElement('a');
     a.href = '#feedbacks';
     a.className = 'mobile-link';
     a.textContent = 'Feedbacks';
-    mobileMenu.appendChild(a);
+    const contatoA = mobileMenu.querySelector('a[href="#contact"]');
+    mobileMenu.insertBefore(a, contatoA || null);
   }
 }

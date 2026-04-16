@@ -27,7 +27,7 @@
 
 ## 📋 Sobre
 
-Portfolio profissional completo com **página pública** para visitantes e **painel administrativo** privado para gerenciamento de conteúdo. Inspirado no GitHub Dark Theme, com terminal-style splash screen, player de música ambiente reativo, visualização de certificados e projetos com integração GitHub.
+Portfolio profissional completo com **página pública** para visitantes e **painel administrativo** privado para gerenciamento de conteúdo. Inspirado no GitHub Dark Theme, com terminal-style splash screen, player de música ambiente reativo, visualização de certificados e projetos com integração GitHub, avatar pixel-art personalizável e carrossel de depoimentos de clientes/colaboradores.
 
 <details>
 <summary><strong>📸 Preview</strong></summary>
@@ -39,13 +39,15 @@ Portfolio profissional completo com **página pública** para visitantes e **pai
 | Hero com foto, bio e redes sociais | Upload de imagens/PDFs via Supabase Storage |
 | Certificados organizados por categoria | Gerenciamento de categorias e progresso |
 | Projetos com techs e README viewer | Extração automática de horas de PDFs |
+| Carrossel de feedbacks com modal | Aprovação de feedbacks pendentes |
+| Avatar pixel-art animado | Editor visual de avatar com prévia em tempo real |
 
 </details>
 
 ## ✨ Funcionalidades
 
 ### 🖥️ Splash Screen — Terminal Boot
-- **Tela de entrada** estilo terminal Linux com prompt `guest@portfolio:~$ ./welcome.sh`
+- Tela de entrada estilo terminal Linux com prompt `guest@portfolio:~$ ./welcome.sh`
 - Sequência de boot com mensagens `[ OK ]` e barra de progresso animada
 - Mensagem de boas-vindas digitada caractere por caractere com **som de tecla** (Web Audio API)
 - Botão "Prosseguir" para transição suave ao site
@@ -53,11 +55,13 @@ Portfolio profissional completo com **página pública** para visitantes e **pai
 - Totalmente responsivo — fullscreen em mobile
 
 ### 🌍 Página Pública
-- **Hero Section** — Foto, nome, título, localização e redes sociais com ícones dinâmicos
-- **Sobre Mim** — Bio com informações de contato, empresa atual e tempo de serviço
+- **Hero Section** — Foto, nome, título, localização, redes sociais e avatar pixel-art animado
+- **Sobre Mim** — Bio com informações de contato, empresa atual e tempo de serviço calculado automaticamente
 - **Certificados** — Organizados por categoria com sidebar, barra de progresso, contagem de horas e thumbnails (imagem ou primeira página de PDF via pdf.js)
 - **Projetos** — Cards com badges de destaque, tecnologias auto-detectadas via GitHub API, horas e links
+- **Empresas** — Grid de empresas/clientes com logo, descrição e link para o site
 - **GitHub & Tecnologias** — Estatísticas em tempo real (repos, commits/semana, followers, stars) e badges coloridos de tecnologias
+- **Feedbacks** — Carrossel de depoimentos aprovados com "Ver mais" → modal completo (nome, profissão, rede social)
 - **Modal de Certificado** — Zoom com suporte a imagem e PDF, link da credencial, cópia de link e arquivos complementares
 - **README Viewer** — Modal terminal-style que busca e renderiza README.md do GitHub com marked.js + DOMPurify
 - **Deep Linking** — Links diretos para certificados via `?cert={id}` com highlight animado
@@ -65,23 +69,46 @@ Portfolio profissional completo com **página pública** para visitantes e **pai
 - **Animações Type-In** — Texto digitado no scroll com efeito de cursor terminal
 - **Design Responsivo** — Otimizado para desktop, tablet (768px), mobile (480px) e small mobile (360px)
 
+### 👾 Avatar Pixel-Art
+- Avatar sprite 100×160px totalmente customizável no painel admin
+- Partes personalizáveis: tom de pele, cor do cabelo, barba, olhos, óculos, camisa e calça
+- Opções de estilo: tipo de cabelo, formato do rosto, acessórios
+- **Estados animados autônomos:** idle, wave, code, study, phone, thinking — alterna automaticamente
+- Prévia em tempo real com chips de estado no editor admin
+
 ### 🎵 Player de Música & Reactor
-- **YouTube Floating Player** — Playlist de 4 tracks com seleção aleatória
-- **Controles** — Play/pause com toast de nome da música
+- **YouTube Floating Player** — Playlist gerenciada pelo admin com shuffle e skip
+- **Controles** — Play/pause, volume, shuffle, skip com toast do nome da música
 - **Music Reactor** — Efeito ambient glow reativo com 3 camadas de frequência (bass, mid, treble) simuladas via osciladores senoidais a 60fps
+
+### 💬 Sistema de Feedbacks
+- **Formulário externo** — Deploy independente no Netlify ([feedback-form](../feedback-form/)), mesma identidade visual
+  - Modal de boas-vindas estilo terminal
+  - Campos: nome, profissão, feedback (ilimitado), link de rede social opcional (LinkedIn, Instagram, GitHub, X, etc.)
+  - POST direto ao Supabase com `approved: false`
+- **Carrossel no portfolio** — Exibe apenas feedbacks aprovados, Swiper com 1/2/3 cards por breakpoint
+  - Cards de altura igual, texto limitado a 5 linhas + botão "Ver mais"
+  - "Ver mais" abre modal completo e pausa o autoplay; retoma ao navegar
+  - Link de rede social detectado automaticamente pelo domínio
+- **Admin** — Listagem com filtros (Todos / Pendentes / Aprovados), leitura completa em modal, aprovar/revogar/excluir
 
 ### 🔒 Painel Administrativo
 - **Login Seguro** — Autenticação via Supabase Auth
-- **Perfil** — Nome, foto, título, bio, contato, currículo, GitHub username, empresa e WhatsApp
+- **Perfil** — Nome, foto, título, bio, contato, currículo PDF, GitHub username, empresa e WhatsApp
+- **Avatar** — Editor visual pixel-art com swatches de cor, chips de estilo e prévia ao vivo
 - **Redes Sociais** — CRUD com 11 plataformas pré-definidas e auto-preenchimento de ícones
-- **Categorias** — Organização de certificados por área (Hard Skills, Soft Skills, etc.)
+- **Categorias** — Organização de certificados por área
 - **Certificados** — Upload de imagem/PDF, progresso, emissor, credencial, horas (extração automática de PDFs) e arquivos complementares (Excel, SQL, PowerBI, etc.)
 - **Projetos** — Título, descrição, imagem, GitHub, demo, tecnologias (auto-fetch via API), horas e destaque
+- **Empresas** — Logo, nome, descrição e link de site
+- **Rádio** — Gerenciamento da playlist (nome + YouTube ID, ativar/desativar)
+- **Feedbacks** — Aprovação de depoimentos recebidos pelo formulário externo
 
 ### 🛡️ Segurança
-- **RLS (Row Level Security)** — Leitura pública, escrita apenas pelo owner
+- **RLS (Row Level Security)** — Leitura pública restrita; escrita/atualização apenas pelo owner autenticado
+- **Feedbacks RLS** — INSERT público (sem auth), SELECT público somente onde `approved = true`, UPDATE/DELETE apenas para auth
 - **Proteção XSS** — `escapeHtml()` + `escapeAttr()` em todo conteúdo renderizado + DOMPurify para Markdown
-- **Headers de Segurança** — X-Frame-Options, CSP, Referrer-Policy via Netlify
+- **Headers de Segurança** — X-Frame-Options, CSP, Referrer-Policy via `netlify.toml`
 
 ---
 
@@ -91,6 +118,7 @@ Portfolio profissional completo com **página pública** para visitantes e **pai
 |--------|-----------|-----|
 | **Frontend** | HTML5 / CSS3 / JavaScript ES6+ | Interface pública e painel admin |
 | **Estilização** | CSS Custom Properties + Grid/Flexbox | Design system responsivo |
+| **Carrossel** | [Swiper](https://swiperjs.com/) 11 | Carrossel de feedbacks |
 | **Ícones** | [Font Awesome](https://fontawesome.com/) 6 | Ícones de UI e redes sociais |
 | **Fontes** | [Google Fonts](https://fonts.google.com/) (Inter) | Tipografia |
 | **PDF** | [PDF.js](https://mozilla.github.io/pdf.js/) 3.11 | Thumbnails e extração de texto de PDFs |
@@ -128,21 +156,24 @@ Portfolio/
 │   │   ├── _about.css          #    Seção "Sobre mim"
 │   │   ├── _certificates.css   #    Certificados e sidebar
 │   │   ├── _projects.css       #    Cards de projetos
+│   │   ├── _companies.css      #    Grid de empresas
+│   │   ├── _feedbacks.css      #    Carrossel de feedbacks + modal
 │   │   ├── _readme-modal.css   #    Modal README viewer
-│   │   ├── _footer.css         #    Rodapé
 │   │   ├── _cert-modal.css     #    Modal de certificado
+│   │   ├── _footer.css         #    Rodapé
 │   │   ├── _ui.css             #    Componentes UI (toast, spinner...)
 │   │   ├── _animations.css     #    Animações type-in
 │   │   ├── _github.css         #    Stats GitHub e badges
-│   │   ├── _responsive.css     #    Todas as media queries
 │   │   ├── _music.css          #    Player de música
-│   │   └── _splash.css         #    Splash screen terminal
+│   │   ├── _avatar.css         #    Avatar pixel-art
+│   │   ├── _splash.css         #    Splash screen terminal
+│   │   └── _responsive.css     #    Todas as media queries
 │   └── admin/                  # 📦 Módulos CSS do painel admin
 │       ├── _variables-base.css #    Variáveis e reset
 │       ├── _sidebar.css        #    Sidebar + mobile header
 │       ├── _content.css        #    Área de conteúdo principal
 │       ├── _forms.css          #    Formulários e botões
-│       ├── _components.css     #    Modais, toast, listas
+│       ├── _components.css     #    Modais, toast, listas, avatar editor
 │       └── _responsive.css     #    Responsividade do admin
 │
 ├── js/
@@ -151,7 +182,7 @@ Portfolio/
 │   ├── auth.js                 # 🛡️  Guard de autenticação
 │   ├── admin.js                # 🔧 Entry point do painel admin
 │   ├── modules/                # 📦 Módulos JS públicos
-│   │   ├── utils.js            #    slugify, escapeHtml, calcTimeSince
+│   │   ├── utils.js            #    escapeHtml, escapeAttr, calcTimeSince
 │   │   ├── splash.js           #    Splash screen boot sequence
 │   │   ├── navbar.js           #    Barra de navegação
 │   │   ├── profile.js          #    Seção de perfil
@@ -160,18 +191,25 @@ Portfolio/
 │   │   ├── collapsible.js      #    Seções colapsáveis
 │   │   ├── cert-modal.js       #    Modal de certificado
 │   │   ├── projects.js         #    Cards de projetos
+│   │   ├── companies.js        #    Grid de empresas
+│   │   ├── feedbacks.js        #    Carrossel Swiper + modal de feedback
 │   │   ├── readme-modal.js     #    README viewer modal
 │   │   ├── animations.js       #    Animação type-in
-│   │   ├── github.js           #    Dados GitHub e badges
+│   │   ├── github.js           #    Dados GitHub e badges de tecnologia
+│   │   ├── avatar.js           #    Avatar pixel-art (SVG gerado em JS)
 │   │   └── music.js            #    Player YouTube e music reactor
 │   └── admin/                  # 📦 Módulos JS do admin
-│       ├── core.js             #    Navegação, modais, toast, upload
-│       ├── profile.js          #    CRUD de perfil
+│       ├── core.js             #    Navegação, modais, toast, uploadFile
+│       ├── profile.js          #    CRUD de perfil + upload de foto/currículo
+│       ├── avatar.js           #    Editor visual do avatar pixel-art
 │       ├── social.js           #    CRUD de redes sociais
-│       ├── categories.js       #    CRUD de categorias
-│       ├── certificates.js     #    CRUD de certificados + PDF
-│       ├── cert-files.js       #    Arquivos complementares
-│       └── projects.js         #    CRUD de projetos
+│       ├── categories.js       #    CRUD de categorias de certificados
+│       ├── certificates.js     #    CRUD de certificados + extração de horas
+│       ├── cert-files.js       #    Arquivos complementares de certificados
+│       ├── projects.js         #    CRUD de projetos
+│       ├── companies.js        #    CRUD de empresas
+│       ├── radio.js            #    CRUD de tracks do player de rádio
+│       └── feedbacks.js        #    Moderação de feedbacks
 │
 ├── supabase-schema.sql         # 🗄️ Schema SQL (tabelas + RLS + storage)
 ├── netlify.toml                # ☁️  Configuração do Netlify
@@ -181,13 +219,18 @@ Portfolio/
 ### 🗄️ Schema do Banco de Dados
 
 ```
-profiles ──────────────── Perfil do usuário (nome, foto, bio, contato, empresa)
-social_links ──────────── Redes sociais (plataforma, URL, ícone, ordem)
-certificate_categories ── Categorias (nome, descrição, ordem)
-certificates ──────────── Certificados (nome, imagem/PDF, emissor, progresso, horas)
-certificate_files ─────── Arquivos complementares (Excel, SQL, PBIX, etc.)
-projects ──────────────── Projetos (título, GitHub, demo, tecnologias, horas)
+profiles ──────────────────── Perfil (nome, foto, bio, contato, empresa, avatar_config)
+social_links ──────────────── Redes sociais (plataforma, URL, ícone, ordem)
+certificate_categories ────── Categorias (nome, descrição, ordem)
+certificates ──────────────── Certificados (nome, imagem/PDF, emissor, progresso, horas)
+certificate_project_files ─── Arquivos complementares (Excel, SQL, PBIX, etc.)
+projects ──────────────────── Projetos (título, GitHub, demo, tecnologias[], horas)
+companies ─────────────────── Empresas/clientes (nome, logo, site, descrição)
+radio_tracks ──────────────── Playlist do rádio (nome, YouTube ID, ativo)
+feedbacks ─────────────────── Depoimentos (nome, profissão, texto, rede social, aprovado)
 ```
+
+**Buckets de Storage:** `avatars` · `resumes` · `certificates` · `projects` · `companies` · `project-files`
 
 ---
 
@@ -227,6 +270,14 @@ const SUPABASE_ANON_KEY = 'SUA_ANON_KEY';
 4. Publish directory: `.` | Build command: _(vazio)_
 5. **Deploy site** ✅
 
+### 4️⃣ Formulário de Feedbacks (opcional)
+
+O formulário de coleta de feedbacks é um projeto separado em [`../feedback-form/`](../feedback-form/).
+
+1. Crie um novo site no Netlify apontando para a pasta `feedback-form/`
+2. Configure as credenciais do Supabase em `feedback-form/js/config.js`
+3. Após o deploy, atualize `FEEDBACK_FORM_URL` em `js/modules/feedbacks.js` com a URL do formulário
+
 ---
 
 ## 📖 Como Usar
@@ -241,16 +292,20 @@ https://seusite.netlify.app/admin/login.html
 
 | Seção | O que gerencia |
 |:-----:|:--------------|
-| 👤 **Perfil** | Nome, foto, título, bio, email, telefone, empresa, currículo e GitHub |
+| 👤 **Perfil** | Nome, foto, título, bio, email, telefone, empresa, currículo PDF e GitHub |
+| 👾 **Avatar** | Pixel-art customizável — skin, cabelo, roupa, acessórios e estados animados |
 | 🔗 **Redes Sociais** | LinkedIn, GitHub, Instagram, X, YouTube, Discord, WhatsApp, Telegram, etc. |
-| 📂 **Categorias** | Agrupamentos de certificados (Hard Skills, Soft Skills...) |
-| 📜 **Certificados** | Upload de imagem/PDF, emissor, progresso, horas (extração automática), credencial e arquivos complementares |
+| 📂 **Categorias** | Agrupamentos de certificados (Hard Skills, Soft Skills, etc.) |
+| 📜 **Certificados** | Upload de imagem/PDF, emissor, progresso, horas (extração automática) e arquivos extras |
 | 💻 **Projetos** | Título, descrição, GitHub, demo, tecnologias (auto-fetch), horas e destaque |
+| 🏢 **Empresas** | Logo, nome, descrição e link do site |
+| 🎵 **Rádio** | Tracks da playlist (nome + YouTube ID, ativar/desativar) |
+| 💬 **Feedbacks** | Moderar depoimentos: aprovar, revogar ou excluir |
 
 ### Fluxo Recomendado
 
 ```
-1. Preencher Perfil → 2. Adicionar Redes Sociais → 3. Criar Categorias → 4. Cadastrar Certificados → 5. Adicionar Projetos
+1. Perfil → 2. Redes Sociais → 3. Avatar → 4. Categorias → 5. Certificados → 6. Projetos → 7. Empresas → 8. Rádio
 ```
 
 ---
@@ -263,6 +318,5 @@ Este projeto é de uso pessoal. Sinta-se livre para usá-lo como base para seu p
 
 <div align="center">
 
-**Feito com ❤️ usando HTML, CSS, JavaScript, Supabase e Web Audio API**
 
 </div>
