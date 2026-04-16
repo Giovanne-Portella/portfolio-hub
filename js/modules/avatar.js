@@ -43,7 +43,7 @@ const SECTION_STATES = {
   'github-contributions':{ state: 'code',      bubble: 'Codar é minha paixão!' },
   projects:              { state: 'code',      bubble: 'Veja o que eu construí! 💻' },
   certificates:          { state: 'study',     bubble: 'Sempre aprendendo! 📚' },
-  companies:             { state: 'walk',      bubble: 'Minha jornada profissional.' },
+  companies:             { state: 'idle',      bubble: 'Minha jornada profissional.' },
   feedbacks:             { state: 'celebrate', bubble: 'O que falam de mim! 🌟' },
   contact:               { state: 'wave',      bubble: 'Vamos conversar? 💬' },
 };
@@ -783,7 +783,7 @@ function setHeadphonesProp(visible) {
 }
 
 function isStateAllowed(state) {
-  if (state === 'idle' || state === 'walk') return true;  // always available
+  if (state === 'idle') return true;  // always available
   const allowed = _cfg.allowedStates;
   if (!allowed || !Array.isArray(allowed)) return true;  // null = allow all
   return allowed.includes(state);
@@ -956,10 +956,8 @@ function onAvatarClick() {
   _clickIndex++;
   applyState(r.state);
   showBubble(r.bubble, 3000);
-  setTimeout(() => {
-    const d = SECTION_STATES[_currentSection];
-    if (d) applyState(d.state);
-  }, 3500);
+  // Avatar é autônomo — volta para idle após a reação, não para estado de seção
+  setTimeout(() => applyState('idle'), 3500);
 }
 
 // ============================================
