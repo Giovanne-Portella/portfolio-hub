@@ -36,6 +36,9 @@ function renderFeedbacks(feedbacks) {
 
   if (!section || !container) return;
 
+  // Cache para o modal
+  _feedbacksData = feedbacks;
+
   // Preenche os slides
   container.innerHTML = feedbacks.map(buildSlide).join('');
 
@@ -77,28 +80,27 @@ function renderFeedbacks(feedbacks) {
     swiper.on('slideChange', () => swiper.autoplay.start());
 
     // Botões "Ver mais / Ver menos"
-    document.querySelectorAll('.feedback-text').forEach(textEl => {
-      const btn = textEl.nextElementSibling;
-      if (!btn || !btn.classList.contains('feedback-read-more')) return;
+    // "Ver mais" → abre modal com feedback completo
+    document.querySelectorAll('.feedback-read-more').forEach(btn => {
+      const textEl = btn.previousElementSibling;
 
-      if (textEl.scrollHeight <= textEl.clientHeight + 2) {
+      // Esconde o botão se o texto não estiver sendo cortado
+      if (textEl && textEl.scrollHeight <= textEl.clientHeight + 2) {
         btn.style.display = 'none';
         return;
       }
 
       btn.addEventListener('click', (e) => {
-        e.stopPropagation(); // não vaza o click para o Swiper
-        const expanded = textEl.classList.toggle('expanded');
-        btn.textContent = expanded ? '▲ Ver menos' : '▼ Ver mais';
-
-        if (expanded) {
-          swiper.autoplay.stop();
-        } else {
-          swiper.autoplay.start();
-        }
+        e.stopPropagation();
+        const id = btn.closest('.swiper-slide').dataset.feedbackId;
+        openFeedbackModal(id);
+        swiper.autoplay.stop();
       });
     });
   });
+
+  // Configura o modal (só uma vez)
+  setupFeedbackModal();
 
   // Adiciona link de Feedbacks ao navbar dinâmicamente
   addFeedbackNavLink();
@@ -153,14 +155,9 @@ function buildSlide(f) {
     .join('');
 
   const social = (f.show_linkedin && f.linkedin_url) ? detectSocial(f.linkedin_url) : null;
-  const socialBadge = social
-    ? `<a href="${escapeAttr(f.linkedin_url)}" target="_blank" rel="noopener noreferrer" class="feedback-linkedin">
-         <i class="${social.icon}"></i> Ver ${social.label}
-       </a>`
-    : '';
 
   return `
-    <div class="swiper-slide">
+    <div class="swiper-slide" data-feedback-id="${escapeAttr(f.id)}">
       <div class="feedback-card">
         <div class="feedback-quote"><i class="fas fa-quote-left"></i></div>
         <div class="feedback-text-wrapper">
@@ -173,11 +170,68 @@ function buildSlide(f) {
           <div class="feedback-info">
             <span class="feedback-name">${escapeHtml(f.name)}</span>
             <span class="feedback-profession">${escapeHtml(f.profession)}</span>
-            ${socialBadge}
+            ${social ? `<span class="feedback-linkedin"><i class="${social.icon}"></i> ${social.label}</span>` : ''}
           </div>
         </div>
       </div>
     </div>`;
+}
+
+// ============================================
+// MODAL de feedback completo
+// ============================================
+let _feedbacksData = [];   // cache para o modal
+
+function openFeedbackModal(id) {
+  const f = _feedbacksData.find(x => x.id === id);
+  if (!f) return;
+
+  const initials = f.name
+    .split(' ').filter(w => w.length > 0)
+    .slice(0, 2).map(w => w[0].toUpperCase()).join('');
+
+  document.getElementById('fm-avatar').textContent     = initials;
+  document.getElementById('fm-name').textContent       = f.name;
+  document.getElementById('fm-profession').textContent = f.profession;
+  document.getElementById('fm-text').textContent       = f.feedback;
+
+  const socialEl = document.getElementById('fm-social');
+  if (f.show_linkedin && f.linkedin_url) {
+    const s = detectSocial(f.linkedin_url);
+    document.getElementById('fm-social-icon').className  = s.icon;
+    document.getElementById('fm-social-label').textContent = `Ver ${s.label}`;
+    socialEl.href = f.linkedin_url;
+    socialEl.style.display = '';
+  } else {
+    socialEl.style.display = 'none';
+  }
+
+  document.getElementById('feedback-modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeFeedbackModal() {
+  document.getElementById('feedback-modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function setupFeedbackModal() {
+  const overlay = document.getElementById('feedback-modal-overlay');
+  if (!overlay) return;
+
+  // Fecha ao clicar fora
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeFeedbackModal();
+  });
+
+  // Botões de fechar
+  document.getElementById('feedback-modal-close').addEventListener('click', closeFeedbackModal);
+  document.getElementById('feedback-modal-btn-close').addEventListener('click', closeFeedbackModal);
+
+  // ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeFeedbackModal();
+  });
 }
 
 function addFeedbackNavLink() {

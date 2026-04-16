@@ -331,6 +331,50 @@
     </div>
   </footer>
 
+  <!-- FEEDBACK MODAL -->
+  <div class="feedback-modal-overlay" id="feedback-modal-overlay">
+    <div class="feedback-modal">
+      <!-- Header estilo terminal -->
+      <div class="feedback-modal-header">
+        <div class="feedback-modal-dots">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+        </div>
+        <span class="feedback-modal-title">~/feedback.md</span>
+        <button class="feedback-modal-close" id="feedback-modal-close" aria-label="Fechar">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <!-- Corpo -->
+      <div class="feedback-modal-body">
+        <!-- Autor -->
+        <div class="feedback-modal-author">
+          <div class="feedback-modal-avatar" id="fm-avatar"></div>
+          <div class="feedback-modal-author-info">
+            <span class="feedback-modal-name" id="fm-name"></span>
+            <span class="feedback-modal-profession" id="fm-profession"></span>
+            <a class="feedback-modal-social" id="fm-social" href="#" target="_blank" rel="noopener noreferrer" style="display:none">
+              <i id="fm-social-icon" class="fas fa-link"></i>
+              <span id="fm-social-label">Ver perfil</span>
+            </a>
+          </div>
+        </div>
+        <!-- Divisor -->
+        <div class="feedback-modal-divider"></div>
+        <!-- Texto completo -->
+        <div class="feedback-modal-quote-icon"><i class="fas fa-quote-left"></i></div>
+        <p class="feedback-modal-text" id="fm-text"></p>
+      </div>
+      <!-- Footer -->
+      <div class="feedback-modal-footer">
+        <button class="feedback-modal-btn-close" id="feedback-modal-btn-close">
+          <i class="fas fa-times"></i> Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- CERTIFICATE MODAL (for zoom view) -->
   <div class="modal-overlay" id="cert-modal">
     <div class="modal-content">
