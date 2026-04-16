@@ -51,9 +51,14 @@ function refreshAdminSelections() {
     el.classList.toggle('selected', _adminCfg[el.dataset.key] === el.dataset.value);
   });
 
-  // Option chips (single-value)
+  // Option chips — compara string e boolean (ex: aiEnabled true/false)
   document.querySelectorAll('#section-avatar .avatar-opt-chip[data-key]').forEach(el => {
-    el.classList.toggle('selected', _adminCfg[el.dataset.key] === el.dataset.value);
+    const cv = _adminCfg[el.dataset.key];
+    const dv = el.dataset.value;
+    const match = dv === String(cv)
+      || (dv === 'true'  && cv === true)
+      || (dv === 'false' && cv === false);
+    el.classList.toggle('selected', match);
   });
 
   // Sync custom color inputs to current value
@@ -109,7 +114,11 @@ function setupAvatarEditor() {
   // ── Option chips ──
   section.querySelectorAll('.avatar-opt-chip[data-key]').forEach(el => {
     el.addEventListener('click', () => {
-      _adminCfg[el.dataset.key] = el.dataset.value;
+      // Coerce 'true'/'false' strings para boolean real
+      let val = el.dataset.value;
+      if (val === 'true')  val = true;
+      if (val === 'false') val = false;
+      _adminCfg[el.dataset.key] = val;
       refreshAdminSelections();
       renderAdminPreview();
     });

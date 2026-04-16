@@ -422,6 +422,44 @@
     </div>
   </div>
 
+  <!-- PROJECT MODAL -->
+  <div class="feedback-modal-overlay" id="project-modal-overlay">
+    <div class="feedback-modal project-modal">
+      <div class="feedback-modal-header">
+        <div class="feedback-modal-dots">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+        </div>
+        <span class="feedback-modal-title" id="pm-title-bar">~/project.md</span>
+        <button class="feedback-modal-close" id="project-modal-close" aria-label="Fechar">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="feedback-modal-body">
+        <div class="project-modal-image-wrap" id="pm-image"></div>
+        <div class="project-modal-meta">
+          <h3 class="project-modal-title" id="pm-title"></h3>
+          <span class="project-featured-badge" id="pm-badge" style="display:none">
+            <i class="fas fa-star"></i> Destaque
+          </span>
+        </div>
+        <div class="feedback-modal-divider"></div>
+        <p class="feedback-modal-text" id="pm-desc"></p>
+        <div class="project-techs" id="pm-techs" style="margin-top:16px;display:none"></div>
+        <p class="cert-hours" id="pm-hours" style="margin-top:12px;display:none">
+          <i class="fas fa-clock"></i> <span id="pm-hours-val"></span>
+        </p>
+      </div>
+      <div class="feedback-modal-footer project-modal-footer">
+        <div class="project-modal-links" id="pm-links"></div>
+        <button class="feedback-modal-btn-close" id="project-modal-btn-close">
+          <i class="fas fa-times"></i> Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- CERTIFICATE MODAL (for zoom view) -->
   <div class="modal-overlay" id="cert-modal">
     <div class="modal-content">

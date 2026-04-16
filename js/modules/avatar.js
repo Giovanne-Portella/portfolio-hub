@@ -31,6 +31,7 @@ const AVATAR_DEFAULTS = {
   glassesStyle: 'none',
   glassesColor: '#58a6ff',
   accessory:    'none',
+  aiEnabled:     true,   // false = pula chamadas Claude, usa hardcode
   allowedStates: null,   // null = allow all autonomous states
 };
 
@@ -1023,6 +1024,7 @@ const _aiSectionTs = {};
 // Returns the bubble string on success, or null on any failure/rate-limit.
 // Always non-blocking — callers must use .then() and handle null gracefully.
 async function fetchAIBubble(section) {
+  if (_cfg.aiEnabled === false) return null;   // desativado no admin
   const now = Date.now();
   if (now - (_aiSectionTs[section] || 0) < AI_SECTION_COOLDOWN) return null;
   _aiSectionTs[section] = now;

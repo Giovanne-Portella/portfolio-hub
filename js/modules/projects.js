@@ -1,6 +1,8 @@
-﻿// ============================================
+// ============================================
 // PROJECTS
 // ============================================
+let _projectsData = [];
+
 async function loadProjects() {
   const container = document.getElementById('projects-container');
 
@@ -18,6 +20,9 @@ async function loadProjects() {
     return;
   }
 
+  // Cache para o modal
+  _projectsData = data;
+
   // AI context — títulos dos projetos para o avatar speech
   if (window._avatarCtx) {
     window._avatarCtx.projects = data.slice(0, 5).map(p => p.title);
@@ -28,7 +33,6 @@ async function loadProjects() {
   const projTitle = document.getElementById('proj-section-title');
   if (projTitle) {
     const newProjTitle = projTotalHours > 0 ? `Projetos • ${projTotalHours}h` : 'Projetos';
-    // If type-in animation is mid-flight, update the target it's reading from
     if (projTitle.classList.contains('typing')) {
       projTitle.dataset.typeTarget = newProjTitle;
     } else {
@@ -60,8 +64,10 @@ async function loadProjects() {
       </a>`);
     }
 
+    const pid = escapeAttr(String(project.id));
+
     return `
-      <div class="project-card">
+      <div class="project-card" data-project-id="${pid}">
         <div class="project-image-wrapper">
           ${imageHtml}
           ${project.featured ? '<span class="project-featured-badge"><i class="fas fa-star"></i> Destaque</span>' : ''}
@@ -69,7 +75,9 @@ async function loadProjects() {
         <div class="project-body">
           <h3 class="project-title">${escapeHtml(project.title)}</h3>
           <p class="project-description">${escapeHtml(project.description || '')}</p>
-          ${project.description && project.description.length > 120 ? '<button class="project-desc-toggle" onclick="this.parentElement.classList.toggle(\'expanded\'); this.textContent = this.parentElement.classList.contains(\'expanded\') ? \'Ver menos\' : \'Ver mais\'">Ver mais</button>' : ''}
+          ${project.description && project.description.length > 100
+            ? `<button class="project-read-more" onclick="openProjectModal('${pid}')">▼ Ver mais</button>`
+            : ''}
           ${techsHtml ? `<div class="project-techs">${techsHtml}</div>` : ''}
           ${project.hours ? `<p class="cert-hours"><i class="fas fa-clock"></i> ${project.hours}h</p>` : ''}
           ${linksHtml.length > 0 ? `<div class="project-links">${linksHtml.join('')}</div>` : ''}
@@ -77,5 +85,103 @@ async function loadProjects() {
       </div>
     `;
   }).join('');
+
+  setupProjectModal();
 }
 
+// ============================================
+// PROJECT MODAL
+// ============================================
+function openProjectModal(id) {
+  const p = _projectsData.find(x => String(x.id) === String(id));
+  if (!p) return;
+
+  // Título da barra terminal
+  const titleBar = document.getElementById('pm-title-bar');
+  if (titleBar) titleBar.textContent = `~/${p.title}.md`;
+
+  // Imagem
+  const imgWrap = document.getElementById('pm-image');
+  if (imgWrap) {
+    if (p.image_url) {
+      imgWrap.innerHTML = `<img src="${escapeAttr(p.image_url)}" alt="${escapeAttr(p.title)}">`;
+      imgWrap.style.display = '';
+    } else {
+      imgWrap.innerHTML = `<div class="project-placeholder"><i class="fas fa-code"></i></div>`;
+      imgWrap.style.display = '';
+    }
+  }
+
+  // Título + badge
+  const titleEl = document.getElementById('pm-title');
+  if (titleEl) titleEl.textContent = p.title;
+
+  const badgeEl = document.getElementById('pm-badge');
+  if (badgeEl) badgeEl.style.display = p.featured ? '' : 'none';
+
+  // Descrição
+  const descEl = document.getElementById('pm-desc');
+  if (descEl) descEl.textContent = p.description || '';
+
+  // Tecnologias
+  const techsEl = document.getElementById('pm-techs');
+  if (techsEl) {
+    if (p.technologies && p.technologies.length) {
+      techsEl.innerHTML = p.technologies.map(t => `<span class="tech-tag">${escapeHtml(t)}</span>`).join('');
+      techsEl.style.display = '';
+    } else {
+      techsEl.style.display = 'none';
+    }
+  }
+
+  // Horas
+  const hoursEl  = document.getElementById('pm-hours');
+  const hoursVal = document.getElementById('pm-hours-val');
+  if (hoursEl && hoursVal) {
+    if (p.hours) {
+      hoursVal.textContent = `${p.hours}h`;
+      hoursEl.style.display = '';
+    } else {
+      hoursEl.style.display = 'none';
+    }
+  }
+
+  // Links no footer
+  const linksEl = document.getElementById('pm-links');
+  if (linksEl) {
+    const links = [];
+    if (p.github_url) {
+      links.push(`<a href="${escapeAttr(p.github_url)}" target="_blank" rel="noopener noreferrer" class="project-link"><i class="fab fa-github"></i> Código</a>`);
+      links.push(`<button class="project-link readme-link" onclick="openReadme('${escapeAttr(p.github_url)}','${escapeAttr(p.title)}')"><i class="fas fa-book-open"></i> README</button>`);
+    }
+    if (p.demo_url) {
+      links.push(`<a href="${escapeAttr(p.demo_url)}" target="_blank" rel="noopener noreferrer" class="project-link"><i class="fas fa-external-link-alt"></i> Demo</a>`);
+    }
+    linksEl.innerHTML = links.join('');
+  }
+
+  document.getElementById('project-modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+window.openProjectModal = openProjectModal;
+
+function closeProjectModal() {
+  document.getElementById('project-modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function setupProjectModal() {
+  const overlay = document.getElementById('project-modal-overlay');
+  if (!overlay || overlay.dataset.setup) return;
+  overlay.dataset.setup = '1';
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeProjectModal();
+  });
+  document.getElementById('project-modal-close')?.addEventListener('click', closeProjectModal);
+  document.getElementById('project-modal-btn-close')?.addEventListener('click', closeProjectModal);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay.classList.contains('open')) closeProjectModal();
+  });
+}
