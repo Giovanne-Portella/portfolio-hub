@@ -237,6 +237,13 @@ button.project-link {
   margin-bottom: 4px;
 }
 
+/* Badge dentro do modal deve ser inline, não absolute */
+.project-modal-meta .project-featured-badge {
+  position: static;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
 .project-modal-title {
   font-size: 1.15rem;
   font-weight: 700;
