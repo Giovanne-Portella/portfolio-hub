@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="css/style.css?v=62">
+  <link rel="stylesheet" href="css/style.css?v=63">
 </head>
 <body class="site-loading">
 
@@ -328,6 +328,17 @@
           <div class="footer-social" id="footer-social">
             <!-- Populated by JS -->
           </div>
+
+          <!-- Playlist CTA -->
+          <div class="footer-playlist-cta" id="footer-playlist-cta" style="display:none">
+            <div class="footer-playlist-text">
+              <i class="fas fa-headphones"></i>
+              <span>Gostou da playlist? Aqui está ela completa pra você</span>
+            </div>
+            <button class="btn-playlist" id="btn-playlist-open" type="button">
+              <i class="fas fa-list"></i> Ver playlist
+            </button>
+          </div>
         </div>
 
         <!-- Coluna 2 — Navegação rápida -->
@@ -567,6 +578,31 @@
     </div>
   </div>
 
+  <!-- PLAYLIST MODAL -->
+  <div class="playlist-modal-overlay" id="playlist-modal-overlay">
+    <div class="playlist-modal">
+      <div class="playlist-modal-header">
+        <div class="playlist-modal-dots">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+        </div>
+        <span class="playlist-modal-title">~/playlist.sh</span>
+        <button class="playlist-modal-close" id="playlist-modal-close" aria-label="Fechar">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="playlist-modal-cmd">
+        <span class="playlist-cmd-user">guest@portfolio</span>:<span class="playlist-cmd-path">~</span>$ <span class="playlist-cmd-text">cat playlist.txt</span>
+      </div>
+      <div class="playlist-modal-body" id="playlist-modal-body">
+        <div class="playlist-loading">
+          <i class="fas fa-spinner fa-spin"></i> Carregando playlist...
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- README MODAL -->
   <div class="readme-modal-overlay" id="readme-modal-overlay">
     <div class="readme-modal">
@@ -610,7 +646,7 @@
   <script src="js/modules/animations.js?v=2"></script>
   <script src="js/modules/github.js"></script>
   <script src="js/modules/companies.js"></script>
-  <script src="js/modules/music.js?v=7"></script>
+  <script src="js/modules/music.js?v=8"></script>
   <script src="js/modules/avatar.js?v=11"></script>
   <script src="js/modules/feedbacks.js"></script>
   <script src="js/portfolio.js?v=3"></script>

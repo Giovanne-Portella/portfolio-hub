@@ -148,6 +148,43 @@
 
 .avatar-companion.visible .avatar-section-label { opacity: 0.7; }
 
+/* ── Mobile: shift left to avoid music player, shrink bubble ── */
+@media (max-width: 768px) {
+  .avatar-companion {
+    right: 20px;
+    bottom: 80px;
+  }
+
+  .avatar-bubble {
+    max-width: 160px;
+    font-size: 0.68rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .avatar-companion {
+    right: 12px;
+    bottom: 72px;
+  }
+
+  /* Shrink sprite 20% so it doesn't eat screen real estate */
+  .avatar-sprite-wrap,
+  .avatar-sprite-wrap svg {
+    width: 80px;
+    height: 128px;
+  }
+
+  .avatar-bubble {
+    max-width: 140px;
+    font-size: 0.65rem;
+    padding: 6px 10px;
+  }
+
+  .avatar-section-label {
+    display: none;
+  }
+}
+
 /* ============================================
    SUB-GROUP PIVOT RULES
    Each limb animates around its own bounding box.

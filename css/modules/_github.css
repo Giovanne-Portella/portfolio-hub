@@ -195,3 +195,28 @@
   -webkit-box-orient: vertical;
 }
 
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .tech-stats-wrapper,
+  .gh-orgs-wrapper {
+    padding: 18px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tech-stats-wrapper,
+  .gh-orgs-wrapper {
+    padding: 14px 12px;
+  }
+
+  .tech-stats-title {
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+  }
+
+  .gh-org-card {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
+

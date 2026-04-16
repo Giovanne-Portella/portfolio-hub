@@ -266,10 +266,78 @@ function setVolume(vol) {
   updateVolumeUI(ytVolume);
 }
 
+// ============================================
+// PLAYLIST MODAL
+// ============================================
+async function openPlaylistModal() {
+  const overlay = document.getElementById('playlist-modal-overlay');
+  const body    = document.getElementById('playlist-modal-body');
+  if (!overlay || !body) return;
+
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  if (YT_TRACKS.length === 0) {
+    body.innerHTML = '<p class="playlist-empty">Nenhuma track disponível.</p>';
+    return;
+  }
+
+  body.innerHTML = '<div class="playlist-loading"><i class="fas fa-spinner fa-spin"></i> Buscando informações no YouTube...</div>';
+
+  // Enrich with oEmbed data (channel name) — all in parallel, fail silently
+  const results = await Promise.allSettled(
+    YT_TRACKS.map(track =>
+      fetch(`https://noembed.com/embed?url=${encodeURIComponent('https://www.youtube.com/watch?v=' + track.id)}`)
+        .then(r => r.ok ? r.json() : null)
+        .catch(() => null)
+    )
+  );
+
+  const tracks = YT_TRACKS.map((track, i) => {
+    const oembed = results[i].status === 'fulfilled' ? results[i].value : null;
+    return {
+      ...track,
+      channel: oembed && oembed.author_name ? oembed.author_name : null,
+    };
+  });
+
+  const listHtml = tracks.map((track, i) => {
+    const ytUrl = `https://www.youtube.com/watch?v=${escapeAttr(track.id)}`;
+    const thumb = `https://img.youtube.com/vi/${escapeAttr(track.id)}/mqdefault.jpg`;
+    const num   = String(i + 1).padStart(2, '0');
+    return `
+      <div class="playlist-track">
+        <span class="playlist-track-num">${num}</span>
+        <img class="playlist-track-thumb" src="${thumb}" alt="${escapeAttr(track.name)}" loading="lazy">
+        <div class="playlist-track-info">
+          <span class="playlist-track-name">${escapeHtml(track.name)}</span>
+          ${track.channel ? `<span class="playlist-track-channel"><i class="fab fa-youtube"></i> ${escapeHtml(track.channel)}</span>` : ''}
+        </div>
+        <a href="${ytUrl}" target="_blank" rel="noopener noreferrer" class="playlist-track-link" title="Assistir no YouTube">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </div>`;
+  }).join('');
+
+  body.innerHTML = `<div class="playlist-track-list">${listHtml}</div>`;
+}
+
+function closePlaylistModal() {
+  const overlay = document.getElementById('playlist-modal-overlay');
+  if (overlay) overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
 // Toggle button & init
 document.addEventListener('DOMContentLoaded', async () => {
   // Load tracks from Supabase before starting YT
   await loadRadioTracks();
+
+  // Show footer playlist CTA if we have tracks
+  if (YT_TRACKS.length > 0) {
+    const cta = document.getElementById('footer-playlist-cta');
+    if (cta) cta.style.display = '';
+  }
 
   const btn = document.getElementById('music-toggle');
   if (btn) {
@@ -427,4 +495,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   }, { passive: true });
 
   loadYouTubePlayer();
+
+  // ---- Playlist modal wiring ----
+  const playlistOpenBtn  = document.getElementById('btn-playlist-open');
+  const playlistCloseBtn = document.getElementById('playlist-modal-close');
+  const playlistOverlay  = document.getElementById('playlist-modal-overlay');
+
+  if (playlistOpenBtn)  playlistOpenBtn.addEventListener('click', openPlaylistModal);
+  if (playlistCloseBtn) playlistCloseBtn.addEventListener('click', closePlaylistModal);
+  if (playlistOverlay) {
+    playlistOverlay.addEventListener('click', (e) => {
+      if (e.target === playlistOverlay) closePlaylistModal();
+    });
+  }
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && playlistOverlay && playlistOverlay.classList.contains('open')) {
+      closePlaylistModal();
+    }
+  });
 });

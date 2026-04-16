@@ -67,7 +67,7 @@ Portfolio profissional completo com **página pública** para visitantes e **pai
 - **Deep Linking** — Links diretos para certificados via `?cert={id}` com highlight animado
 - **Seções Colapsáveis** — Estado salvo em localStorage
 - **Animações Type-In** — Texto digitado no scroll com efeito de cursor terminal
-- **Design Responsivo** — Otimizado para desktop, tablet (768px), mobile (480px) e small mobile (360px)
+- **Design Responsivo** — Otimizado para desktop, tablet (768px), mobile (480px) e small mobile (360px); todos os modais em bottom-sheet no mobile; avatar companion e elementos fixos reposicionados em telas pequenas
 
 ### 👾 Avatar Pixel-Art
 - Avatar sprite 100×160px totalmente customizável no painel admin
@@ -80,6 +80,8 @@ Portfolio profissional completo com **página pública** para visitantes e **pai
 - **YouTube Floating Player** — Playlist gerenciada pelo admin com shuffle e skip
 - **Controles** — Play/pause, volume, shuffle, skip com toast do nome da música
 - **Music Reactor** — Efeito ambient glow reativo com 3 camadas de frequência (bass, mid, treble) simuladas via osciladores senoidais a 60fps
+- **CTA de Playlist no Footer** — Após a música iniciar, um botão "Ver playlist" aparece no rodapé
+- **Modal de Playlist Terminal-Style** — Lista todas as tracks com thumbnail do YouTube, nome da música, canal (via noembed.com) e link direto para o vídeo — mesmo visual de terminal do README viewer
 
 ### 💬 Sistema de Feedbacks
 - **Formulário externo** — Deploy independente no Netlify ([feedback-form](../feedback-form/)), mesma identidade visual
