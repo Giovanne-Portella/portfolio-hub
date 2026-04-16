@@ -841,16 +841,20 @@ function showBubble(text, duration = 4000) {
 // ============================================
 // AI BUBBLE (Fase 3)
 // ============================================
-const AI_ENDPOINT    = '/.netlify/functions/avatar-speech';
-const AI_COOLDOWN_MS = 30_000;   // min ms between calls (30s)
-let   _lastAICall    = -Infinity;
+const AI_ENDPOINT       = '/.netlify/functions/avatar-speech';
+const AI_SECTION_COOLDOWN = 15_000;  // ms por seção (cada seção tem cooldown próprio)
+
+// Cooldown independente por seção — rolar hero→projetos→certs dispara 3 chamadas;
+// voltar para hero dentro de 15s usa hardcode; depois de 15s busca IA de novo.
+const _aiSectionTs = {};
 
 // Fetches an AI-generated speech bubble for the given section.
 // Returns the bubble string on success, or null on any failure/rate-limit.
 // Always non-blocking — callers must use .then() and handle null gracefully.
 async function fetchAIBubble(section) {
-  if (Date.now() - _lastAICall < AI_COOLDOWN_MS) return null;
-  _lastAICall = Date.now();
+  const now = Date.now();
+  if (now - (_aiSectionTs[section] || 0) < AI_SECTION_COOLDOWN) return null;
+  _aiSectionTs[section] = now;
 
   try {
     const controller = new AbortController();
@@ -870,7 +874,7 @@ async function fetchAIBubble(section) {
     return bubble || null;
   } catch (err) {
     console.warn('[avatar-ai] fetch failed:', err?.message || err);
-    return null;  // silently degrade — hardcoded bubbles always available
+    return null;
   }
 }
 
@@ -885,15 +889,13 @@ function transitionToSection(sectionId) {
   const stateToUse = isStateAllowed(data.state) ? data.state : 'idle';
   requestState(stateToUse, data.bubble, 3500);
 
-  // 70% chance: enrich bubble with AI-generated line (async, non-blocking).
-  // Shows ~1-2s after the hardcoded bubble, giving a "thinking" feel.
-  if (Math.random() < 0.70) {
-    fetchAIBubble(sectionId).then(aiBubble => {
-      if (aiBubble && _currentSection === sectionId) {
-        showBubble(aiBubble, 4500);
-      }
-    });
-  }
+  // Sempre tenta IA na troca de seção — o cooldown por seção evita spam.
+  // Mostra o hardcode imediatamente; substitui pela IA quando chegar (~1-2s).
+  fetchAIBubble(sectionId).then(aiBubble => {
+    if (aiBubble && _currentSection === sectionId) {
+      showBubble(aiBubble, 4500);
+    }
+  });
 }
 
 function setupScrollObserver() {
