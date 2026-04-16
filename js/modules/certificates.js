@@ -37,6 +37,11 @@ async function loadCertificates() {
   allCategories = categories;
   allCerts = certs || [];
 
+  // AI context — nomes dos certificados para o avatar speech
+  if (window._avatarCtx) {
+    window._avatarCtx.certs = allCerts.slice(0, 5).map(c => c.name);
+  }
+
   // Build sidebar list
   sidebar.innerHTML = '';
 

@@ -142,6 +142,13 @@ async function loadProfile() {
     if (el) el.style.display = '';
   }
 
+  // AI context — nome, título e empresa para o avatar speech
+  if (window._avatarCtx) {
+    window._avatarCtx.name    = data.full_name    || null;
+    window._avatarCtx.title   = data.title        || null;
+    window._avatarCtx.company = data.company_name || null;
+  }
+
   // GitHub & Tech stats
   if (data.github_username) {
     loadGitHubData(data.github_username);

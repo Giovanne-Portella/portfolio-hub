@@ -18,6 +18,11 @@ async function loadProjects() {
     return;
   }
 
+  // AI context — títulos dos projetos para o avatar speech
+  if (window._avatarCtx) {
+    window._avatarCtx.projects = data.slice(0, 5).map(p => p.title);
+  }
+
   // Update section title with total hours
   const projTotalHours = data.reduce((sum, p) => sum + (p.hours || 0), 0);
   const projTitle = document.getElementById('proj-section-title');

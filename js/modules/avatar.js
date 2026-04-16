@@ -34,17 +34,18 @@ const AVATAR_DEFAULTS = {
 };
 
 // Autonomous states that can be toggled by the user
-const ALL_AUTONOMOUS_STATES = ['walk', 'dance', 'bored', 'phone', 'stretch', 'look', 'code', 'wave', 'study'];
+const ALL_AUTONOMOUS_STATES = ['walk', 'dance', 'bored', 'phone', 'stretch', 'look', 'code', 'wave', 'study', 'think', 'celebrate', 'point'];
 
 // ── Section → state map ──────────────────────
 const SECTION_STATES = {
-  hero:                  { state: 'wave',    bubble: 'Olá! Seja bem vindo! 👋' },
-  about:                 { state: 'idle',    bubble: 'Esse sou eu 😄' },
-  'github-contributions':{ state: 'code',    bubble: 'Codar é minha paixão!' },
-  projects:              { state: 'code',    bubble: 'Veja o que eu construí! 💻' },
-  certificates:          { state: 'study',   bubble: 'Sempre aprendendo! 📚' },
-  companies:             { state: 'walk',    bubble: 'Minha jornada profissional.' },
-  contact:               { state: 'wave',    bubble: 'Vamos conversar? 💬' },
+  hero:                  { state: 'wave',      bubble: 'Olá! Seja bem vindo! 👋' },
+  about:                 { state: 'idle',      bubble: 'Esse sou eu 😄' },
+  'github-contributions':{ state: 'code',      bubble: 'Codar é minha paixão!' },
+  projects:              { state: 'code',      bubble: 'Veja o que eu construí! 💻' },
+  certificates:          { state: 'study',     bubble: 'Sempre aprendendo! 📚' },
+  companies:             { state: 'walk',      bubble: 'Minha jornada profissional.' },
+  feedbacks:             { state: 'celebrate', bubble: 'O que falam de mim! 🌟' },
+  contact:               { state: 'wave',      bubble: 'Vamos conversar? 💬' },
 };
 
 const IDLE_BUBBLES = [
@@ -67,6 +68,21 @@ let _spriteEl       = null;
 let _bubbleEl       = null;
 let _labelEl        = null;
 let _idleTimeout    = null;
+
+// ── Action queue (Fase 1) ──────────────────
+let _stateStartTime = 0;          // when current state was applied
+let _pendingState   = null;       // { state, bubble, dur } awaiting min-duration
+let _pendingTimer   = null;       // timeout id for pending transition
+
+// ── AI context (Fase 3) ────────────────────
+// Populated by profile.js / projects.js / certificates.js after Supabase load.
+window._avatarCtx = {
+  name:     null,   // profile.full_name
+  title:    null,   // profile.title
+  company:  null,   // profile.company_name
+  projects: [],     // string[] — project titles (up to 5)
+  certs:    [],     // string[] — certificate names (up to 5)
+};
 
 // ============================================
 // SVG HELPERS
@@ -708,10 +724,20 @@ function lighten(hex, amount) {
 // STATE MACHINE
 // ============================================
 const STATE_EXPRESSION = {
-  idle:    'smile',  walk:    'smile',  dance:   'grin',
-  bored:   'bored',  phone:   'serious', wave:   'wave',
-  serious: 'serious', stretch: 'smile', look:   'smile',
-  code:    'serious', study:  'smile',
+  idle:      'smile',   walk:      'smile',   dance:     'grin',
+  bored:     'bored',   phone:     'serious', wave:      'wave',
+  serious:   'serious', stretch:   'smile',   look:      'smile',
+  code:      'serious', study:     'smile',
+  think:     'serious', celebrate: 'grin',    point:     'smile',
+};
+
+// Minimum ms a state plays before a queued transition can fire.
+// idle/walk = 0 so section changes feel instant when currently passive.
+const STATE_MIN_DURATION = {
+  idle: 0, walk: 0, dance: 900,
+  bored: 2500, phone: 2200, wave: 900,
+  stretch: 2400, look: 1800, code: 2000, study: 2800,
+  think: 2000, celebrate: 1500, point: 1200,
 };
 
 function updateMouth(expression) {
@@ -749,6 +775,11 @@ function isStateAllowed(state) {
 
 function applyState(state) {
   _state = state;
+  _stateStartTime = Date.now();
+  // Cancel any queued transition — this call is now authoritative
+  clearTimeout(_pendingTimer);
+  _pendingState = null;
+
   if (!_spriteEl) return;
   _spriteEl.setAttribute('class', 'avatar-sprite state-' + state);
   updateMouth(STATE_EXPRESSION[state] || 'smile');
@@ -756,9 +787,43 @@ function applyState(state) {
   setBookProp(state === 'study');
   setCodeProps(state === 'code');
   if (_avatarEl) {
-    _avatarEl.classList.toggle('walking', state === 'walk');
-    _avatarEl.classList.toggle('looking', state === 'look');
-    _avatarEl.classList.toggle('coding',  state === 'code');
+    _avatarEl.classList.toggle('walking',    state === 'walk');
+    _avatarEl.classList.toggle('looking',    state === 'look');
+    _avatarEl.classList.toggle('coding',     state === 'code');
+    _avatarEl.classList.toggle('thinking',   state === 'think');
+    _avatarEl.classList.toggle('celebrating',state === 'celebrate');
+  }
+}
+
+// ============================================
+// REQUEST STATE — queue-aware transition
+// ============================================
+// Use this instead of applyState() for section/autonomous transitions.
+// If the current state hasn't reached its minimum play time, the
+// request is buffered and only one pending slot is kept (latest wins).
+// Direct click interactions should still call applyState() to feel
+// instantaneous.
+function requestState(state, bubble, bubbleDuration) {
+  const elapsed = Date.now() - _stateStartTime;
+  const minDur  = STATE_MIN_DURATION[_state] || 0;
+
+  const commit = () => {
+    applyState(state);
+    if (bubble) showBubble(bubble, bubbleDuration || 3500);
+  };
+
+  if (elapsed >= minDur) {
+    commit();
+  } else {
+    // Overwrite any previously queued state (latest always wins)
+    clearTimeout(_pendingTimer);
+    _pendingState = state;
+    _pendingTimer = setTimeout(() => {
+      if (_pendingState === state) {   // still the latest request?
+        _pendingState = null;
+        commit();
+      }
+    }, minDur - elapsed);
   }
 }
 
@@ -774,6 +839,35 @@ function showBubble(text, duration = 4000) {
 }
 
 // ============================================
+// AI BUBBLE (Fase 3)
+// ============================================
+const AI_ENDPOINT    = '/.netlify/functions/avatar-speech';
+const AI_COOLDOWN_MS = 90_000;   // min ms between calls
+let   _lastAICall    = -Infinity;
+
+// Fetches an AI-generated speech bubble for the given section.
+// Returns the bubble string on success, or null on any failure/rate-limit.
+// Always non-blocking — callers must use .then() and handle null gracefully.
+async function fetchAIBubble(section) {
+  if (Date.now() - _lastAICall < AI_COOLDOWN_MS) return null;
+  _lastAICall = Date.now();
+
+  try {
+    const res = await fetch(AI_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ section, ctx: window._avatarCtx }),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return null;
+    const { bubble } = await res.json();
+    return bubble || null;
+  } catch {
+    return null;  // silently degrade — hardcoded bubbles always available
+  }
+}
+
+// ============================================
 // SECTION TRANSITIONS
 // ============================================
 function transitionToSection(sectionId) {
@@ -782,8 +876,17 @@ function transitionToSection(sectionId) {
   const data = SECTION_STATES[sectionId];
   if (!data) return;
   const stateToUse = isStateAllowed(data.state) ? data.state : 'idle';
-  applyState(stateToUse);
-  showBubble(data.bubble, 3500);
+  requestState(stateToUse, data.bubble, 3500);
+
+  // 30% chance: enrich bubble with AI-generated line (async, non-blocking).
+  // Shows ~1-2s after the hardcoded bubble, giving a "thinking" feel.
+  if (Math.random() < 0.30) {
+    fetchAIBubble(sectionId).then(aiBubble => {
+      if (aiBubble && _currentSection === sectionId) {
+        showBubble(aiBubble, 4500);
+      }
+    });
+  }
 }
 
 function setupScrollObserver() {
@@ -805,10 +908,10 @@ function setAvatarMusicState(playing) {
   if (!_avatarEl) return;
   if (playing) {
     _avatarEl.classList.add('music-on');
-    if (_state === 'idle' || _state === 'look') applyState('dance');
+    if (_state === 'idle' || _state === 'look') requestState('dance');
   } else {
     _avatarEl.classList.remove('music-on');
-    if (_state === 'dance') applyState('idle');
+    if (_state === 'dance') requestState('idle');
   }
 }
 
@@ -846,6 +949,8 @@ function scheduleIdleBehavior(quick = false) {
   _idleTimeout = setTimeout(() => {
     if (_musicOn) { scheduleIdleBehavior(); return; }
 
+    // restore() reads _currentSection at call-time so it always returns
+    // to the correct section state even if the user scrolled during behavior.
     const restore = () => {
       const d = SECTION_STATES[_currentSection];
       if (d) applyState(isStateAllowed(d.state) ? d.state : 'idle');
@@ -854,41 +959,76 @@ function scheduleIdleBehavior(quick = false) {
 
     const roll = Math.random();
 
-    if (roll < 0.12 && isStateAllowed('bored')) {
-      applyState('bored');
+    // ── bored (10%) ───────────────────────────
+    if (roll < 0.10 && isStateAllowed('bored')) {
+      requestState('bored');
       setTimeout(restore, 5000);
 
-    } else if (roll < 0.38 && isStateAllowed('phone')) {
-      // Highest weight — this is the main "idle" behavior
-      applyState('phone');
+    // ── phone (18%) ───────────────────────────
+    } else if (roll < 0.28 && isStateAllowed('phone')) {
+      requestState('phone');
       const msgs = ['📱 ...', 'Hmm...', '📲 notificação!', '🔔 mensagem nova'];
       showBubble(msgs[Math.floor(Math.random() * msgs.length)], 3000);
       setTimeout(restore, 5500);
 
-    } else if (roll < 0.50 && isStateAllowed('study')) {
-      applyState('study');
+    // ── study (10%) ───────────────────────────
+    } else if (roll < 0.38 && isStateAllowed('study')) {
+      requestState('study');
       const studyMsgs = ['📖 lendo...', 'Bom livro!', 'Aprendendo algo novo 🎓', 'Página boa essa...'];
       showBubble(studyMsgs[Math.floor(Math.random() * studyMsgs.length)], 3500);
       setTimeout(restore, 6000);
 
-    } else if (roll < 0.60 && isStateAllowed('stretch')) {
-      applyState('stretch');
+    // ── stretch (8%) ──────────────────────────
+    } else if (roll < 0.46 && isStateAllowed('stretch')) {
+      requestState('stretch');
       showBubble('*estica* 🙆', 2000);
       setTimeout(restore, 2800);
 
-    } else if (roll < 0.72 && isStateAllowed('look')) {
-      applyState('look');
+    // ── look (10%) ────────────────────────────
+    } else if (roll < 0.56 && isStateAllowed('look')) {
+      requestState('look');
       setTimeout(restore, 4500);
 
-    } else if (roll < 0.82 && isStateAllowed('code')) {
-      applyState('code');
+    // ── code (10%) ────────────────────────────
+    } else if (roll < 0.66 && isStateAllowed('code')) {
+      requestState('code');
       const codeMsgs = ['const x = ...', '🖥️ debugando...', 'git commit -m "fix"', '// TODO: 😅'];
       showBubble(codeMsgs[Math.floor(Math.random() * codeMsgs.length)], 4000);
       setTimeout(restore, 6000);
 
+    // ── think (10%) ───────────────────────────
+    } else if (roll < 0.76 && isStateAllowed('think')) {
+      requestState('think');
+      const thinkMsgs = ['Hmm... 🤔', 'Deixa eu pensar...', 'Boa ideia essa...', '🧠 processando...'];
+      showBubble(thinkMsgs[Math.floor(Math.random() * thinkMsgs.length)], 3000);
+      setTimeout(restore, 4500);
+
+    // ── celebrate (7%) ────────────────────────
+    } else if (roll < 0.83 && isStateAllowed('celebrate')) {
+      requestState('celebrate');
+      const celebrateMsgs = ['🎉 Mais um projeto!', 'Isso merece comemorar!', '🚀 Let\'s go!', '✨ Bora!'];
+      showBubble(celebrateMsgs[Math.floor(Math.random() * celebrateMsgs.length)], 2500);
+      setTimeout(restore, 3000);
+
+    // ── point (5%) ────────────────────────────
+    } else if (roll < 0.88 && isStateAllowed('point')) {
+      requestState('point');
+      const pointMsgs = ['Olha isso! 👆', 'Veja aqui!', '⬆️ Confira!', 'Não perca isso!'];
+      showBubble(pointMsgs[Math.floor(Math.random() * pointMsgs.length)], 2500);
+      setTimeout(restore, 3200);
+
+    // ── idle bubble (12%) ─────────────────────
     } else {
-      const msg = IDLE_BUBBLES[Math.floor(Math.random() * IDLE_BUBBLES.length)];
-      if (msg) showBubble(msg, 3000);
+      if (Math.random() < 0.20) {
+        // Try AI bubble — falls back to hardcoded if API unavailable or rate-limited
+        fetchAIBubble(_currentSection).then(aiBubble => {
+          const fallback = IDLE_BUBBLES[Math.floor(Math.random() * IDLE_BUBBLES.length)];
+          showBubble(aiBubble || fallback || '', 3500);
+        });
+      } else {
+        const msg = IDLE_BUBBLES[Math.floor(Math.random() * IDLE_BUBBLES.length)];
+        if (msg) showBubble(msg, 3000);
+      }
       scheduleIdleBehavior();
     }
   }, delay);
