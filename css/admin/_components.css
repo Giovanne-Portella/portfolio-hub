@@ -537,6 +537,22 @@
   text-decoration: underline;
 }
 
+/* Corpo do modal de feedback completo */
+.fv-feedback-body {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  font-size: .9rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  max-height: 320px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
 /* Approve / revoke buttons */
 .btn-approve {
   background: rgba(63, 185, 80, 0.12);
