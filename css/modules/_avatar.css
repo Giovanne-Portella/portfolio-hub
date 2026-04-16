@@ -72,6 +72,22 @@
           drop-shadow(0 0 10px rgba(255,107,107,0.22));
 }
 
+/* ── Headphones prop — fade in/out via CSS class ── */
+#avatar-headphones {
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.avatar-companion.headphones-on #avatar-headphones {
+  opacity: 1;
+  animation: avatarHeadphonesBob 0.65s cubic-bezier(0.4,0,0.6,1) infinite;
+}
+
+@keyframes avatarHeadphonesBob {
+  0%, 100% { transform: translateY(0); }
+  45%       { transform: translateY(-1.5px); }
+}
+
 /* ── Speech bubble ── */
 .avatar-bubble {
   position: absolute;

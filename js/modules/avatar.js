@@ -34,7 +34,7 @@ const AVATAR_DEFAULTS = {
 };
 
 // Autonomous states that can be toggled by the user
-const ALL_AUTONOMOUS_STATES = ['walk', 'dance', 'bored', 'phone', 'stretch', 'look', 'code', 'wave', 'study', 'think', 'celebrate', 'point'];
+const ALL_AUTONOMOUS_STATES = ['dance', 'bored', 'phone', 'stretch', 'look', 'code', 'wave', 'study', 'think', 'celebrate', 'point'];
 
 // ── Section → state map ──────────────────────
 const SECTION_STATES = {
@@ -640,6 +640,15 @@ function buildAvatarSVG(cfg) {
     })() : []),
   ].join('');
 
+  // ── HEADPHONES PROP ────────────────────────
+  // Visibilidade por CSS class .headphones-on no companion (opacity transition).
+  // Separado do accessory:'headphones' da config — sempre renderizado no DOM.
+  const headphones = [
+    `<path d="M ${4*PX} ${3*PX} Q ${10*PX} ${-2*PX} ${16*PX} ${3*PX}" fill="none" stroke="#111" stroke-width="${PX-1}"/>`,
+    p(1,4,3,4,'#1a1a1a'), p(1,5,3,2,'#2a2a2a'), p(1,5,1,2,'#ff6b6b'),
+    p(16,4,3,4,'#1a1a1a'), p(16,5,3,2,'#2a2a2a'), p(18,5,1,2,'#ff6b6b'),
+  ].join('');
+
   // ── ASSEMBLE ──────────────────────────────
   return `<svg xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 ${SVG_W} ${SVG_H}"
@@ -652,6 +661,7 @@ ${torso.join('\n')}
 <g class="avatar-left-arm">${armL.join('')}</g>
 <g class="avatar-right-arm">${armR.join('')}</g>
 <g class="avatar-head">${H.join('\n')}</g>
+<g id="avatar-headphones">${headphones}</g>
 <g id="avatar-phone" style="display:none">${phone}</g>
 <g id="avatar-book"  style="display:none">${book}</g>
 <g id="avatar-code-fg" style="display:none">${codeBackHead}</g>
@@ -764,6 +774,12 @@ function setBookProp(visible) {
   if (!_avatarEl) return;
   const bk = _avatarEl.querySelector('#avatar-book');
   if (bk) bk.style.display = visible ? '' : 'none';
+}
+
+function setHeadphonesProp(visible) {
+  if (!_avatarEl) return;
+  // CSS .headphones-on controla opacity (transition suave) — sem display:none
+  _avatarEl.classList.toggle('headphones-on', visible);
 }
 
 function isStateAllowed(state) {
@@ -886,14 +902,13 @@ function transitionToSection(sectionId) {
   _currentSection = sectionId;
   const data = SECTION_STATES[sectionId];
   if (!data) return;
-  const stateToUse = isStateAllowed(data.state) ? data.state : 'idle';
-  requestState(stateToUse, data.bubble, 3500);
 
-  // Sempre tenta IA na troca de seção — o cooldown por seção evita spam.
-  // Mostra o hardcode imediatamente; substitui pela IA quando chegar (~1-2s).
+  // Avatar é autônomo — NÃO muda estado por scroll.
+  // A seção só dispara o bubble contextual.
+  // IA tenta primeiro; se falhar ou rate-limit, mostra hardcode.
   fetchAIBubble(sectionId).then(aiBubble => {
-    if (aiBubble && _currentSection === sectionId) {
-      showBubble(aiBubble, 4500);
+    if (_currentSection === sectionId) {
+      showBubble(aiBubble || data.bubble, 4000);
     }
   });
 }
@@ -915,12 +930,12 @@ function setupScrollObserver() {
 function setAvatarMusicState(playing) {
   _musicOn = playing;
   if (!_avatarEl) return;
+  _avatarEl.classList.toggle('music-on', playing);
+  setHeadphonesProp(playing);
   if (playing) {
-    _avatarEl.classList.add('music-on');
-    if (_state === 'idle' || _state === 'look') requestState('dance');
+    showBubble('🎧 Boa música!', 2500);
   } else {
-    _avatarEl.classList.remove('music-on');
-    if (_state === 'dance') requestState('idle');
+    showBubble('*tira o fone* 🎧', 2000);
   }
 }
 
@@ -958,11 +973,10 @@ function scheduleIdleBehavior(quick = false) {
   _idleTimeout = setTimeout(() => {
     if (_musicOn) { scheduleIdleBehavior(); return; }
 
-    // restore() reads _currentSection at call-time so it always returns
-    // to the correct section state even if the user scrolled during behavior.
+    // Avatar é autônomo — após cada behavior, volta sempre para idle.
+    // O próximo tick de scheduleIdleBehavior escolhe o próximo comportamento.
     const restore = () => {
-      const d = SECTION_STATES[_currentSection];
-      if (d) applyState(isStateAllowed(d.state) ? d.state : 'idle');
+      applyState('idle');
       scheduleIdleBehavior();
     };
 
