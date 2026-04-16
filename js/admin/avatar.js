@@ -57,7 +57,7 @@ function refreshAdminSelections() {
   });
 
   // Sync custom color inputs to current value
-  ['skinTone','hairColor','beardColor','eyeColor','shirtColor','pantsColor','glassesColor'].forEach(key => {
+  ['skinTone','hairColor','beardColor','eyeColor','shirtColor','pantsColor','shoeColor','glassesColor'].forEach(key => {
     const inp = document.querySelector(
       `#section-avatar .avatar-swatch[data-key="${key}"] .swatch-color-input`
     );

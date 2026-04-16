@@ -27,6 +27,7 @@ const AVATAR_DEFAULTS = {
   shirtColor:   '#2a4a7f',
   pantsColor:   '#2c3a5a',
   shoeColor:    '#1a1a1a',
+  shoeStyle:    'formal',
   glassesStyle: 'none',
   glassesColor: '#58a6ff',
   accessory:    'none',
@@ -133,6 +134,51 @@ function buildAvatarSVG(cfg) {
   const torso = [];  // shirt body (no sleeves) + belt
   const head  = [];  // neck up to hair
 
+  // ── SHOE HELPER ────────────────────────────
+  // Called after legL/legR pants pixels are pushed.
+  // sx: left-foot x=2, right-foot x=11
+  const addShoe = (isLeft) => {
+    const buf = isLeft ? legL : legR;
+    const sx  = isLeft ? 2 : 11;
+    const ss  = c.shoeStyle || 'formal';
+
+    if (ss === 'sneakers') {
+      buf.push(p(sx,28,7,2,shc));
+      buf.push(p(sx,27,6,1,lighten(shc,22)));            // tongue top
+      [1,3,5].forEach(i => buf.push(p(sx+i,27,1,1,'#f5f5f5'))); // laces
+      buf.push(p(sx,28,1,2,lighten(shc,14)));            // side highlight
+      buf.push(p(sx+6,28,1,2,darken(shc,16)));           // side shadow
+      buf.push(p(sx,30,7,1,'#e0e0e0'));                  // white midsole
+      buf.push(p(sx,31,7,1,'#b8b8b8'));                  // outsole
+
+    } else if (ss === 'boots') {
+      // Boot shaft covers lower-leg (y=24-29)
+      buf.push(p(sx,24,7,6,shc));
+      buf.push(p(sx,24,7,1,lighten(shc,20)));            // top fold band
+      buf.push(p(sx+1,24,5,1,lighten(shc,30)));          // fold highlight
+      buf.push(p(sx,24,1,6,lighten(shc,12)));            // left edge sheen
+      buf.push(p(sx+6,24,1,6,darken(shc,18)));           // right edge shadow
+      buf.push(p(sx,30,7,1,darken(shc,28)));             // thick sole
+
+    } else if (ss === 'sandals') {
+      // Minimal straps + exposed foot
+      buf.push(p(sx,27,7,1,shc));                        // toe strap
+      buf.push(p(sx+1,27,1,1,lighten(shc,18)));          // strap highlight
+      buf.push(p(sx+1,28,2,1,shc));                      // left cross-strap
+      buf.push(p(sx+4,28,2,1,shc));                      // right cross-strap
+      buf.push(p(sx+3,27,1,2,sk));                       // skin gap (open-toe)
+      buf.push(p(sx,29,7,1,darken(shc,22)));             // thin sole
+
+    } else {
+      // formal — classic dress shoe (original look)
+      buf.push(p(sx,28,7,2,shc));
+      buf.push(p(sx,27,6,1,shcL));
+      buf.push(p(sx,28,1,2,lighten(shc,14)));
+      buf.push(p(sx+6,28,1,2,darken(shc,16)));
+      buf.push(p(sx,29,7,1,darken(shc,24)));
+    }
+  };
+
   // ── GROUND SHADOW ──────────────────────────
   const shadow = `<ellipse cx="${SVG_W/2}" cy="${SVG_H-2}" rx="${SVG_W*0.30}" ry="3.5" fill="rgba(0,0,0,0.20)"/>`;
 
@@ -142,11 +188,7 @@ function buildAvatarSVG(cfg) {
   legL.push(p(8, 21, 1, 7, pcD));
   legL.push(p(5, 23, 1, 5, darken(pc, 10)));
   legL.push(p(4, 27, 4, 1, darken(pc, 14)));
-  legL.push(p(2, 28, 7, 2, shc));
-  legL.push(p(2, 27, 6, 1, shcL));
-  legL.push(p(2, 28, 1, 2, lighten(shc, 14)));
-  legL.push(p(8, 28, 1, 2, darken(shc, 16)));
-  legL.push(p(2, 29, 7, 1, darken(shc, 24)));  // sole thickness
+  addShoe(true);
 
   // ── RIGHT LEG ──────────────────────────────
   legR.push(p(11, 21, 6, 7, pc));
@@ -154,11 +196,7 @@ function buildAvatarSVG(cfg) {
   legR.push(p(16, 21, 1, 7, pcD));
   legR.push(p(14, 23, 1, 5, darken(pc, 10)));
   legR.push(p(12, 27, 4, 1, darken(pc, 14)));
-  legR.push(p(11, 28, 7, 2, shc));
-  legR.push(p(11, 27, 6, 1, shcL));
-  legR.push(p(11, 28, 1, 2, lighten(shc, 14)));
-  legR.push(p(17, 28, 1, 2, darken(shc, 16)));
-  legR.push(p(11, 29, 7, 1, darken(shc, 24)));
+  addShoe(false);
 
   // ── BELT + CROTCH (static, drawn over legs) ─
   torso.push(p(9,  21, 2, 2, pcD));
@@ -224,6 +262,36 @@ function buildAvatarSVG(cfg) {
     torso.push(p(9, 15, 1, 1, darken(sc,34))); torso.push(p(9, 17, 1, 1, darken(sc,34)));
     armL.push(p(1, 13, 2, 5, sc)); armL.push(p(1, 13, 1, 5, scL)); armL.push(p(1, 15, 2, 1, lighten(sc,30)));
     armR.push(p(17, 13, 2, 5, sc)); armR.push(p(17, 13, 1, 5, darken(sc,6))); armR.push(p(17, 15, 2, 1, lighten(sc,30)));
+
+  } else if (c.shirtStyle === 'jacket') {
+    // Bomber / varsity jacket with collar, chest pockets and ribbed hem
+    const jCol = lighten(sc, 26);     // collar / lapel
+    const jRib = darken(sc, 30);      // ribbed trim at cuffs + hem
+    const jRibL = lighten(jRib, 14);
+    // Main body
+    torso.push(p(3, 13, 14, 7, sc));
+    torso.push(p(3, 13, 1, 7, scL));
+    torso.push(p(16, 13, 1, 7, scD));
+    // Collar / lapels
+    torso.push(p(6, 12, 8, 2, jCol));
+    torso.push(p(6, 12, 4, 1, lighten(jCol, 14)));        // collar highlight
+    torso.push(p(6, 13, 2, 2, darken(jCol, 16)));         // left lapel fold
+    torso.push(p(12, 13, 2, 2, darken(jCol, 16)));        // right lapel fold
+    // Centre zip
+    torso.push(p(9, 13, 2, 7, darken(sc, 28)));
+    torso.push(p(9, 14, 1, 5, darken(sc, 42)));           // zip teeth
+    // Chest pockets
+    torso.push(p(5, 15, 3, 2, darken(sc, 18)));
+    torso.push(p(5, 15, 3, 1, scL));                      // pocket top flap
+    torso.push(p(12, 15, 3, 2, darken(sc, 18)));
+    torso.push(p(12, 15, 3, 1, scL));
+    // Ribbed hem
+    torso.push(p(3, 19, 14, 1, jRib));
+    torso.push(p(3, 19, 7, 1, jRibL));
+    for (let ri = 4; ri < 16; ri += 2) torso.push(p(ri, 19, 1, 1, darken(jRib, 16)));
+    // Arms with ribbed cuffs
+    armL.push(p(1, 13, 2, 5, sc)); armL.push(p(1, 13, 1, 5, scL)); armL.push(p(1, 17, 2, 1, jRib));
+    armR.push(p(17, 13, 2, 5, sc)); armR.push(p(17, 13, 1, 5, darken(sc,6))); armR.push(p(17, 17, 2, 1, jRib));
 
   } else { // tank
     torso.push(p(4, 13, 12, 7, sc)); torso.push(p(4, 13, 1, 7, scL)); torso.push(p(15, 13, 1, 7, scD));
@@ -375,6 +443,17 @@ function buildAvatarSVG(cfg) {
       H.push(p(5,12,10,1,bcD)); H.push(p(6,12,8,1,bc)); H.push(p(9,12,2,1,bcDD));
       // Skin blend at edges
       H.push(pa(4,9,1,1,sk,0.38)); H.push(pa(15,9,1,1,sk,0.38));
+
+    } else if (c.beardStyle === 'chinstrap') {
+      // Chinstrap: thin precise line along jaw only
+      H.push(pa(4,7,1,4,bc,0.88));   // left jaw line
+      H.push(pa(15,7,1,4,bc,0.88));  // right jaw line
+      H.push(pa(5,10,2,1,bc,0.92));  // left chin join
+      H.push(pa(13,10,2,1,bc,0.92)); // right chin join
+      H.push(p(6,11,8,1,bc));        // chin bottom strip
+      H.push(p(6,11,3,1,bcL));       // chin highlight
+      H.push(p(11,11,3,1,bcD));      // chin shadow
+      H.push(pa(9,12,2,1,bcD,0.55)); // chin point fade
     }
   }
 
@@ -441,6 +520,41 @@ function buildAvatarSVG(cfg) {
         h.push(p(8,4,4,1,hcDD));
         h.push(p(9,2,1,2,hcLL)); h.push(p(10,1,1,2,hcD));
         h.push(pa(3,4,1,2,hc,0.20)); h.push(pa(16,4,1,2,hc,0.20));
+
+      } else if (c.hairStyle === 'quiff') {
+        // Quiff / topete: volume swept up at front, shaved sides (undercut)
+        h.push(p(4,1,12,3,hc));               // main mass
+        h.push(p(4,0,12,1,hcD));              // roots/base line
+        h.push(p(3,2,1,3,hcD));               // left tight side
+        h.push(p(16,2,1,3,hcD));              // right tight side
+        // Swept-up front peak (extends slightly above SVG — overflow:visible)
+        h.push(p(5,0,10,1,hc));               // upper sweep
+        h.push(p(6,-1,7,1,hcD));              // peak above scalp
+        // Volume shading: bright at front, darker toward back
+        h.push(p(5,0,6,1,hcLL));             // swept highlight (front)
+        h.push(p(6,0,4,1,hcL));
+        h.push(p(12,0,3,1,hcDD));            // shadow at back of sweep
+        h.push(p(5,1,5,1,hcL));              // mid-volume highlight
+        h.push(p(4,3,1,2,hc));  h.push(p(4,4,1,1,hcD));   // left connect
+        h.push(p(15,3,1,2,hc)); h.push(p(16,4,1,1,hcD));  // right connect
+
+      } else if (c.hairStyle === 'topknot') {
+        // Topknot / coque: hair pulled up into a bun
+        h.push(p(3,1,2,4,hcDD));              // shaved left side
+        h.push(p(15,1,2,4,hcDD));             // shaved right side
+        h.push(p(4,0,12,2,hc));              // pulled-up strands
+        h.push(p(5,0,9,1,hcL));              // pull highlight
+        // Bun (extends above head — overflow:visible)
+        h.push(p(7,-3,6,3,hc));              // bun volume
+        h.push(p(8,-3,4,1,hcL));             // bun top
+        h.push(p(7,-3,1,3,hcD));             // left shadow
+        h.push(p(12,-3,1,3,hcD));            // right shadow
+        h.push(p(9,-3,2,1,hcLL));            // top highlight
+        h.push(p(9,-1,2,1,hcDD));            // crease at bun base
+        // Hair tie / elastic
+        h.push(p(8,0,4,1,hcDD));
+        h.push(p(9,0,2,1,'#1a1a1a'));        // elastic band
+        h.push(p(3,2,1,3,hcD));  h.push(p(16,2,1,3,hcD));  // side detail
       }
       return h.join('');
     };
@@ -632,6 +746,12 @@ function buildAvatarSVG(cfg) {
       ...(c.hairStyle==='medium'||c.hairStyle==='long' ? [
         p(2,5,2,3,hc), p(16,5,2,3,hc),
       ] : []),
+      // Topknot bun visible from behind
+      ...(c.hairStyle==='topknot' ? [
+        p(7,-3,6,3,hc), p(8,-3,4,1,hcL), p(9,-3,2,1,hcLL),
+        p(7,-3,1,3,hcDD), p(12,-3,1,3,hcL),
+        p(8,0,4,1,hcDD),  // hair tie from behind
+      ] : []),
     ] : []),
     // Glasses temples from behind
     ...(c.glassesStyle !== 'none' ? (() => {
@@ -649,6 +769,40 @@ function buildAvatarSVG(cfg) {
     p(16,4,3,4,'#1a1a1a'), p(16,5,3,2,'#2a2a2a'), p(18,5,1,2,'#ff6b6b'),
   ].join('');
 
+  // ── SCARF OVERLAY (rendered after head so neck wrap sits on top of chin) ──
+  let scarfHtml = '';
+  if (c.accessory === 'scarf') {
+    const sfC = '#c83030';
+    const sfL = lighten(sfC, 28);
+    const sfD = darken(sfC, 22);
+    scarfHtml = `<g id="avatar-scarf">${[
+      p(5,11,10,2,sfC),                 // neck wrap band
+      p(5,11,5,1,sfL),                  // wrap highlight
+      p(13,11,2,2,sfD),                 // wrap shadow
+      p(8,13,2,5,sfC),                  // left hanging end
+      p(8,13,1,5,sfL),                  // end highlight
+      p(8,17,2,1,sfD),                  // end tip shadow
+      p(10,13,2,4,darken(sfC,16)),      // right hanging end (slightly tucked)
+    ].join('')}</g>`;
+  }
+
+  // ── BACKPACK OVERLAY (strap visible from front, under arms) ────────────
+  let backpackHtml = '';
+  if (c.accessory === 'backpack') {
+    const bpC = '#4a3020';
+    const bpL = lighten(bpC, 24);
+    const bpD = darken(bpC, 14);
+    const bkl = lighten(bpC, 32);
+    backpackHtml = `<g id="avatar-backpack">${[
+      p(5,13,2,7,bpC), p(5,13,1,7,bpL),     // left shoulder strap
+      p(13,13,2,7,bpC), p(13,13,1,7,bpL),   // right shoulder strap
+      p(5,16,10,1,bpD),                       // chest strap
+      p(7,15,6,2,bkl),                        // sternum buckle body
+      p(8,15,4,1,bpC), p(8,16,4,1,bpD),      // buckle detail
+      p(7,15,1,2,bpL),                        // buckle highlight
+    ].join('')}</g>`;
+  }
+
   // ── ASSEMBLE ──────────────────────────────
   return `<svg xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 ${SVG_W} ${SVG_H}"
@@ -661,6 +815,7 @@ ${torso.join('\n')}
 <g class="avatar-left-arm">${armL.join('')}</g>
 <g class="avatar-right-arm">${armR.join('')}</g>
 <g class="avatar-head">${H.join('\n')}</g>
+${scarfHtml}${backpackHtml}
 <g id="avatar-headphones">${headphones}</g>
 <g id="avatar-phone" style="display:none">${phone}</g>
 <g id="avatar-book"  style="display:none">${book}</g>
