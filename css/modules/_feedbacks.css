@@ -351,9 +351,7 @@
   font-size: .92rem;
   font-weight: 700;
   color: var(--secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: break-word;
 }
 
 .feedback-profession {
