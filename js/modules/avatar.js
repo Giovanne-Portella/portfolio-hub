@@ -842,7 +842,7 @@ function showBubble(text, duration = 4000) {
 // AI BUBBLE (Fase 3)
 // ============================================
 const AI_ENDPOINT    = '/.netlify/functions/avatar-speech';
-const AI_COOLDOWN_MS = 90_000;   // min ms between calls
+const AI_COOLDOWN_MS = 30_000;   // min ms between calls (30s)
 let   _lastAICall    = -Infinity;
 
 // Fetches an AI-generated speech bubble for the given section.
@@ -853,16 +853,23 @@ async function fetchAIBubble(section) {
   _lastAICall = Date.now();
 
   try {
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), 5000);
     const res = await fetch(AI_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ section, ctx: window._avatarCtx }),
-      signal: AbortSignal.timeout(5000),
+      signal: controller.signal,
     });
-    if (!res.ok) return null;
+    clearTimeout(tid);
+    if (!res.ok) {
+      console.warn('[avatar-ai] function returned', res.status);
+      return null;
+    }
     const { bubble } = await res.json();
     return bubble || null;
-  } catch {
+  } catch (err) {
+    console.warn('[avatar-ai] fetch failed:', err?.message || err);
     return null;  // silently degrade — hardcoded bubbles always available
   }
 }
@@ -878,9 +885,9 @@ function transitionToSection(sectionId) {
   const stateToUse = isStateAllowed(data.state) ? data.state : 'idle';
   requestState(stateToUse, data.bubble, 3500);
 
-  // 30% chance: enrich bubble with AI-generated line (async, non-blocking).
+  // 70% chance: enrich bubble with AI-generated line (async, non-blocking).
   // Shows ~1-2s after the hardcoded bubble, giving a "thinking" feel.
-  if (Math.random() < 0.30) {
+  if (Math.random() < 0.70) {
     fetchAIBubble(sectionId).then(aiBubble => {
       if (aiBubble && _currentSection === sectionId) {
         showBubble(aiBubble, 4500);
@@ -1019,7 +1026,7 @@ function scheduleIdleBehavior(quick = false) {
 
     // ── idle bubble (12%) ─────────────────────
     } else {
-      if (Math.random() < 0.20) {
+      if (Math.random() < 0.50) {
         // Try AI bubble — falls back to hardcoded if API unavailable or rate-limited
         fetchAIBubble(_currentSection).then(aiBubble => {
           const fallback = IDLE_BUBBLES[Math.floor(Math.random() * IDLE_BUBBLES.length)];
