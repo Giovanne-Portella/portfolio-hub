@@ -96,8 +96,12 @@ function openProjectModal(id) {
   const p = _projectsData.find(x => String(x.id) === String(id));
   if (!p) return;
 
-  // Título da barra terminal (fixo, igual ao padrão do modal de feedback)
-  // O título real do projeto fica no h3 abaixo
+  // Título da barra terminal — slug do nome do projeto
+  const titleBar = document.getElementById('pm-title-bar');
+  if (titleBar) {
+    const slug = p.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    titleBar.textContent = `~/${slug}.md`;
+  }
 
   // Imagem
   const imgWrap = document.getElementById('pm-image');
