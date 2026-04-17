@@ -42,7 +42,8 @@
         https://api.github.com
         https://github-contributions-api.jogruber.de
         https://noembed.com
-        https://api.anthropic.com;
+        https://api.anthropic.com
+        https://cdn.jsdelivr.net;
       worker-src blob:;
       object-src 'none';
       base-uri 'self';
