@@ -15,3 +15,5 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+
+supabase/.temp/
