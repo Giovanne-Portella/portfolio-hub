@@ -134,7 +134,8 @@ async function loadProfile() {
     const span = document.getElementById('footer-company-value');
     if (span) {
       if (data.company_url) {
-        span.innerHTML = `<a href="${data.company_url}" target="_blank" rel="noopener noreferrer">${data.company_name}</a>`;
+        const cleanUrl = safeUrl(data.company_url);
+        span.innerHTML = `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(data.company_name)}</a>`;
       } else {
         span.textContent = data.company_name;
       }

@@ -34,6 +34,20 @@ function escapeAttr(str) {
             .replace(/>/g, '&gt;');
 }
 
+/**
+ * Sanitize a URL for use in an href attribute.
+ * Blocks javascript:, data:, vbscript: and similar dangerous protocols.
+ * Returns '#' for any URL that does not start with http://, https://, mailto:, or /.
+ */
+function safeUrl(url) {
+  if (!url) return '#';
+  const trimmed = String(url).trim();
+  if (/^(https?:\/\/|mailto:|\/)/i.test(trimmed)) {
+    return escapeAttr(trimmed);
+  }
+  return '#';
+}
+
 
 // ============================================
 // TIME SINCE CALCULATOR (Company duration)

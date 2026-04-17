@@ -22,9 +22,55 @@ const SECTION_NAMES = {
   contact:                'seção de contato',
 };
 
+// ============================================
+// In-memory rate limiter (per IP, resets on
+// cold start — adequate for a personal site).
+// Limit: 30 requests per IP per 60 seconds.
+// ============================================
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX       = 30;
+const _rateLimitMap = new Map(); // ip → { count, resetAt }
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  let entry = _rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    entry = { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS };
+    _rateLimitMap.set(ip, entry);
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > RATE_LIMIT_MAX;
+}
+
+// Allowed origins — add custom domain here if you ever set one
+const ALLOWED_ORIGINS = new Set([
+  'https://gm-portfolio-hub.netlify.app',
+  'http://localhost',          // local dev
+]);
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
+  }
+
+  // Origin check — block requests from outside the portfolio
+  const origin = event.headers['origin'] || '';
+  const isLocalhost = origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1');
+  if (origin && !ALLOWED_ORIGINS.has(origin) && !isLocalhost) {
+    return { statusCode: 403, body: JSON.stringify({ error: 'Forbidden' }) };
+  }
+
+  // Rate limiting per IP
+  const ip = event.headers['x-nf-client-connection-ip']
+          || event.headers['x-forwarded-for']?.split(',')[0]?.trim()
+          || 'unknown';
+  if (isRateLimited(ip)) {
+    return {
+      statusCode: 429,
+      headers: { 'Retry-After': '60' },
+      body: JSON.stringify({ error: 'Too many requests' }),
+    };
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;

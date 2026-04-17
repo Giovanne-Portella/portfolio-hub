@@ -16,7 +16,7 @@ async function loadSocialLinks() {
   footerSocial.innerHTML = '';
 
   data.forEach(link => {
-    const icon = `<a href="${escapeAttr(link.url)}" target="_blank" rel="noopener noreferrer" 
+    const icon = `<a href="${safeUrl(link.url)}" target="_blank" rel="noopener noreferrer" 
                      class="social-icon" title="${escapeHtml(link.platform)}">
                     <i class="fab ${escapeAttr(link.icon)}"></i>
                   </a>`;

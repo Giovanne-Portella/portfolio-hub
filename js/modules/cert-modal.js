@@ -115,7 +115,7 @@ async function loadCertProjectFiles(certId) {
     const ext = f.file_name.split('.').pop().toLowerCase();
     const icon = fileIcons[ext] || 'fa-file';
     return `
-      <a href="${escapeAttr(f.file_url)}" target="_blank" rel="noopener noreferrer" class="project-file-item" download>
+      <a href="${safeUrl(f.file_url)}" target="_blank" rel="noopener noreferrer" class="project-file-item" download>
         <i class="fas ${icon}"></i>
         <span>${escapeHtml(f.file_name)}</span>
         ${f.description ? `<small>${escapeHtml(f.description)}</small>` : ''}

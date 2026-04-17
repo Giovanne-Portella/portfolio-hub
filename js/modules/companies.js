@@ -27,7 +27,7 @@ async function loadCompanies() {
       : '';
 
     const linkHtml = company.website_url
-      ? `<a href="${escapeAttr(company.website_url)}" target="_blank" rel="noopener noreferrer" class="company-link">
+      ? `<a href="${safeUrl(company.website_url)}" target="_blank" rel="noopener noreferrer" class="company-link">
           <i class="fas fa-external-link-alt"></i> Visitar site
         </a>`
       : '';

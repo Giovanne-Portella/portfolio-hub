@@ -51,7 +51,7 @@ async function loadProjects() {
 
     const linksHtml = [];
     if (project.github_url) {
-      linksHtml.push(`<a href="${escapeAttr(project.github_url)}" target="_blank" rel="noopener noreferrer" class="project-link">
+      linksHtml.push(`<a href="${safeUrl(project.github_url)}" target="_blank" rel="noopener noreferrer" class="project-link">
         <i class="fab fa-github"></i> Código
       </a>`);
       linksHtml.push(`<button class="project-link readme-link" onclick="openReadme('${escapeAttr(project.github_url)}', '${escapeAttr(project.title)}')">
@@ -59,7 +59,7 @@ async function loadProjects() {
       </button>`);
     }
     if (project.demo_url) {
-      linksHtml.push(`<a href="${escapeAttr(project.demo_url)}" target="_blank" rel="noopener noreferrer" class="project-link">
+      linksHtml.push(`<a href="${safeUrl(project.demo_url)}" target="_blank" rel="noopener noreferrer" class="project-link">
         <i class="fas fa-external-link-alt"></i> Demo
       </a>`);
     }
@@ -154,11 +154,11 @@ function openProjectModal(id) {
   if (linksEl) {
     const links = [];
     if (p.github_url) {
-      links.push(`<a href="${escapeAttr(p.github_url)}" target="_blank" rel="noopener noreferrer" class="project-link"><i class="fab fa-github"></i> Código</a>`);
+      links.push(`<a href="${safeUrl(p.github_url)}" target="_blank" rel="noopener noreferrer" class="project-link"><i class="fab fa-github"></i> Código</a>`);
       links.push(`<button class="project-link readme-link" onclick="openReadme('${escapeAttr(p.github_url)}','${escapeAttr(p.title)}')"><i class="fas fa-book-open"></i> README</button>`);
     }
     if (p.demo_url) {
-      links.push(`<a href="${escapeAttr(p.demo_url)}" target="_blank" rel="noopener noreferrer" class="project-link"><i class="fas fa-external-link-alt"></i> Demo</a>`);
+      links.push(`<a href="${safeUrl(p.demo_url)}" target="_blank" rel="noopener noreferrer" class="project-link"><i class="fas fa-external-link-alt"></i> Demo</a>`);
     }
     linksEl.innerHTML = links.join('');
   }
