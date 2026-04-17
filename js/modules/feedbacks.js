@@ -195,7 +195,7 @@ function buildSlide(f) {
           <div class="feedback-info">
             <span class="feedback-name">${escapeHtml(f.name)}</span>
             <span class="feedback-profession">${escapeHtml(f.profession)}</span>
-            ${social ? `<span class="feedback-linkedin"><i class="${social.icon}"></i> ${social.label}</span>` : ''}
+            ${social ? `<a class="feedback-linkedin" href="${escapeAttr(safeUrl(best))}" target="_blank" rel="noopener noreferrer"><i class="${social.icon}"></i> ${social.label}</a>` : ''}
           </div>
         </div>
       </div>
