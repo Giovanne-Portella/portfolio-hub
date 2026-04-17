@@ -200,7 +200,8 @@ function openFeedbackModal(id) {
     const s = detectSocial(f.linkedin_url);
     document.getElementById('fm-social-icon').className  = s.icon;
     document.getElementById('fm-social-label').textContent = `Ver ${s.label}`;
-    socialEl.href = f.linkedin_url;
+    // safeUrl() blocks javascript: / data: / vbscript: protocols
+    socialEl.href = safeUrl(f.linkedin_url);
     socialEl.style.display = '';
   } else {
     socialEl.style.display = 'none';

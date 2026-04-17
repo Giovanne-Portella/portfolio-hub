@@ -74,8 +74,40 @@ function showToast(message, isError = false) {
 // ============================================
 // FILE UPLOAD HELPER
 // ============================================
+
+// Allowed MIME types per bucket (defense-in-depth — server-side Storage RLS
+// is the authoritative gate; this prevents accidental wrong-file uploads).
+const ALLOWED_MIME_TYPES = {
+  avatars:           ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+  resumes:           ['application/pdf'],
+  certificates:      ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/pdf'],
+  projects:          ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+  companies:         ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+  'project-files':   [
+    'application/pdf',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'text/csv',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/octet-stream', // .pbix, .ipynb
+    'application/json',
+    'text/plain',
+    'text/xml', 'application/xml',
+    'application/zip', 'application/x-rar-compressed', 'application/vnd.rar',
+    'text/x-python', 'application/x-python-code',
+  ],
+};
+
 async function uploadFile(bucket, file) {
-  const ext = file.name.split('.').pop();
+  const allowed = ALLOWED_MIME_TYPES[bucket];
+  if (allowed && !allowed.includes(file.type)) {
+    throw new Error(`Tipo de arquivo não permitido: ${file.type || '(desconhecido)'}`);
+  }
+
+  const ext = file.name.split('.').pop().replace(/[^a-zA-Z0-9]/g, '');
   const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
 
   const { error } = await supabase.storage
