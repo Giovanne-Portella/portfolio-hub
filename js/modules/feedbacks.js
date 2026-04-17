@@ -131,19 +131,37 @@ function renderFeedbacksEmpty() {
 function detectSocial(url) {
   try {
     const host = new URL(url.startsWith('http') ? url : 'https://' + url).hostname.replace('www.', '');
-    if (host.includes('linkedin.com'))  return { icon: 'fab fa-linkedin',   label: 'LinkedIn'   };
-    if (host.includes('instagram.com')) return { icon: 'fab fa-instagram',  label: 'Instagram'  };
-    if (host.includes('github.com'))    return { icon: 'fab fa-github',     label: 'GitHub'     };
-    if (host.includes('x.com') || host.includes('twitter.com')) return { icon: 'fab fa-x-twitter', label: 'X' };
-    if (host.includes('youtube.com'))   return { icon: 'fab fa-youtube',    label: 'YouTube'    };
-    if (host.includes('facebook.com'))  return { icon: 'fab fa-facebook',   label: 'Facebook'   };
-    if (host.includes('tiktok.com'))    return { icon: 'fab fa-tiktok',     label: 'TikTok'     };
-    if (host.includes('discord.com'))   return { icon: 'fab fa-discord',    label: 'Discord'    };
-    if (host.includes('telegram.org') || host.includes('t.me')) return { icon: 'fab fa-telegram', label: 'Telegram' };
-    if (host.includes('behance.net'))   return { icon: 'fab fa-behance',    label: 'Behance'    };
-    if (host.includes('dribbble.com'))  return { icon: 'fab fa-dribbble',   label: 'Dribbble'   };
+    if (host.includes('linkedin.com'))  return { icon: 'fab fa-linkedin',   label: 'LinkedIn',  priority: 1 };
+    if (host.includes('github.com'))    return { icon: 'fab fa-github',     label: 'GitHub',    priority: 2 };
+    if (host.includes('instagram.com')) return { icon: 'fab fa-instagram',  label: 'Instagram', priority: 3 };
+    if (host.includes('x.com') || host.includes('twitter.com')) return { icon: 'fab fa-x-twitter', label: 'X', priority: 4 };
+    if (host.includes('youtube.com'))   return { icon: 'fab fa-youtube',    label: 'YouTube',   priority: 5 };
+    if (host.includes('facebook.com'))  return { icon: 'fab fa-facebook',   label: 'Facebook',  priority: 6 };
+    if (host.includes('tiktok.com'))    return { icon: 'fab fa-tiktok',     label: 'TikTok',    priority: 7 };
+    if (host.includes('discord.com'))   return { icon: 'fab fa-discord',    label: 'Discord',   priority: 8 };
+    if (host.includes('telegram.org') || host.includes('t.me')) return { icon: 'fab fa-telegram', label: 'Telegram', priority: 9 };
+    if (host.includes('behance.net'))   return { icon: 'fab fa-behance',    label: 'Behance',   priority: 10 };
+    if (host.includes('dribbble.com'))  return { icon: 'fab fa-dribbble',   label: 'Dribbble',  priority: 11 };
   } catch (_) {}
-  return { icon: 'fas fa-link', label: 'Perfil' };
+  return { icon: 'fas fa-link', label: 'Perfil', priority: 99 };
+}
+
+function parseSocialLinks(raw) {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed.filter(Boolean);
+  } catch (_) {}
+  return [raw];
+}
+
+function bestSocialLink(urls) {
+  if (!urls.length) return null;
+  return urls.slice().sort((a, b) => {
+    const pa = detectSocial(a).priority;
+    const pb = detectSocial(b).priority;
+    return pa - pb;
+  })[0];
 }
 
 function buildSlide(f) {
@@ -154,7 +172,9 @@ function buildSlide(f) {
     .map(w => w[0].toUpperCase())
     .join('');
 
-  const social = (f.show_linkedin && f.linkedin_url) ? detectSocial(f.linkedin_url) : null;
+  const socialUrls = (f.show_linkedin && f.linkedin_url) ? parseSocialLinks(f.linkedin_url) : [];
+  const best = bestSocialLink(socialUrls);
+  const social = best ? detectSocial(best) : null;
 
   return `
     <div class="swiper-slide" data-feedback-id="${escapeAttr(f.id)}">
@@ -195,16 +215,15 @@ function openFeedbackModal(id) {
   document.getElementById('fm-profession').textContent = f.profession;
   document.getElementById('fm-text').textContent       = f.feedback;
 
-  const socialEl = document.getElementById('fm-social');
-  if (f.show_linkedin && f.linkedin_url) {
-    const s = detectSocial(f.linkedin_url);
-    document.getElementById('fm-social-icon').className  = s.icon;
-    document.getElementById('fm-social-label').textContent = `Ver ${s.label}`;
-    // safeUrl() blocks javascript: / data: / vbscript: protocols
-    socialEl.href = safeUrl(f.linkedin_url);
-    socialEl.style.display = '';
-  } else {
-    socialEl.style.display = 'none';
+  const socialLinksEl = document.getElementById('fm-social-links');
+  if (socialLinksEl) {
+    const urls = (f.show_linkedin && f.linkedin_url) ? parseSocialLinks(f.linkedin_url) : [];
+    socialLinksEl.innerHTML = urls.map(url => {
+      const s = detectSocial(url);
+      return `<a class="feedback-modal-social" href="${escapeAttr(safeUrl(url))}" target="_blank" rel="noopener noreferrer">
+        <i class="${s.icon}"></i> Ver ${s.label}
+      </a>`;
+    }).join('');
   }
 
   document.getElementById('feedback-modal-overlay').classList.add('open');
