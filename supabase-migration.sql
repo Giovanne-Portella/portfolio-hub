@@ -88,9 +88,9 @@ create policy "Owner delete companies" on companies for delete using (auth.uid()
 insert into storage.buckets (id, name, public) values ('companies', 'companies', true);
 
 create policy "Public read companies bucket" on storage.objects for select using (bucket_id = 'companies');
-create policy "Auth upload companies bucket" on storage.objects for insert with check (bucket_id = 'companies' and auth.role() = 'authenticated');
-create policy "Auth update companies bucket" on storage.objects for update using (bucket_id = 'companies' and auth.role() = 'authenticated');
-create policy "Auth delete companies bucket" on storage.objects for delete using (bucket_id = 'companies' and auth.role() = 'authenticated');
+create policy "Owner upload companies" on storage.objects for insert with check (bucket_id = 'companies' and auth.uid() = 'YOUR_USER_UID');
+create policy "Owner update companies" on storage.objects for update using (bucket_id = 'companies' and auth.uid() = 'YOUR_USER_UID');
+create policy "Owner delete companies" on storage.objects for delete using (bucket_id = 'companies' and auth.uid() = 'YOUR_USER_UID');
 
 -- ============================================
 -- 7. Bucket para currículo (PDFs)
@@ -98,9 +98,9 @@ create policy "Auth delete companies bucket" on storage.objects for delete using
 insert into storage.buckets (id, name, public) values ('resumes', 'resumes', true);
 
 create policy "Public read resumes" on storage.objects for select using (bucket_id = 'resumes');
-create policy "Auth upload resumes" on storage.objects for insert with check (bucket_id = 'resumes' and auth.role() = 'authenticated');
-create policy "Auth update resumes" on storage.objects for update using (bucket_id = 'resumes' and auth.role() = 'authenticated');
-create policy "Auth delete resumes" on storage.objects for delete using (bucket_id = 'resumes' and auth.role() = 'authenticated');
+create policy "Owner upload resumes" on storage.objects for insert with check (bucket_id = 'resumes' and auth.uid() = 'YOUR_USER_UID');
+create policy "Owner update resumes" on storage.objects for update using (bucket_id = 'resumes' and auth.uid() = 'YOUR_USER_UID');
+create policy "Owner delete resumes" on storage.objects for delete using (bucket_id = 'resumes' and auth.uid() = 'YOUR_USER_UID');
 
 -- ============================================
 -- 8. Coluna avatar_config na tabela profiles

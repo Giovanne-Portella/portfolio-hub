@@ -165,23 +165,24 @@ create policy "Public read avatars" on storage.objects for select using (bucket_
 create policy "Public read certificates" on storage.objects for select using (bucket_id = 'certificates');
 create policy "Public read projects" on storage.objects for select using (bucket_id = 'projects');
 
--- Storage policies - authenticated upload/update/delete
-create policy "Auth upload avatars" on storage.objects for insert with check (bucket_id = 'avatars' and auth.role() = 'authenticated');
-create policy "Auth update avatars" on storage.objects for update using (bucket_id = 'avatars' and auth.role() = 'authenticated');
-create policy "Auth delete avatars" on storage.objects for delete using (bucket_id = 'avatars' and auth.role() = 'authenticated');
+-- Storage policies - owner-only write (auth.uid() locks to a single user)
+-- Replace YOUR_USER_UID with the actual UID from auth.users
+create policy "Owner upload avatars" on storage.objects for insert with check (bucket_id = 'avatars' and auth.uid() = 'YOUR_USER_UID');
+create policy "Owner update avatars" on storage.objects for update using (bucket_id = 'avatars' and auth.uid() = 'YOUR_USER_UID');
+create policy "Owner delete avatars" on storage.objects for delete using (bucket_id = 'avatars' and auth.uid() = 'YOUR_USER_UID');
 
-create policy "Auth upload certificates" on storage.objects for insert with check (bucket_id = 'certificates' and auth.role() = 'authenticated');
-create policy "Auth update certificates" on storage.objects for update using (bucket_id = 'certificates' and auth.role() = 'authenticated');
-create policy "Auth delete certificates" on storage.objects for delete using (bucket_id = 'certificates' and auth.role() = 'authenticated');
+create policy "Owner upload certificates" on storage.objects for insert with check (bucket_id = 'certificates' and auth.uid() = 'YOUR_USER_UID');
+create policy "Owner update certificates" on storage.objects for update using (bucket_id = 'certificates' and auth.uid() = 'YOUR_USER_UID');
+create policy "Owner delete certificates" on storage.objects for delete using (bucket_id = 'certificates' and auth.uid() = 'YOUR_USER_UID');
 
-create policy "Auth upload projects" on storage.objects for insert with check (bucket_id = 'projects' and auth.role() = 'authenticated');
-create policy "Auth update projects" on storage.objects for update using (bucket_id = 'projects' and auth.role() = 'authenticated');
-create policy "Auth delete projects" on storage.objects for delete using (bucket_id = 'projects' and auth.role() = 'authenticated');
+create policy "Owner upload projects" on storage.objects for insert with check (bucket_id = 'projects' and auth.uid() = 'YOUR_USER_UID');
+create policy "Owner update projects" on storage.objects for update using (bucket_id = 'projects' and auth.uid() = 'YOUR_USER_UID');
+create policy "Owner delete projects" on storage.objects for delete using (bucket_id = 'projects' and auth.uid() = 'YOUR_USER_UID');
 
 create policy "Public read project-files" on storage.objects for select using (bucket_id = 'project-files');
-create policy "Auth upload project-files" on storage.objects for insert with check (bucket_id = 'project-files' and auth.role() = 'authenticated');
-create policy "Auth update project-files" on storage.objects for update using (bucket_id = 'project-files' and auth.role() = 'authenticated');
-create policy "Auth delete project-files" on storage.objects for delete using (bucket_id = 'project-files' and auth.role() = 'authenticated');
+create policy "Owner upload project-files" on storage.objects for insert with check (bucket_id = 'project-files' and auth.uid() = 'YOUR_USER_UID');
+create policy "Owner update project-files" on storage.objects for update using (bucket_id = 'project-files' and auth.uid() = 'YOUR_USER_UID');
+create policy "Owner delete project-files" on storage.objects for delete using (bucket_id = 'project-files' and auth.uid() = 'YOUR_USER_UID');
 
 -- ============================================
 -- FUNCTION: Auto-update updated_at
