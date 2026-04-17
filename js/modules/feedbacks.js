@@ -148,11 +148,16 @@ function detectSocial(url) {
 
 function parseSocialLinks(raw) {
   if (!raw) return [];
+  // New format: JSON array
   try {
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) return parsed.filter(Boolean);
+    if (Array.isArray(parsed)) return parsed.map(s => s.trim()).filter(Boolean);
   } catch (_) {}
-  return [raw];
+  // Legacy format: comma-separated URLs
+  if (raw.includes(',')) {
+    return raw.split(',').map(s => s.trim()).filter(Boolean);
+  }
+  return [raw.trim()];
 }
 
 function bestSocialLink(urls) {
