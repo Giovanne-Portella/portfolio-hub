@@ -48,17 +48,18 @@ function setupModal() {
 
     if (isPdf) {
       modalImage.style.display = 'none';
-      modalPdf.src = image;
+      modalPdf.innerHTML = '';
       modalPdf.style.display = '';
+      renderPdfInModal(image, modalPdf);
     } else if (image) {
       modalPdf.style.display = 'none';
-      modalPdf.src = '';
+      modalPdf.innerHTML = '';
       modalImage.src = image;
       modalImage.style.display = '';
     } else {
       modalImage.style.display = 'none';
       modalPdf.style.display = 'none';
-      modalPdf.src = '';
+      modalPdf.innerHTML = '';
     }
 
     const linkEl = document.getElementById('modal-cert-link');
@@ -80,6 +81,39 @@ function setupModal() {
 
     modal.classList.add('active');
   });
+}
+
+// ============================================
+// PDF RENDERING IN MODAL (via PDF.js, avoids iframe blocking)
+// ============================================
+async function renderPdfInModal(pdfUrl, container) {
+  container.innerHTML = '<div class="modal-pdf-loading"><i class="fas fa-spinner fa-spin"></i> Carregando PDF...</div>';
+  try {
+    const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+    container.innerHTML = '';
+
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const dpr = window.devicePixelRatio || 1;
+      const containerWidth = container.clientWidth || 600;
+      const naturalViewport = page.getViewport({ scale: 1 });
+      const scale = (containerWidth * dpr) / naturalViewport.width;
+      const viewport = page.getViewport({ scale });
+
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      canvas.style.width = '100%';
+      canvas.style.display = 'block';
+      if (pageNum < pdf.numPages) canvas.style.marginBottom = '8px';
+
+      container.appendChild(canvas);
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+    }
+  } catch (err) {
+    console.error('Erro ao renderizar PDF no modal:', err);
+    container.innerHTML = '<p style="color:#e74c3c;text-align:center;padding:2rem"><i class="fas fa-exclamation-triangle"></i> Não foi possível carregar o PDF.</p>';
+  }
 }
 
 // ============================================
